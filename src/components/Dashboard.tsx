@@ -10,10 +10,12 @@ import {
   formatRemainingTime,
   calculateTotalActual,
 } from '../helpers';
+import { Calendar, TrendingUp, Wallet, Target, Users, Clock } from 'lucide-react';
 
 export default function Dashboard() {
   const { settings, budgetItems, savings, guests } = useWeddingStore();
 
+  // Semua perhitungan menggunakan helper functions
   const totalBudget = calculateTotalBudget(budgetItems);
   const totalActual = calculateTotalActual(budgetItems);
   const totalSavings = calculateTotalSavings(savings);
@@ -21,134 +23,185 @@ export default function Dashboard() {
   const remainingMonths = calculateRemainingMonths(settings.weddingDate);
   const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
   const progress = calculateProgressPercentage(totalSavings, totalBudget);
-  const totalGuests = guests.reduce((sum, g) => sum + g.pax, 1); // +1 for couple
+  const totalGuests = guests.reduce((sum, g) => sum + g.pax, 0);
+
+  const formattedDate = settings.weddingDate
+    ? new Date(settings.weddingDate).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-800">WeddingPlan Dashboard</h1>
-        <p className="text-gray-500 mt-1">Pantau perencanaan pernikahanmu di satu tempat</p>
-      </div>
-
-      {/* Countdown */}
+      {/* Hero Section - Countdown */}
       {settings.weddingDate && (
-        <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white text-center shadow-lg">
-          <p className="text-sm opacity-90">Menuju Hari Bahagiamu</p>
-          <p className="text-2xl font-bold mt-1">{formatRemainingTime(settings.weddingDate)}</p>
-          <p className="text-sm opacity-75 mt-1">
-            {new Date(settings.weddingDate).toLocaleDateString('id-ID', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#B76E79] via-[#C4838C] to-[#87A878] p-6 sm:p-8 text-white shadow-lg">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2MkgxNnYtMmgyMHptMC00djJIMjR2LTJoMTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock size={18} className="opacity-80" />
+              <span className="text-sm opacity-90 font-medium">Menuju Hari Bahagiamu</span>
+            </div>
+            <p className="text-3xl sm:text-4xl font-heading font-bold mb-1">
+              {formatRemainingTime(settings.weddingDate)}
+            </p>
+            <p className="text-sm opacity-80">
+              {formattedDate}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Welcome Message (no date set) */}
+      {!settings.weddingDate && (
+        <div className="bg-white rounded-2xl p-8 border border-[#E8E0D4] text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-[#B76E79]/20 to-[#87A878]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">💒</span>
+          </div>
+          <h2 className="font-heading text-2xl font-bold text-gray-800 mb-2">
+            Selamat Datang di WeddingPlan
+          </h2>
+          <p className="text-gray-500 max-w-md mx-auto">
+            Mulai rencanakan pernikahan impianmu. Atur tanggal pernikahan di menu Pengaturan untuk melihat countdown.
           </p>
         </div>
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Anggaran */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">💰</span>
-            </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Total Anggaran</p>
-              <p className="text-lg font-bold text-gray-800">{formatCurrency(totalBudget, settings.currency)}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Anggaran</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalBudget, settings.currency)}</p>
+            </div>
+            <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
+              <Wallet size={20} className="text-[#87A878]" />
             </div>
           </div>
+          <p className="text-xs text-gray-400 mt-2">{budgetItems.length} item anggaran</p>
         </div>
 
         {/* Total Realisasi */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">🧾</span>
-            </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Total Realisasi</p>
-              <p className="text-lg font-bold text-gray-800">{formatCurrency(totalActual, settings.currency)}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Realisasi</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalActual, settings.currency)}</p>
+            </div>
+            <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+              <TrendingUp size={20} className="text-orange-500" />
             </div>
           </div>
+          <p className="text-xs text-gray-400 mt-2">
+            {totalBudget > 0 ? Math.round((totalActual / totalBudget) * 100) : 0}% dari anggaran
+          </p>
         </div>
 
         {/* Total Tabungan */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">🏦</span>
-            </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Total Tabungan</p>
-              <p className="text-lg font-bold text-gray-800">{formatCurrency(totalSavings, settings.currency)}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Tabungan</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalSavings, settings.currency)}</p>
+            </div>
+            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+              <Target size={20} className="text-emerald-500" />
             </div>
           </div>
+          <p className="text-xs text-gray-400 mt-2">{savings.length} kali menabung</p>
         </div>
 
         {/* Kekurangan Dana */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">⚠️</span>
-            </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Kekurangan Dana</p>
-              <p className="text-lg font-bold text-red-600">{formatCurrency(fundingGap, settings.currency)}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Kekurangan Dana</p>
+              <p className={`text-xl font-bold mt-1 ${fundingGap > 0 ? 'text-[#B76E79]' : 'text-emerald-600'}`}>
+                {formatCurrency(fundingGap, settings.currency)}
+              </p>
+            </div>
+            <div className="w-10 h-10 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
+              <span className="text-lg">{fundingGap > 0 ? '⚠️' : '✅'}</span>
             </div>
           </div>
+          <p className="text-xs text-gray-400 mt-2">
+            {fundingGap > 0 ? 'Masih perlu ditabung' : 'Anggaran terpenuhi!'}
+          </p>
         </div>
 
         {/* Target Bulanan */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">🎯</span>
-            </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Target Tabungan/Bulan</p>
-              <p className="text-lg font-bold text-gray-800">{formatCurrency(monthlyTarget, settings.currency)}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Target/Bulan</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(monthlyTarget, settings.currency)}</p>
+            </div>
+            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+              <Calendar size={20} className="text-purple-500" />
             </div>
           </div>
+          <p className="text-xs text-gray-400 mt-2">{remainingMonths} bulan tersisa</p>
         </div>
 
         {/* Total Tamu */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-              <span className="text-xl">👥</span>
-            </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Total Tamu (Pax)</p>
-              <p className="text-lg font-bold text-gray-800">{totalGuests} orang</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Tamu</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{totalGuests} <span className="text-sm font-normal text-gray-500">pax</span></p>
             </div>
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <Users size={20} className="text-blue-500" />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">{guests.length} orang diundang</p>
+        </div>
+      </div>
+
+      {/* Progress Section */}
+      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-heading text-lg font-semibold text-gray-800">Progress Tabungan</h3>
+          <span className="text-2xl font-bold text-[#87A878]">{progress}%</span>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="relative">
+          <div className="w-full bg-[#F5F0E8] rounded-full h-4 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-700 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          {/* Progress markers */}
+          <div className="flex justify-between mt-2">
+            <span className="text-xs text-gray-400">{formatCurrency(0, settings.currency)}</span>
+            <span className="text-xs text-gray-400">{formatCurrency(totalBudget / 2, settings.currency)}</span>
+            <span className="text-xs text-gray-400">{formatCurrency(totalBudget, settings.currency)}</span>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-[#87A878]" />
+            <span className="text-gray-600">Terkumpul: {formatCurrency(totalSavings, settings.currency)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-[#F5F0E8] border border-gray-200" />
+            <span className="text-gray-600">Sisa: {formatCurrency(fundingGap, settings.currency)}</span>
           </div>
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="font-semibold text-gray-700">Progress Tabungan</h3>
-          <span className="text-sm font-bold text-pink-600">{progress}%</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-          <div
-            className="bg-gradient-to-r from-pink-400 to-rose-500 h-full rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <p className="text-xs text-gray-500 mt-2">
-          {formatCurrency(totalSavings, settings.currency)} dari {formatCurrency(totalBudget, settings.currency)}
-        </p>
-      </div>
-
-      {/* Summary per Category */}
+      {/* Category Breakdown */}
       {budgetItems.length > 0 && (
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h3 className="font-semibold text-gray-700 mb-4">Ringkasan per Kategori</h3>
+        <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+          <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">Ringkasan per Kategori</h3>
           <div className="space-y-3">
             {Object.entries(
               budgetItems.reduce((acc, item) => {
@@ -157,32 +210,33 @@ export default function Dashboard() {
                 acc[item.category].actual += item.actualCost;
                 return acc;
               }, {} as Record<string, { estimated: number; actual: number }>)
-            ).map(([category, data]) => (
-              <div key={category} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-                <span className="text-sm text-gray-600">{category}</span>
-                <div className="text-right">
-                  <span className="text-sm font-medium text-gray-800">
-                    {formatCurrency(data.estimated, settings.currency)}
-                  </span>
-                  <span className="text-xs text-gray-400 ml-2">
-                    (realisasi: {formatCurrency(data.actual, settings.currency)})
-                  </span>
+            ).map(([category, data]) => {
+              const percentage = totalBudget > 0 ? (data.estimated / totalBudget) * 100 : 0;
+              return (
+                <div key={category} className="group">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-sm font-medium text-gray-700">{category}</span>
+                    <div className="text-right">
+                      <span className="text-sm font-semibold text-gray-800">
+                        {formatCurrency(data.estimated, settings.currency)}
+                      </span>
+                      {data.actual > 0 && (
+                        <span className="text-xs text-gray-400 ml-2">
+                          ({formatCurrency(data.actual, settings.currency)})
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="w-full bg-[#F5F0E8] rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#B76E79] to-[#D4959E] transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!settings.weddingDate && budgetItems.length === 0 && savings.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <span className="text-5xl">💒</span>
-          <h3 className="text-lg font-semibold text-gray-700 mt-4">Selamat Datang di WeddingPlan!</h3>
-          <p className="text-gray-500 mt-2 max-w-md mx-auto">
-            Mulai rencanakan pernikahan impianmu. Atur tanggal pernikahan, buat anggaran, lacak tabungan, dan kelola daftar tamu.
-          </p>
-          <p className="text-sm text-pink-500 mt-4">← Mulai dari tab "Pengaturan" untuk mengatur tanggal pernikahan</p>
         </div>
       )}
     </div>
