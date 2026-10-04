@@ -4,6 +4,7 @@ import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculat
 import { useToastStore } from '../toastStore';
 import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 import CloudSyncSection from './CloudSyncSection';
+import CollaborationSection from './CollaborationSection';
 
 export default function SettingsPage() {
   const { settings, updateSettings, resetData, importData, budgetItems, savings, guests } = useWeddingStore();
@@ -311,6 +312,9 @@ export default function SettingsPage() {
 
       {/* Cloud Sync Section */}
       <CloudSyncSection />
+
+      {/* Collaboration Section */}
+      <CollaborationSection />
 
       {/* Backup & Restore Section */}
       <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
