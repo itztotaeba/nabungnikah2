@@ -11,7 +11,17 @@ import { calculateItemStatus, generateId, getDefaultSettings } from './helpers';
 import { AppState } from './types';
 
 // Re-export types for convenience
-export type { WeddingSettings, BudgetItem, SavingsEntry, Guest, AppState } from './types';
+export type { 
+  WeddingSettings, 
+  BudgetItem, 
+  SavingsEntry, 
+  Guest, 
+  Vendor, 
+  VendorType,
+  VendorCategory,
+  ContractStatus,
+  AppState 
+} from './types';
 
 // ============================================
 // INITIAL STATE
@@ -22,6 +32,7 @@ const initialState = {
   budgetItems: [],
   savings: [],
   guests: [],
+  vendors: [],
 };
 
 // ============================================
@@ -109,6 +120,36 @@ export const useWeddingStore = create<AppState>()(
           guests: state.guests.filter((guest) => guest.id !== id),
         })),
 
+      // ---- Vendors ----
+      addVendor: (vendor) =>
+        set((state) => ({
+          vendors: [
+            ...state.vendors,
+            {
+              ...vendor,
+              id: generateId(),
+              remainingBalance: vendor.dealPrice - vendor.dpAmount,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        })),
+
+      updateVendor: (id, updates) =>
+        set((state) => ({
+          vendors: state.vendors.map((vendor) => {
+            if (vendor.id !== id) return vendor;
+            const updated = { ...vendor, ...updates };
+            // Auto-calculate remainingBalance
+            updated.remainingBalance = updated.dealPrice - updated.dpAmount;
+            return updated;
+          }),
+        })),
+
+      deleteVendor: (id) =>
+        set((state) => ({
+          vendors: state.vendors.filter((vendor) => vendor.id !== id),
+        })),
+
       // ---- Reset ----
       resetData: () => set({ ...initialState }),
 
@@ -119,6 +160,7 @@ export const useWeddingStore = create<AppState>()(
           budgetItems: data.budgetItems,
           savings: data.savings,
           guests: data.guests,
+          vendors: data.vendors || [],
         }),
     }),
     {
@@ -128,6 +170,7 @@ export const useWeddingStore = create<AppState>()(
         budgetItems: state.budgetItems,
         savings: state.savings,
         guests: state.guests,
+        vendors: state.vendors,
       }),
     }
   )
