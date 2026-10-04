@@ -30,6 +30,15 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       return false;
     }
 
+    if (!supabase) {
+      console.warn('Supabase not configured, cannot sync to cloud');
+      useToastStore.getState().addToast(
+        'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.',
+        'error'
+      );
+      return false;
+    }
+
     try {
       set({ status: 'syncing' });
       
@@ -84,6 +93,15 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const { user } = useAuthStore.getState();
     if (!user) {
       console.log('No user logged in, skipping sync');
+      return false;
+    }
+
+    if (!supabase) {
+      console.warn('Supabase not configured, cannot sync from cloud');
+      useToastStore.getState().addToast(
+        'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.',
+        'error'
+      );
       return false;
     }
 

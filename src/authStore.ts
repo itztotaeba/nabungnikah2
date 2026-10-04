@@ -30,6 +30,13 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ isLoading: true });
           
+          // Check if supabase is configured
+          if (!supabase) {
+            console.warn('Supabase not configured, skipping auth initialization');
+            set({ isLoading: false, isInitialized: true });
+            return;
+          }
+          
           // Get current session
           const { data: { session }, error } = await supabase.auth.getSession();
           
@@ -61,6 +68,10 @@ export const useAuthStore = create<AuthState>()(
 
       signIn: async (email: string, password: string) => {
         try {
+          if (!supabase) {
+            return { error: 'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.' };
+          }
+          
           set({ isLoading: true });
           
           const { error } = await supabase.auth.signInWithPassword({
@@ -83,6 +94,10 @@ export const useAuthStore = create<AuthState>()(
 
       signUp: async (email: string, password: string) => {
         try {
+          if (!supabase) {
+            return { error: 'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.' };
+          }
+          
           set({ isLoading: true });
           
           const { error } = await supabase.auth.signUp({
@@ -105,6 +120,11 @@ export const useAuthStore = create<AuthState>()(
 
       signOut: async () => {
         try {
+          if (!supabase) {
+            set({ user: null, session: null });
+            return;
+          }
+          
           await supabase.auth.signOut();
           set({ user: null, session: null });
         } catch (error) {

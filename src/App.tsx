@@ -1,16 +1,11 @@
-import { useState, useEffect } from 'react';
-import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Menu, X, LogOut, type LucideIcon } from 'lucide-react';
+import { useState } from 'react';
+import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Menu, X, type LucideIcon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import BudgetManager from './components/BudgetManager';
 import SavingsTracker from './components/SavingsTracker';
 import GuestManager from './components/GuestManager';
 import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
-import AuthPage from './components/AuthPage';
-import SyncIndicator from './components/SyncIndicator';
-import { useAuthStore } from './authStore';
-import { useSyncStore, triggerAutoSync } from './syncStore';
-import { useWeddingStore } from './store';
 
 type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'settings';
 
@@ -31,60 +26,6 @@ const NAV_ITEMS: NavItem[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  const { user, isInitialized, initialize, signOut } = useAuthStore();
-  const { syncFromCloud } = useSyncStore();
-  const weddingStore = useWeddingStore();
-
-  // Initialize auth on mount
-  useEffect(() => {
-    initialize();
-  }, [initialize]);
-
-  // Auto-sync when wedding store changes
-  useEffect(() => {
-    const unsubscribe = useWeddingStore.subscribe(() => {
-      triggerAutoSync();
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Load data from cloud on first login
-  useEffect(() => {
-    if (user && isInitialized) {
-      // Check if local data is empty
-      const hasLocalData = 
-        weddingStore.budgetItems.length > 0 ||
-        weddingStore.savings.length > 0 ||
-        weddingStore.guests.length > 0;
-      
-      if (!hasLocalData) {
-        // Try to load from cloud
-        syncFromCloud();
-      }
-    }
-  }, [user, isInitialized]);
-
-  // Show auth page if not logged in
-  if (!isInitialized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
-        <div className="text-center">
-          <div className="animate-spin text-4xl mb-4">⏳</div>
-          <p className="text-gray-600">Memuat...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <>
-        <AuthPage />
-        <ToastContainer />
-      </>
-    );
-  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -142,14 +83,7 @@ export default function App() {
         </nav>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#E8E0D4] space-y-3">
-          <button
-            onClick={signOut}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut size={16} />
-            <span>Keluar</span>
-          </button>
+        <div className="px-6 py-4 border-t border-[#E8E0D4]">
           <p className="text-xs text-gray-400 text-center">
             © 2024 WeddingPlan
           </p>
@@ -238,9 +172,8 @@ export default function App() {
               </h2>
             </div>
 
-            {/* Right: Sync indicator + Current page indicator */}
-            <div className="flex items-center gap-3">
-              <SyncIndicator />
+            {/* Right: Current page indicator */}
+            <div className="flex items-center gap-2">
               <span className="text-xs text-gray-400 hidden sm:block">
                 {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               </span>
