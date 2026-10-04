@@ -1,41 +1,80 @@
 import { useState } from 'react';
 import { useWeddingStore } from '../store';
-import { formatCurrency, calculateTotalSavings } from '../helpers';
-import { Plus, Trash2, PiggyBank } from 'lucide-react';
+import {
+  formatCurrency,
+  calculateTotalSavings,
+  calculateTotalBudget,
+  calculateFundingGap,
+  calculateRemainingMonths,
+  calculateMonthlyTarget,
+  calculateProgressPercentage,
+} from '../helpers';
+import { useToastStore } from '../toastStore';
+import Modal from './Modal';
+import { Plus, Trash2, PiggyBank, Target, TrendingUp, Calendar } from 'lucide-react';
+
+const SAVINGS_SOURCES = ['Gaji', 'Bonus', 'Hadiah', 'Tabungan Lama', 'Lainnya'];
 
 export default function SavingsTracker() {
-  const { settings, savings, addSavings, deleteSavings } = useWeddingStore();
-  const [showForm, setShowForm] = useState(false);
+  const { settings, savings, budgetItems, addSavings, deleteSavings } = useWeddingStore();
+  const { addToast } = useToastStore();
+  
+  const [showModal, setShowModal] = useState(false);
 
   // Form state
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [source, setSource] = useState(SAVINGS_SOURCES[0]);
   const [amount, setAmount] = useState('');
-  const [source, setSource] = useState('');
   const [note, setNote] = useState('');
 
+  // Calculations from helpers
   const totalSavings = calculateTotalSavings(savings);
+  const totalBudget = calculateTotalBudget(budgetItems);
+  const fundingGap = calculateFundingGap(totalBudget, totalSavings);
+  const remainingMonths = calculateRemainingMonths(settings.weddingDate);
+  const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
+  const progress = calculateProgressPercentage(totalSavings, totalBudget);
 
   const resetForm = () => {
     setDate(new Date().toISOString().split('T')[0]);
+    setSource(SAVINGS_SOURCES[0]);
     setAmount('');
-    setSource('');
     setNote('');
-    setShowForm(false);
+    setShowModal(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || parseInt(amount) <= 0) return;
+    
+    // Validation
+    const amt = parseInt(amount);
+    if (isNaN(amt) || amt <= 0) {
+      addToast('Nominal harus angka positif', 'error');
+      return;
+    }
 
     addSavings({
       date,
-      amount: parseInt(amount),
-      source: source.trim() || 'Umum',
+      source,
+      amount: amt,
       note: note.trim(),
     });
-
+    
+    addToast('Tabungan berhasil ditambahkan', 'success');
     resetForm();
   };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Hapus catatan tabungan ini?')) {
+      deleteSavings(id);
+      addToast('Catatan tabungan berhasil dihapus', 'success');
+    }
+  };
+
+  // Sort by date descending
+  const sortedSavings = [...savings].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   return (
     <div className="space-y-6">
@@ -46,7 +85,7 @@ export default function SavingsTracker() {
           <p className="text-sm text-gray-500 mt-1">Catat semua tabungan untuk pernikahanmu</p>
         </div>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
         >
           <Plus size={16} />
@@ -54,79 +93,231 @@ export default function SavingsTracker() {
         </button>
       </div>
 
-      {/* Total Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#87A878] via-[#6B8A5E] to-[#4A7040] p-6 sm:p-8 text-white shadow-lg">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-2">
-            <PiggyBank size={20} className="opacity-80" />
-            <span className="text-sm opacity-90 font-medium">Total Tabungan Terkumpul</span>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Total Savings */}
+        <div className="bg-gradient-to-br from-[#87A878] to-[#6B8A5E] rounded-xl p-5 text-white shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <PiggyBank size={20} />
+            </div>
+            <div>
+              <p className="text-xs opacity-90 uppercase tracking-wider">Total Tabungan</p>
+              <p className="text-xl font-bold">{formatCurrency(totalSavings, settings.currency)}</p>
+            </div>
           </div>
-          <p className="text-3xl sm:text-4xl font-heading font-bold">
-            {formatCurrency(totalSavings, settings.currency)}
-          </p>
-          <p className="text-sm opacity-75 mt-2">{savings.length} kali menabung</p>
+        </div>
+
+        {/* Monthly Target */}
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+              <Target size={20} className="text-purple-500" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Target/Bulan</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(monthlyTarget, settings.currency)}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Progress */}
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
+              <TrendingUp size={20} className="text-[#B76E79]" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Progress</p>
+              <p className="text-xl font-bold text-[#B76E79]">{progress}%</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Form */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
-          <h3 className="font-heading text-lg font-semibold text-gray-800">💰 Catat Tabungan Baru</h3>
+      {/* Progress Bar */}
+      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-heading text-lg font-semibold text-gray-800">Progress Menuju Target</h3>
+          <span className="text-sm text-gray-500">
+            {formatCurrency(totalSavings, settings.currency)} / {formatCurrency(totalBudget, settings.currency)}
+          </span>
+        </div>
+        
+        <div className="relative">
+          <div className="w-full bg-[#F5F0E8] rounded-full h-4 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-700 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Tanggal</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              />
-            </div>
+        {totalBudget > 0 && (
+          <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        )}
+      </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Jumlah (Rp)</label>
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0"
-                min="1"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              />
-            </div>
+      {/* Table */}
+      {sortedSavings.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">💵</span>
+          </div>
+          <p className="text-gray-500 font-medium">Belum ada tabungan</p>
+          <p className="text-sm text-gray-400 mt-1">Mulai catat setoran pertamamu!</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F5F0E8]/50 border-b border-[#E8E0D4]">
+                <tr>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sumber Dana</th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Nominal</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Catatan</th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F5F0E8]">
+                {sortedSavings.map((entry) => (
+                  <tr key={entry.id} className="hover:bg-[#FDFBF7] transition-colors">
+                    <td className="px-5 py-4 text-sm text-gray-700">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={14} className="text-gray-400" />
+                        {new Date(entry.date).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-gray-700">{entry.source}</td>
+                    <td className="px-5 py-4 text-sm text-right font-semibold text-gray-800">
+                      {formatCurrency(entry.amount, settings.currency)}
+                    </td>
+                    <td className="px-5 py-4 text-sm text-gray-600">{entry.note || '-'}</td>
+                    <td className="px-5 py-4 text-center">
+                      <button
+                        onClick={() => handleDelete(entry.id)}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Hapus"
+                      >
+                        <Trash2 size={16} className="text-red-600" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Sumber Dana</label>
-              <input
-                type="text"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                placeholder="Contoh: Gaji, Hadiah, dll"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              />
-            </div>
+          {/* Mobile Cards */}
+          <div className="md:hidden divide-y divide-[#F5F0E8]">
+            {sortedSavings.map((entry) => (
+              <div key={entry.id} className="p-4">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Calendar size={14} className="text-gray-400" />
+                      <span className="text-xs text-gray-500">
+                        {new Date(entry.date).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#F5F0E8] text-gray-600 font-medium">
+                        {entry.source}
+                      </span>
+                    </div>
+                    <p className="text-lg font-bold text-gray-800">{formatCurrency(entry.amount, settings.currency)}</p>
+                    {entry.note && <p className="text-sm text-gray-600 mt-1">{entry.note}</p>}
+                  </div>
+                  <button
+                    onClick={() => handleDelete(entry.id)}
+                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <Trash2 size={16} className="text-red-600" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Catatan (opsional)</label>
-              <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Catatan tambahan..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              />
-            </div>
+      {/* Modal Form */}
+      <Modal
+        isOpen={showModal}
+        onClose={resetForm}
+        title="Tambah Tabungan"
+      >
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Sumber Dana</label>
+            <select
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              required
+            >
+              {SAVINGS_SOURCES.map((src) => (
+                <option key={src} value={src}>{src}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Nominal</label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0"
+              min="1"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              required
+            />
+            {amount && (
+              <p className="text-xs text-gray-500 mt-1">
+                {formatCurrency(parseInt(amount) || 0, settings.currency)}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Catatan (opsional)</label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Tambahkan catatan..."
+              rows={3}
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+            />
           </div>
 
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
             >
               Simpan Tabungan
             </button>
@@ -139,47 +330,7 @@ export default function SavingsTracker() {
             </button>
           </div>
         </form>
-      )}
-
-      {/* Savings List */}
-      {savings.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">💵</span>
-          </div>
-          <p className="text-gray-500 font-medium">Belum ada tabungan tercatat</p>
-          <p className="text-sm text-gray-400 mt-1">Mulai catat tabunganmu untuk pernikahan impian</p>
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
-          <div className="divide-y divide-[#F5F0E8]">
-            {[...savings].reverse().map((entry) => (
-              <div key={entry.id} className="px-5 py-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center shrink-0">
-                    <span className="text-lg">💰</span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-gray-800">{formatCurrency(entry.amount, settings.currency)}</p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {new Date(entry.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      {' • '}{entry.source}
-                      {entry.note && ` • ${entry.note}`}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => deleteSavings(entry.id)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium shrink-0"
-                >
-                  <Trash2 size={12} />
-                  <span className="hidden sm:inline">Hapus</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }
