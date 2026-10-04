@@ -172,13 +172,15 @@ export default function VendorManager() {
           <p className="text-sm text-gray-500 mt-1">Kelola vendor pernikahan Anda</p>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowComparison(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-medium"
-          >
-            <TrendingUp size={16} />
-            Analisis
-          </button>
+          {!showComparison && (
+            <button
+              onClick={() => setShowComparison(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-medium"
+            >
+              <TrendingUp size={16} />
+              Analisis
+            </button>
+          )}
           {!showForm && (
             <button
               onClick={() => { resetForm(); setShowForm(true); }}
@@ -227,6 +229,9 @@ export default function VendorManager() {
           </div>
         </div>
       </div>
+
+      {/* Comparison Analysis Inline Section */}
+      <ComparisonAnalysis isVisible={showComparison} onClose={() => setShowComparison(false)} />
 
       {/* Filter Tabs */}
       <div className="flex gap-2 flex-wrap">
@@ -581,9 +586,6 @@ export default function VendorManager() {
           </div>
         </form>
       )}
-
-      {/* Comparison Analysis Modal */}
-      <ComparisonAnalysis isOpen={showComparison} onClose={() => setShowComparison(false)} />
     </div>
   );
 }
