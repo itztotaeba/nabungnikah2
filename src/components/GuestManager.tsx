@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWeddingStore, Guest } from '../store';
 import { formatCurrency } from '../helpers';
+import { Plus, Pencil, Trash2, Users } from 'lucide-react';
 
 const GUEST_CATEGORIES: Guest['category'][] = ['Keluarga', 'Teman', 'Rekan Kerja', 'Lainnya'];
 const RSVP_OPTIONS: Guest['rsvpStatus'][] = ['Belum Respon', 'Hadir', 'Tidak Hadir'];
@@ -71,68 +72,92 @@ export default function GuestManager() {
 
   const rsvpBadge = (status: string) => {
     switch (status) {
-      case 'Hadir': return 'bg-green-100 text-green-700';
-      case 'Tidak Hadir': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-600';
+      case 'Hadir': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'Tidak Hadir': return 'bg-red-100 text-red-700 border-red-200';
+      default: return 'bg-gray-100 text-gray-600 border-gray-200';
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">👥 Daftar Tamu</h2>
-          <p className="text-sm text-gray-500">Kelola daftar tamu undangan pernikahanmu</p>
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-gray-800">Daftar Tamu</h2>
+          <p className="text-sm text-gray-500 mt-1">Kelola daftar tamu undangan pernikahanmu</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
         >
-          + Tambah Tamu
+          <Plus size={16} />
+          Tambah Tamu
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-          <p className="text-xs text-purple-600 uppercase tracking-wide">Total Tamu</p>
-          <p className="text-xl font-bold text-purple-800">{guests.length} orang / {totalPax} pax</p>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+              <Users size={20} className="text-purple-500" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Tamu</p>
+              <p className="text-lg font-bold text-gray-800">{guests.length} <span className="text-sm font-normal text-gray-500">/ {totalPax} pax</span></p>
+            </div>
+          </div>
         </div>
-        <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-          <p className="text-xs text-green-600 uppercase tracking-wide">Konfirmasi Hadir</p>
-          <p className="text-xl font-bold text-green-800">{confirmedPax} pax</p>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+              <span className="text-lg">✅</span>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Konfirmasi Hadir</p>
+              <p className="text-lg font-bold text-gray-800">{confirmedPax} <span className="text-sm font-normal text-gray-500">pax</span></p>
+            </div>
+          </div>
         </div>
-        <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-          <p className="text-xs text-blue-600 uppercase tracking-wide">Estimasi Angpao</p>
-          <p className="text-xl font-bold text-blue-800">{formatCurrency(totalEstimatedGift, settings.currency)}</p>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <span className="text-lg">🎁</span>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Estimasi Angpao</p>
+              <p className="text-lg font-bold text-gray-800">{formatCurrency(totalEstimatedGift, settings.currency)}</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-4">
-          <h3 className="font-semibold text-gray-700">{editingId ? 'Edit Tamu' : 'Tambah Tamu Baru'}</h3>
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+          <h3 className="font-heading text-lg font-semibold text-gray-800">
+            {editingId ? '✏️ Edit Tamu' : '✨ Tambah Tamu Baru'}
+          </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Nama Tamu</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Nama Tamu</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama lengkap..."
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-400 outline-none"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Kategori</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Kategori</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Guest['category'])}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-400 outline-none"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 {GUEST_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -141,54 +166,65 @@ export default function GuestManager() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Jumlah Pax</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Jumlah Pax</label>
               <input
                 type="number"
                 value={pax}
                 onChange={(e) => setPax(e.target.value)}
                 min="1"
                 max="10"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-400 outline-none"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Estimasi Angpao</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Estimasi Angpao</label>
               <input
                 type="number"
                 value={estimatedGift}
                 onChange={(e) => setEstimatedGift(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-400 outline-none"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Status RSVP</label>
-              <select
-                value={rsvpStatus}
-                onChange={(e) => setRsvpStatus(e.target.value as Guest['rsvpStatus'])}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-purple-400 outline-none"
-              >
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Status RSVP</label>
+              <div className="flex gap-2 flex-wrap">
                 {RSVP_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setRsvpStatus(opt)}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
+                      rsvpStatus === opt
+                        ? opt === 'Hadir'
+                          ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                          : opt === 'Tidak Hadir'
+                          ? 'border-red-500 bg-red-50 text-red-700'
+                          : 'border-gray-400 bg-gray-50 text-gray-700'
+                        : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
+                    }`}
+                  >
+                    {opt}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm font-medium"
+              className="px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
             >
-              {editingId ? 'Update' : 'Simpan'}
+              {editingId ? 'Update Tamu' : 'Simpan Tamu'}
             </button>
             <button
               type="button"
               onClick={resetForm}
-              className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+              className="px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
             >
               Batal
             </button>
@@ -203,10 +239,10 @@ export default function GuestManager() {
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`px-4 py-2 rounded-xl text-xs font-medium border transition-all ${
                 filterCategory === cat
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'border-[#87A878] bg-[#87A878]/10 text-[#6B8A5E]'
+                  : 'border-[#E8E0D4] bg-white text-gray-600 hover:border-[#87A878]/50'
               }`}
             >
               {cat}
@@ -217,46 +253,53 @@ export default function GuestManager() {
 
       {/* Guest List */}
       {filteredGuests.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-xl border border-gray-100">
-          <span className="text-4xl">📝</span>
-          <p className="text-gray-500 mt-3">
-            {guests.length === 0 ? 'Belum ada tamu terdaftar. Mulai tambahkan!' : 'Tidak ada tamu di kategori ini.'}
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">📝</span>
+          </div>
+          <p className="text-gray-500 font-medium">
+            {guests.length === 0 ? 'Belum ada tamu terdaftar' : 'Tidak ada tamu di kategori ini'}
+          </p>
+          <p className="text-sm text-gray-400 mt-1">
+            {guests.length === 0 ? 'Mulai tambahkan tamu untuk pernikahanmu' : 'Coba pilih kategori lain'}
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="divide-y divide-gray-50">
+        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
+          <div className="divide-y divide-[#F5F0E8]">
             {filteredGuests.map((guest) => (
-              <div key={guest.id} className="px-5 py-4 flex items-center justify-between">
-                <div className="flex-1">
+              <div key={guest.id} className="px-5 py-4 flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium text-gray-800">{guest.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${rsvpBadge(guest.rsvpStatus)}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${rsvpBadge(guest.rsvpStatus)}`}>
                       {guest.rsvpStatus}
                     </span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100">
                       {guest.category}
                     </span>
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
                     {guest.pax} pax
                     {guest.estimatedGift > 0 && (
-                      <span className="ml-3">Est. Angpao: {formatCurrency(guest.estimatedGift, settings.currency)}</span>
+                      <span className="ml-3">Est. Angpao: <span className="font-medium text-gray-700">{formatCurrency(guest.estimatedGift, settings.currency)}</span></span>
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <button
                     onClick={() => handleEdit(guest)}
-                    className="px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
                   >
-                    Edit
+                    <Pencil size={12} />
+                    <span className="hidden sm:inline">Edit</span>
                   </button>
                   <button
                     onClick={() => deleteGuest(guest.id)}
-                    className="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
                   >
-                    Hapus
+                    <Trash2 size={12} />
+                    <span className="hidden sm:inline">Hapus</span>
                   </button>
                 </div>
               </div>
