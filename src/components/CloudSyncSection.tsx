@@ -9,6 +9,9 @@ export default function CloudSyncSection() {
   const { syncToCloud, syncFromCloud } = useSyncStore();
   const { addToast } = useToastStore();
   
+  // Debug log untuk memastikan state ter-update
+  console.log('🔍 CloudSyncSection - User state:', user ? user.email : 'null');
+  
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [email, setEmail] = useState('');
@@ -40,7 +43,8 @@ export default function CloudSyncSection() {
         if (error) {
           addToast(`Login gagal: ${error}`, 'error');
         } else {
-          addToast('Login berhasil!', 'success');
+          // Toast "Login berhasil" sudah ditampilkan di useAuthSync hook
+          // saat event SIGNED_IN terjadi
           setShowLoginModal(false);
           resetForm();
         }
