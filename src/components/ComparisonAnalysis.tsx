@@ -1,15 +1,16 @@
 import { useWeddingStore } from '../store';
 import { formatCurrency } from '../helpers';
-import Modal from './Modal';
 import { TrendingUp, Check, X, Star } from 'lucide-react';
 
 interface ComparisonAnalysisProps {
-  isOpen: boolean;
+  isVisible: boolean;
   onClose: () => void;
 }
 
-export default function ComparisonAnalysis({ isOpen, onClose }: ComparisonAnalysisProps) {
+export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAnalysisProps) {
   const { settings, vendors } = useWeddingStore();
+
+  if (!isVisible) return null;
 
   // Calculate totals
   const totalAllIn = vendors
@@ -129,103 +130,106 @@ export default function ComparisonAnalysis({ isOpen, onClose }: ComparisonAnalys
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Analisis Perbandingan">
-      <div className="space-y-6">
-        {/* Kalkulator Selisih */}
-        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-5 border border-purple-100">
-          <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <TrendingUp size={20} className="text-purple-500" />
-            Kalkulator Selisih
-          </h3>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="bg-white rounded-lg p-4 border border-purple-100">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total All-in</p>
-              <p className="text-xl font-bold text-purple-700">{formatCurrency(totalAllIn, settings.currency)}</p>
-              <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'All-in').length} vendor</p>
-            </div>
-            <div className="bg-white rounded-lg p-4 border border-blue-100">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Satuan</p>
-              <p className="text-xl font-bold text-blue-700">{formatCurrency(totalSatuan, settings.currency)}</p>
-              <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'Satuan').length} vendor</p>
-            </div>
-          </div>
-
-          {totalAllIn > 0 && totalSatuan > 0 && (
-            <div className={`rounded-lg p-4 border-2 ${isAllInCheaper ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'}`}>
-              <p className="text-sm font-medium text-gray-700 mb-1">
-                {isAllInCheaper ? '🎉 All-in Lebih Hemat!' : '🎉 Satuan Lebih Hemat!'}
-              </p>
-              <p className="text-2xl font-bold text-gray-800">
-                Selisih: {formatCurrency(difference, settings.currency)}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">
-                ({percentageDiff}% lebih {isAllInCheaper ? 'murah' : 'murah'})
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Matriks Perbandingan */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
-          <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">
-            Matriks Perbandingan
-          </h3>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Aspek</th>
-                  <th className="text-center py-3 px-2 text-sm font-semibold text-purple-700">All-in</th>
-                  <th className="text-center py-3 px-2 text-sm font-semibold text-blue-700">Satuan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonData.map((item, idx) => (
-                  <tr key={idx} className="border-b border-gray-100">
-                    <td className="py-3 px-2 text-sm font-medium text-gray-700">{item.aspect}</td>
-                    <td className="py-3 px-2">
-                      <div className="flex flex-col items-center gap-1">
-                        <div className="flex">{renderStars(item.allIn.score)}</div>
-                        <p className={`text-xs ${item.allIn.positive === true ? 'text-emerald-600' : item.allIn.positive === false ? 'text-red-600' : 'text-gray-600'}`}>
-                          {item.allIn.text}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="py-3 px-2">
-                      <div className="flex flex-col items-center gap-1">
-                        <div className="flex">{renderStars(item.satuan.score)}</div>
-                        <p className={`text-xs ${item.satuan.positive === true ? 'text-emerald-600' : item.satuan.positive === false ? 'text-red-600' : 'text-gray-600'}`}>
-                          {item.satuan.text}
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Rekomendasi */}
-        <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
-          <h3 className="font-heading text-lg font-semibold text-gray-800 mb-3">
-            💡 Rekomendasi Cerdas
-          </h3>
-          <p className="text-sm text-gray-700 leading-relaxed">
-            {getRecommendation()}
-          </p>
-        </div>
-
-        {/* Close Button */}
+    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-6 animate-fade-in">
+      {/* Header dengan judul & tombol close */}
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-heading text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <TrendingUp size={20} className="text-purple-500" />
+          Analisis Perbandingan
+        </h3>
         <button
           onClick={onClose}
-          className="w-full px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+          className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
         >
-          Tutup
+          <X size={20} className="text-gray-500" />
         </button>
       </div>
-    </Modal>
+
+      {/* Kalkulator Selisih */}
+      <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-5 border border-purple-100">
+        <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
+          Kalkulator Selisih
+        </h4>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <div className="bg-white rounded-lg p-4 border border-purple-100">
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total All-in</p>
+            <p className="text-xl font-bold text-purple-700">{formatCurrency(totalAllIn, settings.currency)}</p>
+            <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'All-in').length} vendor</p>
+          </div>
+          <div className="bg-white rounded-lg p-4 border border-blue-100">
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Satuan</p>
+            <p className="text-xl font-bold text-blue-700">{formatCurrency(totalSatuan, settings.currency)}</p>
+            <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'Satuan').length} vendor</p>
+          </div>
+        </div>
+
+        {totalAllIn > 0 && totalSatuan > 0 && (
+          <div className={`rounded-lg p-4 border-2 ${isAllInCheaper ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'}`}>
+            <p className="text-sm font-medium text-gray-700 mb-1">
+              {isAllInCheaper ? '🎉 All-in Lebih Hemat!' : '🎉 Satuan Lebih Hemat!'}
+            </p>
+            <p className="text-2xl font-bold text-gray-800">
+              Selisih: {formatCurrency(difference, settings.currency)}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              ({percentageDiff}% lebih {isAllInCheaper ? 'murah' : 'murah'})
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Matriks Perbandingan */}
+      <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
+          Matriks Perbandingan
+        </h4>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-2 text-sm font-semibold text-gray-700">Aspek</th>
+                <th className="text-center py-3 px-2 text-sm font-semibold text-purple-700">All-in</th>
+                <th className="text-center py-3 px-2 text-sm font-semibold text-blue-700">Satuan</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonData.map((item, idx) => (
+                <tr key={idx} className="border-b border-gray-100">
+                  <td className="py-3 px-2 text-sm font-medium text-gray-700">{item.aspect}</td>
+                  <td className="py-3 px-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex">{renderStars(item.allIn.score)}</div>
+                      <p className={`text-xs ${item.allIn.positive === true ? 'text-emerald-600' : item.allIn.positive === false ? 'text-red-600' : 'text-gray-600'}`}>
+                        {item.allIn.text}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="py-3 px-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex">{renderStars(item.satuan.score)}</div>
+                      <p className={`text-xs ${item.satuan.positive === true ? 'text-emerald-600' : item.satuan.positive === false ? 'text-red-600' : 'text-gray-600'}`}>
+                        {item.satuan.text}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Rekomendasi */}
+      <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+        <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
+          💡 Rekomendasi Cerdas
+        </h4>
+        <p className="text-sm text-gray-700 leading-relaxed">
+          {getRecommendation()}
+        </p>
+      </div>
+    </div>
   );
 }
