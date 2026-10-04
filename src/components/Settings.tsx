@@ -2,19 +2,17 @@ import { useState, useRef } from 'react';
 import { useWeddingStore } from '../store';
 import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculateTotalBudget, calculateTotalSavings } from '../helpers';
 import { useToastStore } from '../toastStore';
-import { useSyncStore } from '../syncStore';
-import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, Cloud, CloudDownload } from 'lucide-react';
+import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
+import CloudSyncSection from './CloudSyncSection';
 
 export default function SettingsPage() {
   const { settings, updateSettings, resetData, importData, budgetItems, savings, guests } = useWeddingStore();
   const { addToast } = useToastStore();
-  const { syncToCloud, syncFromCloud, status: syncStatus } = useSyncStore();
   
   const [showConfirm, setShowConfirm] = useState(false);
   const [weddingDate, setWeddingDate] = useState(settings.weddingDate);
   const [currency, setCurrency] = useState(settings.currency);
   const [saved, setSaved] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,34 +36,6 @@ export default function SettingsPage() {
 
   const totalBudget = calculateTotalBudget(budgetItems);
   const totalSavings = calculateTotalSavings(savings);
-
-  // ============================================
-  // SYNC HANDLERS
-  // ============================================
-  const handleSyncToCloud = async () => {
-    setIsSyncing(true);
-    const success = await syncToCloud();
-    setIsSyncing(false);
-    if (success) {
-      addToast('Data berhasil disinkronkan ke cloud', 'success');
-    }
-  };
-
-  const handleSyncFromCloud = async () => {
-    if (budgetItems.length > 0 || savings.length > 0 || guests.length > 0) {
-      if (!window.confirm('Data lokal akan diganti dengan data dari cloud. Lanjutkan?')) {
-        return;
-      }
-    }
-    setIsSyncing(true);
-    const success = await syncFromCloud();
-    setIsSyncing(false);
-    if (success) {
-      // Update local state
-      setWeddingDate(settings.weddingDate);
-      setCurrency(settings.currency);
-    }
-  };
 
   // ============================================
   // EXPORT DATA
@@ -337,49 +307,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Cloud Sync Section */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-            <Cloud size={20} className="text-blue-500" />
-          </div>
-          <div>
-            <h3 className="font-heading text-lg font-semibold text-gray-800">Cloud Sync</h3>
-            <p className="text-xs text-gray-400">Sinkronkan data Anda dengan cloud untuk akses di mana saja</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          {/* Sync to Cloud Button */}
-          <button
-            onClick={handleSyncToCloud}
-            disabled={isSyncing}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSyncing ? (
-              <span className="animate-spin">⏳</span>
-            ) : (
-              <Cloud size={18} />
-            )}
-            <span>Sync Sekarang</span>
-          </button>
-
-          {/* Load from Cloud Button */}
-          <button
-            onClick={handleSyncFromCloud}
-            disabled={isSyncing}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <CloudDownload size={18} />
-            <span>Muat dari Cloud</span>
-          </button>
-        </div>
-
-        <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
-          <p className="text-xs text-blue-700">
-            💡 <strong>Auto-sync aktif:</strong> Data akan otomatis tersinkron setiap kali ada perubahan. Gunakan tombol di atas untuk sync manual.
-          </p>
-        </div>
-      </div>
+      <CloudSyncSection />
 
       {/* Backup & Restore Section */}
       <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
