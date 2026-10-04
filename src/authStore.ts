@@ -1,0 +1,126 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { supabase } from './lib/supabase';
+import type { User, Session } from '@supabase/supabase-js';
+
+interface AuthState {
+  user: User | null;
+  session: Session | null;
+  isLoading: boolean;
+  isInitialized: boolean;
+  
+  // Actions
+  initialize: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: string | null }>;
+  signOut: () => Promise<void>;
+  setUser: (user: User | null) => void;
+  setSession: (session: Session | null) => void;
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      session: null,
+      isLoading: false,
+      isInitialized: false,
+
+      initialize: async () => {
+        try {
+          set({ isLoading: true });
+          
+          // Get current session
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (error) {
+            console.error('Error getting session:', error);
+            set({ isLoading: false, isInitialized: true });
+            return;
+          }
+          
+          set({ 
+            session, 
+            user: session?.user || null, 
+            isLoading: false, 
+            isInitialized: true 
+          });
+          
+          // Listen for auth changes
+          supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {
+            set({ 
+              session, 
+              user: session?.user || null 
+            });
+          });
+        } catch (error) {
+          console.error('Error initializing auth:', error);
+          set({ isLoading: false, isInitialized: true });
+        }
+      },
+
+      signIn: async (email: string, password: string) => {
+        try {
+          set({ isLoading: true });
+          
+          const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (error) {
+            set({ isLoading: false });
+            return { error: error.message };
+          }
+          
+          set({ isLoading: false });
+          return { error: null };
+        } catch (error: any) {
+          set({ isLoading: false });
+          return { error: error.message || 'Terjadi kesalahan' };
+        }
+      },
+
+      signUp: async (email: string, password: string) => {
+        try {
+          set({ isLoading: true });
+          
+          const { error } = await supabase.auth.signUp({
+            email,
+            password,
+          });
+          
+          if (error) {
+            set({ isLoading: false });
+            return { error: error.message };
+          }
+          
+          set({ isLoading: false });
+          return { error: null };
+        } catch (error: any) {
+          set({ isLoading: false });
+          return { error: error.message || 'Terjadi kesalahan' };
+        }
+      },
+
+      signOut: async () => {
+        try {
+          await supabase.auth.signOut();
+          set({ user: null, session: null });
+        } catch (error) {
+          console.error('Error signing out:', error);
+        }
+      },
+
+      setUser: (user) => set({ user }),
+      setSession: (session) => set({ session }),
+    }),
+    {
+      name: 'weddingplan-auth',
+      partialize: (state) => ({
+        user: state.user,
+        session: state.session,
+      }),
+    }
+  )
+);
