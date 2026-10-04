@@ -1,20 +1,64 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useWeddingStore, Guest } from '../store';
 import { formatCurrency } from '../helpers';
 import { useToastStore } from '../toastStore';
 import Modal from './Modal';
-import { Plus, Pencil, Trash2, Users, Gift, CheckCircle2 } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Users,
+  Gift,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Search,
+  Filter,
+  UserCheck,
+  UserX,
+  UserPlus,
+} from 'lucide-react';
 
 const GUEST_CATEGORIES: Guest['category'][] = ['Keluarga', 'Teman', 'Rekan Kerja', 'Lainnya'];
 const RSVP_OPTIONS: Guest['rsvpStatus'][] = ['Belum Respon', 'Hadir', 'Tidak Hadir'];
 
+// Badge warna per kategori
+const categoryBadge = (category: string) => {
+  switch (category) {
+    case 'Keluarga':
+      return 'bg-rose-50 text-rose-700 border-rose-200';
+    case 'Teman':
+      return 'bg-blue-50 text-blue-700 border-blue-200';
+    case 'Rekan Kerja':
+      return 'bg-purple-50 text-purple-700 border-purple-200';
+    default:
+      return 'bg-gray-100 text-gray-600 border-gray-200';
+  }
+};
+
+// Badge warna per RSVP
+const rsvpBadge = (status: string) => {
+  switch (status) {
+    case 'Hadir':
+      return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    case 'Tidak Hadir':
+      return 'bg-red-100 text-red-700 border-red-200';
+    default:
+      return 'bg-amber-100 text-amber-700 border-amber-200';
+  }
+};
+
 export default function GuestManager() {
   const { settings, guests, addGuest, updateGuest, deleteGuest } = useWeddingStore();
   const { addToast } = useToastStore();
-  
+
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Filter & Search state
+  const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('Semua');
+  const [filterRsvp, setFilterRsvp] = useState<string>('Semua');
 
   // Form state
   const [name, setName] = useState('');
@@ -23,6 +67,63 @@ export default function GuestManager() {
   const [estimatedGift, setEstimatedGift] = useState('');
   const [rsvpStatus, setRsvpStatus] = useState<Guest['rsvpStatus']>('Belum Respon');
 
+  // ============================================
+  // STATISTIK (dihitung dari data store)
+  // ============================================
+  const stats = useMemo(() => {
+    const totalPax = guests.reduce((sum, g) => sum + g.pax, 0);
+    const confirmedPax = guests
+      .filter((g) => g.rsvpStatus === 'Hadir')
+      .reduce((sum, g) => sum + g.pax, 0);
+    const declinedPax = guests
+      .filter((g) => g.rsvpStatus === 'Tidak Hadir')
+      .reduce((sum, g) => sum + g.pax, 0);
+    const pendingPax = guests
+      .filter((g) => g.rsvpStatus === 'Belum Respon')
+      .reduce((sum, g) => sum + g.pax, 0);
+    const totalEstimatedGift = guests.reduce((sum, g) => sum + g.estimatedGift, 0);
+
+    return {
+      totalPax,
+      confirmedPax,
+      declinedPax,
+      pendingPax,
+      totalEstimatedGift,
+      totalGuests: guests.length,
+    };
+  }, [guests]);
+
+  // ============================================
+  // FILTERED & SORTED GUESTS
+  // ============================================
+  const filteredGuests = useMemo(() => {
+    let result = [...guests];
+
+    // Search by name
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter((g) => g.name.toLowerCase().includes(query));
+    }
+
+    // Filter by category
+    if (filterCategory !== 'Semua') {
+      result = result.filter((g) => g.category === filterCategory);
+    }
+
+    // Filter by RSVP
+    if (filterRsvp !== 'Semua') {
+      result = result.filter((g) => g.rsvpStatus === filterRsvp);
+    }
+
+    // Sort by name A-Z
+    result.sort((a, b) => a.name.localeCompare(b.name, 'id'));
+
+    return result;
+  }, [guests, searchQuery, filterCategory, filterRsvp]);
+
+  // ============================================
+  // FORM HANDLERS
+  // ============================================
   const resetForm = () => {
     setName('');
     setCategory('Keluarga');
@@ -35,27 +136,39 @@ export default function GuestManager() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!name.trim()) {
       addToast('Nama tamu tidak boleh kosong', 'error');
       return;
     }
 
+    const paxNum = parseInt(pax);
+    if (isNaN(paxNum) || paxNum < 1) {
+      addToast('Jumlah pax minimal 1', 'error');
+      return;
+    }
+
+    const giftNum = parseInt(estimatedGift) || 0;
+    if (giftNum < 0) {
+      addToast('Estimasi amplop harus angka positif', 'error');
+      return;
+    }
+
     const guestData = {
       name: name.trim(),
       category,
-      pax: parseInt(pax) || 1,
-      estimatedGift: parseInt(estimatedGift) || 0,
+      pax: paxNum,
+      estimatedGift: giftNum,
       rsvpStatus,
     };
 
     if (editingId) {
       updateGuest(editingId, guestData);
-      addToast('Data tamu berhasil diupdate', 'success');
+      addToast(`Data tamu "${name.trim()}" berhasil diupdate`, 'success');
     } else {
       addGuest(guestData);
-      addToast('Tamu berhasil ditambahkan', 'success');
+      addToast(`Tamu "${name.trim()}" berhasil ditambahkan`, 'success');
     }
 
     resetForm();
@@ -71,30 +184,20 @@ export default function GuestManager() {
     setShowModal(true);
   };
 
-  const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Hapus tamu "${name}"?`)) {
+  const handleDelete = (id: string, guestName: string) => {
+    if (window.confirm(`Hapus tamu "${guestName}" dari daftar?`)) {
       deleteGuest(id);
-      addToast('Tamu berhasil dihapus', 'success');
+      addToast(`Tamu "${guestName}" berhasil dihapus`, 'success');
     }
   };
 
-  // Stats
-  const totalPax = guests.reduce((sum, g) => sum + g.pax, 0);
-  const confirmedPax = guests.filter(g => g.rsvpStatus === 'Hadir').reduce((sum, g) => sum + g.pax, 0);
-  const totalEstimatedGift = guests.reduce((sum, g) => sum + g.estimatedGift, 0);
-
-  // Filter
-  const filteredGuests = filterCategory === 'Semua'
-    ? guests
-    : guests.filter(g => g.category === filterCategory);
-
-  const rsvpBadge = (status: string) => {
-    switch (status) {
-      case 'Hadir': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'Tidak Hadir': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-600 border-gray-200';
-    }
+  const clearFilters = () => {
+    setSearchQuery('');
+    setFilterCategory('Semua');
+    setFilterRsvp('Semua');
   };
+
+  const hasActiveFilters = searchQuery || filterCategory !== 'Semua' || filterRsvp !== 'Semua';
 
   return (
     <div className="space-y-6">
@@ -105,7 +208,10 @@ export default function GuestManager() {
           <p className="text-sm text-gray-500 mt-1">Kelola daftar tamu undangan pernikahanmu</p>
         </div>
         <button
-          onClick={() => { resetForm(); setShowModal(true); }}
+          onClick={() => {
+            resetForm();
+            setShowModal(true);
+          }}
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
         >
           <Plus size={16} />
@@ -113,79 +219,176 @@ export default function GuestManager() {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-              <Users size={20} className="text-purple-500" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Tamu</p>
-              <p className="text-lg font-bold text-gray-800">{guests.length} <span className="text-sm font-normal text-gray-500">/ {totalPax} pax</span></p>
+      {/* ============================================
+          STATISTIK CARDS (5 cards)
+          ============================================ */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+        {/* Total Tamu */}
+        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Users size={16} className="text-purple-500" />
             </div>
           </div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Total Tamu</p>
+          <p className="text-xl font-bold text-gray-800 mt-0.5">{stats.totalPax}</p>
+          <p className="text-xs text-gray-400">{stats.totalGuests} orang</p>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
-              <CheckCircle2 size={20} className="text-emerald-500" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Konfirmasi Hadir</p>
-              <p className="text-lg font-bold text-gray-800">{confirmedPax} <span className="text-sm font-normal text-gray-500">pax</span></p>
+
+        {/* Konfirmasi Hadir */}
+        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+              <UserCheck size={16} className="text-emerald-500" />
             </div>
           </div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Hadir</p>
+          <p className="text-xl font-bold text-emerald-600 mt-0.5">{stats.confirmedPax}</p>
+          <p className="text-xs text-gray-400">pax konfirmasi</p>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
-              <Gift size={20} className="text-[#B76E79]" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Estimasi Angpao</p>
-              <p className="text-lg font-bold text-gray-800">{formatCurrency(totalEstimatedGift, settings.currency)}</p>
+
+        {/* Tidak Hadir */}
+        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+              <UserX size={16} className="text-red-500" />
             </div>
           </div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Tidak Hadir</p>
+          <p className="text-xl font-bold text-red-600 mt-0.5">{stats.declinedPax}</p>
+          <p className="text-xs text-gray-400">pax menolak</p>
+        </div>
+
+        {/* Belum Respon */}
+        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+              <Clock size={16} className="text-amber-500" />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Belum Respon</p>
+          <p className="text-xl font-bold text-amber-600 mt-0.5">{stats.pendingPax}</p>
+          <p className="text-xs text-gray-400">pax menunggu</p>
+        </div>
+
+        {/* Estimasi Amplop */}
+        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4] col-span-2 sm:col-span-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 bg-[#B76E79]/10 rounded-lg flex items-center justify-center">
+              <Gift size={16} className="text-[#B76E79]" />
+            </div>
+          </div>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Est. Pemasukan</p>
+          <p className="text-lg font-bold text-[#B76E79] mt-0.5">
+            {formatCurrency(stats.totalEstimatedGift, settings.currency)}
+          </p>
+          <p className="text-xs text-gray-400">dari amplop tamu</p>
         </div>
       </div>
 
-      {/* Filter */}
-      {guests.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
-          {['Semua', ...GUEST_CATEGORIES].map((cat) => (
+      {/* ============================================
+          FILTER & SEARCH BAR
+          ============================================ */}
+      <div className="bg-white rounded-xl p-4 border border-[#E8E0D4] space-y-3">
+        <div className="flex items-center gap-2 mb-1">
+          <Filter size={16} className="text-gray-400" />
+          <span className="text-sm font-medium text-gray-600">Filter & Cari</span>
+          {hasActiveFilters && (
             <button
-              key={cat}
-              onClick={() => setFilterCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-xs font-medium border transition-all ${
-                filterCategory === cat
-                  ? 'border-[#87A878] bg-[#87A878]/10 text-[#6B8A5E]'
-                  : 'border-[#E8E0D4] bg-white text-gray-600 hover:border-[#87A878]/50'
-              }`}
+              onClick={clearFilters}
+              className="ml-auto text-xs text-[#B76E79] hover:underline font-medium"
             >
-              {cat}
-              {cat !== 'Semua' && (
-                <span className="ml-1.5 text-gray-400">
-                  ({guests.filter(g => g.category === cat).length})
-                </span>
-              )}
+              Reset Filter
             </button>
-          ))}
+          )}
         </div>
-      )}
 
-      {/* Guest List */}
-      {filteredGuests.length === 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Search */}
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama tamu..."
+              className="w-full pl-9 pr-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+            />
+          </div>
+
+          {/* Filter Kategori */}
+          <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+          >
+            <option value="Semua">Semua Kategori</option>
+            {GUEST_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+
+          {/* Filter RSVP */}
+          <select
+            value={filterRsvp}
+            onChange={(e) => setFilterRsvp(e.target.value)}
+            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+          >
+            <option value="Semua">Semua Status RSVP</option>
+            {RSVP_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Result count */}
+        {hasActiveFilters && (
+          <p className="text-xs text-gray-500">
+            Menampilkan <span className="font-semibold text-gray-700">{filteredGuests.length}</span> dari{' '}
+            <span className="font-semibold text-gray-700">{guests.length}</span> tamu
+          </p>
+        )}
+      </div>
+
+      {/* ============================================
+          TABEL DAFTAR TAMU
+          ============================================ */}
+      {guests.length === 0 ? (
+        /* Empty State - belum ada tamu sama sekali */
         <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
           <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">📝</span>
+            <UserPlus size={28} className="text-gray-400" />
           </div>
-          <p className="text-gray-500 font-medium">
-            {guests.length === 0 ? 'Belum ada tamu terdaftar' : 'Tidak ada tamu di kategori ini'}
-          </p>
-          <p className="text-sm text-gray-400 mt-1">
-            {guests.length === 0 ? 'Mulai tambahkan tamu untuk pernikahanmu' : 'Coba pilih kategori lain'}
-          </p>
+          <p className="text-gray-500 font-medium">Belum ada daftar tamu</p>
+          <p className="text-sm text-gray-400 mt-1">Yuk mulai tambahkan tamu pertamamu!</p>
+          <button
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all"
+          >
+            + Tambah Tamu Pertama
+          </button>
+        </div>
+      ) : filteredGuests.length === 0 ? (
+        /* Empty State - filter tidak cocok */
+        <div className="text-center py-12 bg-white rounded-2xl border border-[#E8E0D4]">
+          <div className="w-14 h-14 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <Search size={24} className="text-gray-400" />
+          </div>
+          <p className="text-gray-500 font-medium">Tidak ada tamu yang cocok</p>
+          <p className="text-sm text-gray-400 mt-1">Coba ubah filter atau kata kunci pencarian</p>
+          <button
+            onClick={clearFilters}
+            className="mt-3 text-sm text-[#B76E79] hover:underline font-medium"
+          >
+            Reset Filter
+          </button>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
@@ -194,72 +397,112 @@ export default function GuestManager() {
             <table className="w-full">
               <thead className="bg-[#F5F0E8]/50 border-b border-[#E8E0D4]">
                 <tr>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Kategori</th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Pax</th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">RSVP</th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Est. Angpao</th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Nama Tamu
+                  </th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Kategori
+                  </th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Pax
+                  </th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Est. Amplop
+                  </th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Status RSVP
+                  </th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F5F0E8]">
                 {filteredGuests.map((guest) => (
                   <tr key={guest.id} className="hover:bg-[#FDFBF7] transition-colors">
-                    <td className="px-5 py-4 text-sm font-medium text-gray-800">{guest.name}</td>
-                    <td className="px-5 py-4 text-sm text-gray-700">{guest.category}</td>
+                    <td className="px-5 py-4">
+                      <span className="text-sm font-medium text-gray-800">{guest.name}</span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span
+                        className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${categoryBadge(guest.category)}`}
+                      >
+                        {guest.category}
+                      </span>
+                    </td>
                     <td className="px-5 py-4 text-sm text-center text-gray-700">{guest.pax}</td>
+                    <td className="px-5 py-4 text-sm text-right text-gray-700">
+                      {guest.estimatedGift > 0
+                        ? formatCurrency(guest.estimatedGift, settings.currency)
+                        : '-'}
+                    </td>
                     <td className="px-5 py-4 text-center">
-                      <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${rsvpBadge(guest.rsvpStatus)}`}>
+                      <span
+                        className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${rsvpBadge(guest.rsvpStatus)}`}
+                      >
                         {guest.rsvpStatus}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-sm text-right text-gray-700">
-                      {guest.estimatedGift > 0 ? formatCurrency(guest.estimatedGift, settings.currency) : '-'}
-                    </td>
                     <td className="px-5 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => handleEdit(guest)}
                           className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Edit"
                         >
-                          <Pencil size={16} className="text-blue-600" />
+                          <Pencil size={15} className="text-blue-600" />
                         </button>
                         <button
                           onClick={() => handleDelete(guest.id, guest.name)}
                           className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                           title="Hapus"
                         >
-                          <Trash2 size={16} className="text-red-600" />
+                          <Trash2 size={15} className="text-red-600" />
                         </button>
                       </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
+              {/* Footer - Total */}
+              <tfoot className="bg-[#F5F0E8]/30 border-t-2 border-[#E8E0D4]">
+                <tr>
+                  <td colSpan={2} className="px-5 py-3 text-sm font-bold text-gray-800">
+                    TOTAL ({filteredGuests.length} tamu)
+                  </td>
+                  <td className="px-5 py-3 text-sm text-center font-bold text-gray-800">
+                    {filteredGuests.reduce((sum, g) => sum + g.pax, 0)} pax
+                  </td>
+                  <td className="px-5 py-3 text-sm text-right font-bold text-[#B76E79]">
+                    {formatCurrency(
+                      filteredGuests.reduce((sum, g) => sum + g.estimatedGift, 0),
+                      settings.currency
+                    )}
+                  </td>
+                  <td colSpan={2}></td>
+                </tr>
+              </tfoot>
             </table>
           </div>
 
           {/* Mobile Cards */}
           <div className="md:hidden divide-y divide-[#F5F0E8]">
             {filteredGuests.map((guest) => (
-              <div key={guest.id} className="p-4">
+              <div key={guest.id} className="p-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="font-medium text-gray-800">{guest.name}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${rsvpBadge(guest.rsvpStatus)}`}>
-                        {guest.rsvpStatus}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-                      <span className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100">
+                    <p className="font-medium text-gray-800">{guest.name}</p>
+                    <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium border ${categoryBadge(guest.category)}`}
+                      >
                         {guest.category}
                       </span>
-                      <span>{guest.pax} pax</span>
-                      {guest.estimatedGift > 0 && (
-                        <span>Est. {formatCurrency(guest.estimatedGift, settings.currency)}</span>
-                      )}
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium border ${rsvpBadge(guest.rsvpStatus)}`}
+                      >
+                        {guest.rsvpStatus}
+                      </span>
                     </div>
                   </div>
                   <div className="flex gap-1 shrink-0">
@@ -267,68 +510,127 @@ export default function GuestManager() {
                       onClick={() => handleEdit(guest)}
                       className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
                     >
-                      <Pencil size={16} className="text-blue-600" />
+                      <Pencil size={15} className="text-blue-600" />
                     </button>
                     <button
                       onClick={() => handleDelete(guest.id, guest.name)}
                       className="p-2 hover:bg-red-50 rounded-lg transition-colors"
                     >
-                      <Trash2 size={16} className="text-red-600" />
+                      <Trash2 size={15} className="text-red-600" />
                     </button>
                   </div>
                 </div>
+                <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <Users size={12} />
+                    {guest.pax} pax
+                  </span>
+                  {guest.estimatedGift > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Gift size={12} />
+                      {formatCurrency(guest.estimatedGift, settings.currency)}
+                    </span>
+                  )}
+                </div>
               </div>
             ))}
+
+            {/* Mobile Footer Total */}
+            <div className="px-4 py-3 bg-[#F5F0E8]/30 border-t-2 border-[#E8E0D4]">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-bold text-gray-800">
+                  Total ({filteredGuests.length} tamu)
+                </span>
+                <span className="font-bold text-[#B76E79]">
+                  {formatCurrency(
+                    filteredGuests.reduce((sum, g) => sum + g.estimatedGift, 0),
+                    settings.currency
+                  )}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Modal Form */}
+      {/* ============================================
+          MODAL FORM
+          ============================================ */}
       <Modal
         isOpen={showModal}
         onClose={resetForm}
         title={editingId ? 'Edit Tamu' : 'Tambah Tamu Baru'}
       >
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Nama */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Nama Tamu</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nama Tamu <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nama lengkap..."
+              placeholder="Masukkan nama lengkap..."
               className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               required
             />
           </div>
 
+          {/* Kategori */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as Guest['category'])}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-            >
+            <div className="grid grid-cols-2 gap-2">
               {GUEST_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategory(cat)}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
+                    category === cat
+                      ? categoryBadge(cat) + ' border-current'
+                      : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
+                  }`}
+                >
+                  {cat}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
+          {/* Pax */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah Pax</label>
-            <input
-              type="number"
-              value={pax}
-              onChange={(e) => setPax(e.target.value)}
-              min="1"
-              max="10"
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-            />
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setPax((prev) => String(Math.max(1, parseInt(prev) - 1)))}
+                className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                value={pax}
+                onChange={(e) => setPax(e.target.value)}
+                min="1"
+                max="10"
+                className="w-20 text-center px-3 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
+              />
+              <button
+                type="button"
+                onClick={() => setPax((prev) => String(Math.min(10, parseInt(prev) + 1)))}
+                className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+              >
+                +
+              </button>
+              <span className="text-xs text-gray-400 ml-2">orang</span>
+            </div>
           </div>
 
+          {/* Estimasi Amplop */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Angpao</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Amplop</label>
             <input
               type="number"
               value={estimatedGift}
@@ -337,13 +639,14 @@ export default function GuestManager() {
               min="0"
               className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
             />
-            {estimatedGift && (
+            {estimatedGift && parseInt(estimatedGift) > 0 && (
               <p className="text-xs text-gray-500 mt-1">
-                {formatCurrency(parseInt(estimatedGift) || 0, settings.currency)}
+                {formatCurrency(parseInt(estimatedGift), settings.currency)}
               </p>
             )}
           </div>
 
+          {/* RSVP Status */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Status RSVP</label>
             <div className="flex gap-2 flex-wrap">
@@ -354,20 +657,20 @@ export default function GuestManager() {
                   onClick={() => setRsvpStatus(opt)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
                     rsvpStatus === opt
-                      ? opt === 'Hadir'
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                        : opt === 'Tidak Hadir'
-                        ? 'border-red-500 bg-red-50 text-red-700'
-                        : 'border-gray-400 bg-gray-50 text-gray-700'
+                      ? rsvpBadge(opt) + ' border-current'
                       : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
                   }`}
                 >
+                  {opt === 'Hadir' && '✅ '}
+                  {opt === 'Tidak Hadir' && '❌ '}
+                  {opt === 'Belum Respon' && '⏳ '}
                   {opt}
                 </button>
               ))}
             </div>
           </div>
 
+          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
