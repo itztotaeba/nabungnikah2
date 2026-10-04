@@ -53,13 +53,8 @@ export const useAuthStore = create<AuthState>()(
             isInitialized: true 
           });
           
-          // Listen for auth changes
-          supabase.auth.onAuthStateChange((_event: string, session: Session | null) => {
-            set({ 
-              session, 
-              user: session?.user || null 
-            });
-          });
+          // Listener sudah di-setup di useAuthSync hook
+          // Tidak perlu setup di sini untuk menghindari duplikasi
         } catch (error) {
           console.error('Error initializing auth:', error);
           set({ isLoading: false, isInitialized: true });

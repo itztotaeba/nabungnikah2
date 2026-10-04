@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Menu, X, type LucideIcon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import BudgetManager from './components/BudgetManager';
@@ -6,6 +6,8 @@ import SavingsTracker from './components/SavingsTracker';
 import GuestManager from './components/GuestManager';
 import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
+import { useAuthSync } from './hooks/useAuthSync';
+import { useAuthStore } from './authStore';
 
 type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'settings';
 
@@ -26,6 +28,16 @@ const NAV_ITEMS: NavItem[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Setup auth sync listener di root component
+  useAuthSync();
+  
+  // Initialize auth store saat app load
+  const initialize = useAuthStore((state) => state.initialize);
+  
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   const renderContent = () => {
     switch (activeTab) {
