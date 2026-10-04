@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useWeddingStore } from '../store';
 import { formatCurrency, calculateTotalBudget, calculateTotalActual, calculateItemStatus } from '../helpers';
 import { useToastStore } from '../toastStore';
-import Modal from './Modal';
-import { Plus, Pencil, Trash2, Receipt, TrendingDown, TrendingUp, Minus } from 'lucide-react';
+import { Plus, Pencil, Trash2, Receipt, TrendingUp, Minus, X } from 'lucide-react';
 
 const BUDGET_CATEGORIES = [
   'Katering',
@@ -22,7 +21,7 @@ export default function BudgetManager() {
   const { settings, budgetItems, addBudgetItem, updateBudgetItem, deleteBudgetItem } = useWeddingStore();
   const { addToast } = useToastStore();
   
-  const [showModal, setShowModal] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form state
@@ -42,7 +41,7 @@ export default function BudgetManager() {
     setEstimatedCost('');
     setActualCost('');
     setEditingId(null);
-    setShowModal(false);
+    setShowForm(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -97,7 +96,10 @@ export default function BudgetManager() {
     setEstimatedCost(item.estimatedCost.toString());
     setActualCost(item.actualCost.toString());
     setEditingId(id);
-    setShowModal(true);
+    setShowForm(true);
+
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = (id: string, itemName: string) => {
@@ -123,13 +125,15 @@ export default function BudgetManager() {
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-gray-800">Anggaran Pernikahan</h2>
           <p className="text-sm text-gray-500 mt-1">Kelola estimasi dan realisasi biaya pernikahanmu</p>
         </div>
-        <button
-          onClick={() => { resetForm(); setShowModal(true); }}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
-        >
-          <Plus size={16} />
-          Tambah Item
-        </button>
+        {!showForm && (
+          <button
+            onClick={() => { resetForm(); setShowForm(true); }}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+          >
+            <Plus size={16} />
+            Tambah Item
+          </button>
+        )}
       </div>
 
       {/* Summary Cards */}
@@ -170,6 +174,115 @@ export default function BudgetManager() {
           </div>
         </div>
       </div>
+
+      {/* Inline Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <h3 className="font-heading text-lg font-semibold text-gray-800">
+              {editingId ? '✏️ Edit Item Anggaran' : '✨ Tambah Item Baru'}
+            </h3>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              >
+                {BUDGET_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nama Item</label>
+              <input
+                type="text"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+                placeholder="Contoh: Gedung Serbaguna"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Biaya</label>
+              <input
+                type="number"
+                value={estimatedCost}
+                onChange={(e) => setEstimatedCost(e.target.value)}
+                placeholder="0"
+                min="0"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              />
+              {estimatedCost && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatCurrency(parseInt(estimatedCost) || 0, settings.currency)}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Biaya Aktual</label>
+              <input
+                type="number"
+                value={actualCost}
+                onChange={(e) => setActualCost(e.target.value)}
+                placeholder="0"
+                min="0"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              />
+              {actualCost && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatCurrency(parseInt(actualCost) || 0, settings.currency)}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Preview Status */}
+          {estimatedCost && (
+            <div className="bg-[#F5F0E8] rounded-xl p-4">
+              <p className="text-xs text-gray-600 mb-2">Preview Status:</p>
+              <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(
+                calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)
+              )}`}>
+                {calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)}
+              </span>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            >
+              {editingId ? 'Update Item' : 'Simpan Item'}
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Table */}
       {budgetItems.length === 0 ? (
@@ -305,107 +418,6 @@ export default function BudgetManager() {
           </div>
         </div>
       )}
-
-      {/* Modal Form */}
-      <Modal
-        isOpen={showModal}
-        onClose={resetForm}
-        title={editingId ? 'Edit Item Anggaran' : 'Tambah Item Anggaran'}
-      >
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          <div className="space-y-5 flex-1">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              >
-                {BUDGET_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nama Item</label>
-              <input
-                type="text"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder="Contoh: Gedung Serbaguna"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Biaya</label>
-              <input
-                type="number"
-                value={estimatedCost}
-                onChange={(e) => setEstimatedCost(e.target.value)}
-                placeholder="0"
-                min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              />
-              {estimatedCost && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatCurrency(parseInt(estimatedCost) || 0, settings.currency)}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Biaya Aktual</label>
-              <input
-                type="number"
-                value={actualCost}
-                onChange={(e) => setActualCost(e.target.value)}
-                placeholder="0"
-                min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              />
-              {actualCost && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatCurrency(parseInt(actualCost) || 0, settings.currency)}
-                </p>
-              )}
-            </div>
-
-            {/* Preview Status */}
-            {estimatedCost && (
-              <div className="bg-[#F5F0E8] rounded-xl p-4">
-                <p className="text-xs text-gray-600 mb-2">Preview Status:</p>
-                <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(
-                  calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)
-                )}`}>
-                  {calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Footer dengan tombol sticky */}
-          <div className="sticky bottom-0 bg-white border-t border-gray-200 -mx-6 px-6 py-4 mt-5 rounded-b-2xl flex gap-3">
-            <button
-              type="button"
-              onClick={resetForm}
-              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
-            >
-              {editingId ? 'Update' : 'Simpan'}
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }
