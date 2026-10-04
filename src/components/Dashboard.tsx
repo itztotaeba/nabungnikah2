@@ -10,10 +10,13 @@ import {
   formatRemainingTime,
   calculateTotalActual,
 } from '../helpers';
-import { Calendar, TrendingUp, Wallet, Target, Users, Clock } from 'lucide-react';
+import { generateFullReport } from '../helpers/pdfGenerator';
+import { useToastStore } from '../toastStore';
+import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText } from 'lucide-react';
 
 export default function Dashboard() {
   const { settings, budgetItems, savings, guests } = useWeddingStore();
+  const { addToast } = useToastStore();
 
   // Semua perhitungan menggunakan helper functions
   const totalBudget = calculateTotalBudget(budgetItems);
@@ -33,6 +36,21 @@ export default function Dashboard() {
         day: 'numeric',
       })
     : null;
+
+  // Handle Export PDF
+  const handleExportPDF = () => {
+    try {
+      if (budgetItems.length === 0 && guests.length === 0) {
+        addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
+        return;
+      }
+      generateFullReport(budgetItems, guests, settings);
+      addToast('PDF berhasil dibuat!', 'success');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      addToast('Gagal membuat PDF', 'error');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -54,6 +72,17 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Export PDF Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleExportPDF}
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
+        >
+          <FileText size={16} />
+          Cetak Laporan Lengkap (PDF)
+        </button>
+      </div>
 
       {/* Welcome Message (no date set) */}
       {!settings.weddingDate && (
