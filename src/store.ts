@@ -111,6 +111,15 @@ export const useWeddingStore = create<AppState>()(
 
       // ---- Reset ----
       resetData: () => set({ ...initialState }),
+
+      // ---- Import Data ----
+      importData: (data) =>
+        set({
+          settings: data.settings,
+          budgetItems: data.budgetItems,
+          savings: data.savings,
+          guests: data.guests,
+        }),
     }),
     {
       name: 'weddingplan-storage', // LocalStorage key
