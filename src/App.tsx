@@ -8,8 +8,10 @@ import VendorManager from './components/VendorManager';
 import TimelineManager from './components/TimelineManager';
 import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
+import LiveSyncIndicator from './components/LiveSyncIndicator';
 import { useAuthSync } from './hooks/useAuthSync';
 import { useAuthStore } from './authStore';
+import { useCollaborationStore } from './collaborationStore';
 
 type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'timeline' | 'settings';
 
@@ -38,10 +40,20 @@ export default function App() {
   
   // Initialize auth store saat app load
   const initialize = useAuthStore((state) => state.initialize);
+  const user = useAuthStore((state) => state.user);
+  const initializeWedding = useCollaborationStore((state) => state.initializeWedding);
+  const currentWeddingId = useCollaborationStore((state) => state.currentWeddingId);
   
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Initialize wedding setelah user login
+  useEffect(() => {
+    if (user && !currentWeddingId) {
+      initializeWedding();
+    }
+  }, [user, currentWeddingId, initializeWedding]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -190,8 +202,9 @@ export default function App() {
               </h2>
             </div>
 
-            {/* Right: Current page indicator */}
-            <div className="flex items-center gap-2">
+            {/* Right: Live Sync Indicator + Current page indicator */}
+            <div className="flex items-center gap-3">
+              <LiveSyncIndicator />
               <span className="text-xs text-gray-400 hidden sm:block">
                 {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               </span>

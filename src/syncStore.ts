@@ -3,6 +3,7 @@ import { supabase } from './lib/supabase';
 import { useAuthStore } from './authStore';
 import { useWeddingStore } from './store';
 import { useToastStore } from './toastStore';
+import { useCollaborationStore } from './collaborationStore';
 
 type SyncStatus = 'synced' | 'syncing' | 'offline' | 'error';
 
@@ -25,8 +26,15 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
   syncToCloud: async () => {
     const { user } = useAuthStore.getState();
+    const { currentWeddingId } = useCollaborationStore.getState();
+    
     if (!user) {
       console.log('No user logged in, skipping sync');
+      return false;
+    }
+
+    if (!currentWeddingId) {
+      console.log('No wedding ID, skipping sync');
       return false;
     }
 
@@ -42,20 +50,23 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     try {
       set({ status: 'syncing' });
       
-      const { settings, budgetItems, savings, guests } = useWeddingStore.getState();
+      const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore.getState();
       
       const data = {
+        id: currentWeddingId,
         user_id: user.id,
         settings,
         budget_items: budgetItems,
         savings,
         guests,
+        vendors,
+        tasks,
         updated_at: new Date().toISOString(),
       };
 
       const { error } = await supabase
         .from('wedding_data')
-        .upsert(data, { onConflict: 'user_id' });
+        .upsert(data, { onConflict: 'id' });
 
       if (error) {
         throw error;
@@ -91,8 +102,15 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
   syncFromCloud: async () => {
     const { user } = useAuthStore.getState();
+    const { currentWeddingId } = useCollaborationStore.getState();
+    
     if (!user) {
       console.log('No user logged in, skipping sync');
+      return false;
+    }
+
+    if (!currentWeddingId) {
+      console.log('No wedding ID, skipping sync');
       return false;
     }
 
@@ -111,7 +129,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       const { data, error } = await supabase
         .from('wedding_data')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('id', currentWeddingId)
         .single();
 
       if (error) {
@@ -127,7 +145,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         const { importData } = useWeddingStore.getState();
         
         importData({
-          settings: data.settings,
+          settings: data.settings || {},
           budgetItems: data.budget_items || [],
           savings: data.savings || [],
           guests: data.guests || [],
@@ -140,10 +158,11 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           lastSync: new Date() 
         });
         
-        useToastStore.getState().addToast(
-          'Data berhasil dimuat dari cloud',
-          'success'
-        );
+        // Jangan tampilkan toast saat auto-sync dari realtime
+        // useToastStore.getState().addToast(
+        //   'Data berhasil dimuat dari cloud',
+        //   'success'
+        // );
         
         return true;
       }
