@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useWeddingStore, Guest } from '../store';
 import { formatCurrency } from '../helpers';
+import { generateGuestPDF } from '../helpers/pdfGenerator';
 import { useToastStore } from '../toastStore';
 import {
   Plus,
@@ -16,6 +17,7 @@ import {
   UserX,
   UserPlus,
   X,
+  FileText,
 } from 'lucide-react';
 
 const GUEST_CATEGORIES: Guest['category'][] = ['Keluarga', 'Teman', 'Rekan Kerja', 'Lainnya'];
@@ -201,6 +203,21 @@ export default function GuestManager() {
 
   const hasActiveFilters = searchQuery || filterCategory !== 'Semua' || filterRsvp !== 'Semua';
 
+  // Handle Export PDF
+  const handleExportPDF = () => {
+    try {
+      if (guests.length === 0) {
+        addToast('Data tamu masih kosong, tidak ada yang bisa di-export', 'warning');
+        return;
+      }
+      generateGuestPDF(guests, settings);
+      addToast('PDF berhasil dibuat!', 'success');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      addToast('Gagal membuat PDF', 'error');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -210,16 +227,25 @@ export default function GuestManager() {
           <p className="text-sm text-gray-500 mt-1">Kelola daftar tamu undangan pernikahanmu</p>
         </div>
         {!showForm && (
-          <button
-            onClick={() => {
-              resetForm();
-              setShowForm(true);
-            }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
-          >
-            <Plus size={16} />
-            Tambah Tamu
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={handleExportPDF}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
+            >
+              <FileText size={16} />
+              Export PDF
+            </button>
+            <button
+              onClick={() => {
+                resetForm();
+                setShowForm(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+            >
+              <Plus size={16} />
+              Tambah Tamu
+            </button>
+          </div>
         )}
       </div>
 
