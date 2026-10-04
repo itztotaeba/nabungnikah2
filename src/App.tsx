@@ -5,6 +5,7 @@ import BudgetManager from './components/BudgetManager';
 import SavingsTracker from './components/SavingsTracker';
 import GuestManager from './components/GuestManager';
 import SettingsPage from './components/Settings';
+import ToastContainer from './components/ToastContainer';
 
 type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'settings';
 
@@ -219,6 +220,9 @@ export default function App() {
         {/* Safe area for iOS */}
         <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
+
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

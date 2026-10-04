@@ -1,68 +1,88 @@
 import { useState } from 'react';
 import { useWeddingStore } from '../store';
-import { formatCurrency, calculateTotalBudget, calculateTotalActual } from '../helpers';
-import { Plus, Pencil, Trash2, Receipt } from 'lucide-react';
+import { formatCurrency, calculateTotalBudget, calculateTotalActual, calculateItemStatus } from '../helpers';
+import { useToastStore } from '../toastStore';
+import Modal from './Modal';
+import { Plus, Pencil, Trash2, Receipt, TrendingDown, TrendingUp, Minus } from 'lucide-react';
 
 const BUDGET_CATEGORIES = [
-  'Gedung & Venue',
   'Katering',
+  'Venue',
+  'MUA',
+  'Dekorasi',
   'Dokumentasi',
-  'Dekorasi & Bunga',
-  'Busana & Makeup',
-  'Entertainment',
   'Undangan',
-  'Souvenir',
+  'Cincin',
+  'Hiburan',
   'Transportasi',
   'Lainnya',
 ];
 
 export default function BudgetManager() {
   const { settings, budgetItems, addBudgetItem, updateBudgetItem, deleteBudgetItem } = useWeddingStore();
-  const [showForm, setShowForm] = useState(false);
+  const { addToast } = useToastStore();
+  
+  const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form state
   const [category, setCategory] = useState(BUDGET_CATEGORIES[0]);
-  const [customCategory, setCustomCategory] = useState('');
   const [itemName, setItemName] = useState('');
   const [estimatedCost, setEstimatedCost] = useState('');
   const [actualCost, setActualCost] = useState('');
 
+  // Calculations from helpers
   const totalBudget = calculateTotalBudget(budgetItems);
   const totalActual = calculateTotalActual(budgetItems);
+  const totalDifference = totalBudget - totalActual;
 
   const resetForm = () => {
     setCategory(BUDGET_CATEGORIES[0]);
-    setCustomCategory('');
     setItemName('');
     setEstimatedCost('');
     setActualCost('');
     setEditingId(null);
-    setShowForm(false);
+    setShowModal(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!itemName.trim() || !estimatedCost) return;
-
-    const finalCategory = category === 'Lainnya' ? customCategory || 'Lainnya' : category;
-    const est = parseInt(estimatedCost) || 0;
+    
+    // Validation
+    if (!itemName.trim()) {
+      addToast('Nama item tidak boleh kosong', 'error');
+      return;
+    }
+    
+    const est = parseInt(estimatedCost);
     const act = parseInt(actualCost) || 0;
+    
+    if (isNaN(est) || est < 0) {
+      addToast('Estimasi biaya harus angka positif', 'error');
+      return;
+    }
+    
+    if (act < 0) {
+      addToast('Biaya aktual harus angka positif', 'error');
+      return;
+    }
 
     if (editingId) {
       updateBudgetItem(editingId, {
-        category: finalCategory,
+        category,
         itemName: itemName.trim(),
         estimatedCost: est,
         actualCost: act,
       });
+      addToast('Item anggaran berhasil diupdate', 'success');
     } else {
       addBudgetItem({
-        category: finalCategory,
+        category,
         itemName: itemName.trim(),
         estimatedCost: est,
         actualCost: act,
       });
+      addToast('Item anggaran berhasil ditambahkan', 'success');
     }
 
     resetForm();
@@ -72,19 +92,19 @@ export default function BudgetManager() {
     const item = budgetItems.find((b) => b.id === id);
     if (!item) return;
 
-    if (BUDGET_CATEGORIES.includes(item.category)) {
-      setCategory(item.category);
-      setCustomCategory('');
-    } else {
-      setCategory('Lainnya');
-      setCustomCategory(item.category);
-    }
-
+    setCategory(item.category);
     setItemName(item.itemName);
     setEstimatedCost(item.estimatedCost.toString());
     setActualCost(item.actualCost.toString());
     setEditingId(id);
-    setShowForm(true);
+    setShowModal(true);
+  };
+
+  const handleDelete = (id: string, itemName: string) => {
+    if (window.confirm(`Hapus item "${itemName}"?`)) {
+      deleteBudgetItem(id);
+      addToast('Item anggaran berhasil dihapus', 'success');
+    }
   };
 
   const statusBadge = (status: string) => {
@@ -95,13 +115,6 @@ export default function BudgetManager() {
     }
   };
 
-  // Group by category
-  const groupedItems = budgetItems.reduce((acc, item) => {
-    if (!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, typeof budgetItems>);
-
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -111,7 +124,7 @@ export default function BudgetManager() {
           <p className="text-sm text-gray-500 mt-1">Kelola estimasi dan realisasi biaya pernikahanmu</p>
         </div>
         <button
-          onClick={() => { resetForm(); setShowForm(true); }}
+          onClick={() => { resetForm(); setShowModal(true); }}
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
         >
           <Plus size={16} />
@@ -120,14 +133,14 @@ export default function BudgetManager() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
               <Receipt size={20} className="text-[#87A878]" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Anggaran</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Estimasi</p>
               <p className="text-xl font-bold text-gray-800">{formatCurrency(totalBudget, settings.currency)}</p>
             </div>
           </div>
@@ -135,92 +148,248 @@ export default function BudgetManager() {
         <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-              <span className="text-lg">🧾</span>
+              <TrendingUp size={20} className="text-orange-500" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Realisasi</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Aktual</p>
               <p className="text-xl font-bold text-gray-800">{formatCurrency(totalActual, settings.currency)}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <Minus size={20} className="text-blue-500" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider">Selisih</p>
+              <p className={`text-xl font-bold ${totalDifference >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                {formatCurrency(Math.abs(totalDifference), settings.currency)}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Form */}
-      {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
-          <h3 className="font-heading text-lg font-semibold text-gray-800">
-            {editingId ? '✏️ Edit Item Anggaran' : '✨ Tambah Item Baru'}
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Kategori</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              >
-                {BUDGET_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-            </div>
-
-            {category === 'Lainnya' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-600 mb-1.5">Nama Kategori</label>
-                <input
-                  type="text"
-                  value={customCategory}
-                  onChange={(e) => setCustomCategory(e.target.value)}
-                  placeholder="Masukkan kategori..."
-                  className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Nama Item</label>
-              <input
-                type="text"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder="Contoh: Gedung Serbaguna"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Estimasi Biaya</label>
-              <input
-                type="number"
-                value={estimatedCost}
-                onChange={(e) => setEstimatedCost(e.target.value)}
-                placeholder="0"
-                min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Biaya Aktual (Realisasi)</label>
-              <input
-                type="number"
-                value={actualCost}
-                onChange={(e) => setActualCost(e.target.value)}
-                placeholder="0"
-                min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              />
-            </div>
+      {/* Table */}
+      {budgetItems.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl">📋</span>
           </div>
+          <p className="text-gray-500 font-medium">Belum ada anggaran</p>
+          <p className="text-sm text-gray-400 mt-1">Yuk mulai tambah item pertama!</p>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
+          {/* Desktop Table */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F5F0E8]/50 border-b border-[#E8E0D4]">
+                <tr>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Kategori</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Item</th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Estimasi</th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Aktual</th>
+                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Selisih</th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#F5F0E8]">
+                {budgetItems.map((item) => {
+                  const difference = item.estimatedCost - item.actualCost;
+                  return (
+                    <tr key={item.id} className="hover:bg-[#FDFBF7] transition-colors">
+                      <td className="px-5 py-4 text-sm text-gray-700">{item.category}</td>
+                      <td className="px-5 py-4 text-sm font-medium text-gray-800">{item.itemName}</td>
+                      <td className="px-5 py-4 text-sm text-right text-gray-700">{formatCurrency(item.estimatedCost, settings.currency)}</td>
+                      <td className="px-5 py-4 text-sm text-right text-gray-700">{formatCurrency(item.actualCost, settings.currency)}</td>
+                      <td className={`px-5 py-4 text-sm text-right font-medium ${difference >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                        {formatCurrency(Math.abs(difference), settings.currency)}
+                        {difference >= 0 ? ' (sisa)' : ' (lebih)'}
+                      </td>
+                      <td className="px-5 py-4 text-center">
+                        <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(item.status)}`}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleEdit(item.id)}
+                            className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil size={16} className="text-blue-600" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id, item.itemName)}
+                            className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Hapus"
+                          >
+                            <Trash2 size={16} className="text-red-600" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot className="bg-[#F5F0E8]/30 border-t-2 border-[#E8E0D4]">
+                <tr>
+                  <td colSpan={2} className="px-5 py-4 text-sm font-bold text-gray-800">GRAND TOTAL</td>
+                  <td className="px-5 py-4 text-sm text-right font-bold text-gray-800">{formatCurrency(totalBudget, settings.currency)}</td>
+                  <td className="px-5 py-4 text-sm text-right font-bold text-gray-800">{formatCurrency(totalActual, settings.currency)}</td>
+                  <td className={`px-5 py-4 text-sm text-right font-bold ${totalDifference >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {formatCurrency(Math.abs(totalDifference), settings.currency)}
+                  </td>
+                  <td colSpan={2}></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden divide-y divide-[#F5F0E8]">
+            {budgetItems.map((item) => {
+              const difference = item.estimatedCost - item.actualCost;
+              return (
+                <div key={item.id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#F5F0E8] text-gray-600 font-medium">
+                          {item.category}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusBadge(item.status)}`}>
+                          {item.status}
+                        </span>
+                      </div>
+                      <p className="font-medium text-gray-800">{item.itemName}</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleEdit(item.id)}
+                        className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <Pencil size={16} className="text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id, item.itemName)}
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={16} className="text-red-600" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div>
+                      <p className="text-gray-500">Estimasi</p>
+                      <p className="font-semibold text-gray-800">{formatCurrency(item.estimatedCost, settings.currency)}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Aktual</p>
+                      <p className="font-semibold text-gray-800">{formatCurrency(item.actualCost, settings.currency)}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500">Selisih</p>
+                      <p className={`font-semibold ${difference >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                        {formatCurrency(Math.abs(difference), settings.currency)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Modal Form */}
+      <Modal
+        isOpen={showModal}
+        onClose={resetForm}
+        title={editingId ? 'Edit Item Anggaran' : 'Tambah Item Anggaran'}
+      >
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              required
+            >
+              {BUDGET_CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Nama Item</label>
+            <input
+              type="text"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              placeholder="Contoh: Gedung Serbaguna"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Biaya</label>
+            <input
+              type="number"
+              value={estimatedCost}
+              onChange={(e) => setEstimatedCost(e.target.value)}
+              placeholder="0"
+              min="0"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              required
+            />
+            {estimatedCost && (
+              <p className="text-xs text-gray-500 mt-1">
+                {formatCurrency(parseInt(estimatedCost) || 0, settings.currency)}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Biaya Aktual</label>
+            <input
+              type="number"
+              value={actualCost}
+              onChange={(e) => setActualCost(e.target.value)}
+              placeholder="0"
+              min="0"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+            />
+            {actualCost && (
+              <p className="text-xs text-gray-500 mt-1">
+                {formatCurrency(parseInt(actualCost) || 0, settings.currency)}
+              </p>
+            )}
+          </div>
+
+          {/* Preview Status */}
+          {estimatedCost && (
+            <div className="bg-[#F5F0E8] rounded-xl p-4">
+              <p className="text-xs text-gray-600 mb-2">Preview Status:</p>
+              <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(
+                calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)
+              )}`}>
+                {calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)}
+              </span>
+            </div>
+          )}
 
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
             >
               {editingId ? 'Update Item' : 'Simpan Item'}
             </button>
@@ -233,64 +402,7 @@ export default function BudgetManager() {
             </button>
           </div>
         </form>
-      )}
-
-      {/* Budget Items List */}
-      {budgetItems.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">📋</span>
-          </div>
-          <p className="text-gray-500 font-medium">Belum ada item anggaran</p>
-          <p className="text-sm text-gray-400 mt-1">Mulai tambahkan item untuk merencanakan biaya pernikahanmu</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {Object.entries(groupedItems).map(([cat, items]) => (
-            <div key={cat} className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
-              <div className="px-5 py-3.5 bg-[#F5F0E8]/50 border-b border-[#E8E0D4]">
-                <h4 className="font-medium text-gray-700 text-sm">{cat}</h4>
-              </div>
-              <div className="divide-y divide-[#F5F0E8]">
-                {items.map((item) => (
-                  <div key={item.id} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium text-gray-800">{item.itemName}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusBadge(item.status)}`}>
-                          {item.status}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        Estimasi: <span className="font-medium text-gray-700">{formatCurrency(item.estimatedCost, settings.currency)}</span>
-                        {item.actualCost > 0 && (
-                          <span className="ml-3">Realisasi: <span className="font-medium text-gray-700">{formatCurrency(item.actualCost, settings.currency)}</span></span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(item.id)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
-                      >
-                        <Pencil size={12} />
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteBudgetItem(item.id)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
-                      >
-                        <Trash2 size={12} />
-                        Hapus
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }
