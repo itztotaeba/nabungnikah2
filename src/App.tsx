@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Menu, X, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, Menu, X, type LucideIcon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import BudgetManager from './components/BudgetManager';
 import SavingsTracker from './components/SavingsTracker';
 import GuestManager from './components/GuestManager';
+import VendorManager from './components/VendorManager';
 import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
 import { useAuthSync } from './hooks/useAuthSync';
 import { useAuthStore } from './authStore';
 
-type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'settings';
+type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'settings';
 
 interface NavItem {
   id: Tab;
@@ -22,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'budget', label: 'Anggaran', icon: Receipt },
   { id: 'savings', label: 'Tabungan', icon: PiggyBank },
   { id: 'guests', label: 'Tamu', icon: Users },
+  { id: 'vendors', label: 'Vendor', icon: Building2 },
   { id: 'settings', label: 'Pengaturan', icon: SettingsIcon },
 ];
 
@@ -45,6 +47,7 @@ export default function App() {
       case 'budget': return <BudgetManager />;
       case 'savings': return <SavingsTracker />;
       case 'guests': return <GuestManager />;
+      case 'vendors': return <VendorManager />;
       case 'settings': return <SettingsPage />;
       default: return <Dashboard />;
     }

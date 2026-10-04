@@ -36,11 +36,39 @@ export interface Guest {
   rsvpStatus: 'Belum Respon' | 'Hadir' | 'Tidak Hadir';
 }
 
+// ============================================
+// VENDOR TYPES
+// ============================================
+export type VendorType = 'All-in' | 'Satuan';
+export type VendorCategory = 'WO' | 'Katering' | 'Venue' | 'MUA' | 'Fotografi' | 'Dekorasi' | 'Entertainment' | 'Lainnya';
+export type ContractStatus = 'Belum Kontrak' | 'Sudah DP' | 'Lunas';
+
+export interface Vendor {
+  id: string;
+  name: string;
+  type: VendorType;
+  category: VendorCategory;
+  contactWA: string;
+  email?: string;
+  address?: string;
+  dealPrice: number;
+  dpAmount: number;
+  remainingBalance: number; // Auto-calculated: dealPrice - dpAmount
+  dueDateDP?: string;
+  dueDateFinal?: string;
+  contractStatus: ContractStatus;
+  notes?: string;
+  rating?: number; // 1-5
+  review?: string;
+  createdAt: string;
+}
+
 export interface AppState {
   settings: WeddingSettings;
   budgetItems: BudgetItem[];
   savings: SavingsEntry[];
   guests: Guest[];
+  vendors: Vendor[];
 
   // Settings Actions
   updateSettings: (settings: Partial<WeddingSettings>) => void;
@@ -59,6 +87,11 @@ export interface AppState {
   updateGuest: (id: string, updates: Partial<Guest>) => void;
   deleteGuest: (id: string) => void;
 
+  // Vendor Actions
+  addVendor: (vendor: Omit<Vendor, 'id' | 'createdAt' | 'remainingBalance'>) => void;
+  updateVendor: (id: string, updates: Partial<Vendor>) => void;
+  deleteVendor: (id: string) => void;
+
   // Reset
   resetData: () => void;
 
@@ -68,5 +101,6 @@ export interface AppState {
     budgetItems: BudgetItem[];
     savings: SavingsEntry[];
     guests: Guest[];
+    vendors: Vendor[];
   }) => void;
 }

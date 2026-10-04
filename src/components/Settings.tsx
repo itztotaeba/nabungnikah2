@@ -117,7 +117,8 @@ export default function SettingsPage() {
         }
 
         // Show confirmation
-        const confirmMessage = `Data saat ini akan diganti dengan data dari file.\n\nFile berisi:\n- ${data.budgetItems.length} item anggaran\n- ${data.savings.length} catatan tabungan\n- ${data.guests.length} tamu\n\nLanjutkan?`;
+        const vendorCount = data.vendors ? data.vendors.length : 0;
+        const confirmMessage = `Data saat ini akan diganti dengan data dari file.\n\nFile berisi:\n- ${data.budgetItems.length} item anggaran\n- ${data.savings.length} catatan tabungan\n- ${data.guests.length} tamu${vendorCount > 0 ? `\n- ${vendorCount} vendor` : ''}\n\nLanjutkan?`;
         
         if (window.confirm(confirmMessage)) {
           importData({
@@ -125,6 +126,7 @@ export default function SettingsPage() {
             budgetItems: data.budgetItems,
             savings: data.savings,
             guests: data.guests,
+            vendors: data.vendors || [],
           });
           
           // Update local state
