@@ -63,12 +63,29 @@ export interface Vendor {
   createdAt: string;
 }
 
+// ============================================
+// TASK TYPES
+// ============================================
+export type TaskCategory = 'Administrasi' | 'Vendor' | 'Pakaian' | 'Dekorasi' | 'Undangan' | 'Lainnya';
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  category: TaskCategory;
+  monthsBefore: number; // Berapa bulan sebelum pernikahan (misal: 3, 1, 0)
+  isCompleted: boolean;
+  completedAt?: string; // ISO Date
+  isDefault: boolean; // True untuk template bawaan, False untuk custom user
+}
+
 export interface AppState {
   settings: WeddingSettings;
   budgetItems: BudgetItem[];
   savings: SavingsEntry[];
   guests: Guest[];
   vendors: Vendor[];
+  tasks: Task[];
 
   // Settings Actions
   updateSettings: (settings: Partial<WeddingSettings>) => void;
@@ -92,6 +109,11 @@ export interface AppState {
   updateVendor: (id: string, updates: Partial<Vendor>) => void;
   deleteVendor: (id: string) => void;
 
+  // Task Actions
+  addTask: (task: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>) => void;
+  toggleTask: (id: string) => void;
+  deleteTask: (id: string) => void;
+
   // Reset
   resetData: () => void;
 
@@ -102,5 +124,6 @@ export interface AppState {
     savings: SavingsEntry[];
     guests: Guest[];
     vendors: Vendor[];
+    tasks: Task[];
   }) => void;
 }

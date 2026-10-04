@@ -9,6 +9,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { calculateItemStatus, generateId, getDefaultSettings } from './helpers';
 import { AppState } from './types';
+import { defaultTasks } from './data/defaultTasks';
 
 // Re-export types for convenience
 export type { 
@@ -20,6 +21,8 @@ export type {
   VendorType,
   VendorCategory,
   ContractStatus,
+  Task,
+  TaskCategory,
   AppState 
 } from './types';
 
@@ -33,6 +36,11 @@ const initialState = {
   savings: [],
   guests: [],
   vendors: [],
+  tasks: defaultTasks.map(task => ({
+    ...task,
+    id: generateId(),
+    isCompleted: false,
+  })),
 };
 
 // ============================================
@@ -150,6 +158,36 @@ export const useWeddingStore = create<AppState>()(
           vendors: state.vendors.filter((vendor) => vendor.id !== id),
         })),
 
+      // ---- Tasks ----
+      addTask: (task) =>
+        set((state) => ({
+          tasks: [
+            ...state.tasks,
+            {
+              ...task,
+              id: generateId(),
+              isCompleted: false,
+            },
+          ],
+        })),
+
+      toggleTask: (id) =>
+        set((state) => ({
+          tasks: state.tasks.map((task) => {
+            if (task.id !== id) return task;
+            return {
+              ...task,
+              isCompleted: !task.isCompleted,
+              completedAt: !task.isCompleted ? new Date().toISOString() : undefined,
+            };
+          }),
+        })),
+
+      deleteTask: (id) =>
+        set((state) => ({
+          tasks: state.tasks.filter((task) => task.id !== id),
+        })),
+
       // ---- Reset ----
       resetData: () => set({ ...initialState }),
 
@@ -161,6 +199,7 @@ export const useWeddingStore = create<AppState>()(
           savings: data.savings,
           guests: data.guests,
           vendors: data.vendors || [],
+          tasks: data.tasks || [],
         }),
     }),
     {
@@ -171,6 +210,7 @@ export const useWeddingStore = create<AppState>()(
         savings: state.savings,
         guests: state.guests,
         vendors: state.vendors,
+        tasks: state.tasks,
       }),
     }
   )

@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, Menu, X, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, ListTodo, Menu, X, type LucideIcon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import BudgetManager from './components/BudgetManager';
 import SavingsTracker from './components/SavingsTracker';
 import GuestManager from './components/GuestManager';
 import VendorManager from './components/VendorManager';
+import TimelineManager from './components/TimelineManager';
 import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
 import { useAuthSync } from './hooks/useAuthSync';
 import { useAuthStore } from './authStore';
 
-type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'settings';
+type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'timeline' | 'settings';
 
 interface NavItem {
   id: Tab;
@@ -24,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'savings', label: 'Tabungan', icon: PiggyBank },
   { id: 'guests', label: 'Tamu', icon: Users },
   { id: 'vendors', label: 'Vendor', icon: Building2 },
+  { id: 'timeline', label: 'Timeline', icon: ListTodo },
   { id: 'settings', label: 'Pengaturan', icon: SettingsIcon },
 ];
 
@@ -48,6 +50,7 @@ export default function App() {
       case 'savings': return <SavingsTracker />;
       case 'guests': return <GuestManager />;
       case 'vendors': return <VendorManager />;
+      case 'timeline': return <TimelineManager />;
       case 'settings': return <SettingsPage />;
       default: return <Dashboard />;
     }

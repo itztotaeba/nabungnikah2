@@ -127,6 +127,7 @@ export default function SettingsPage() {
             savings: data.savings,
             guests: data.guests,
             vendors: data.vendors || [],
+            tasks: data.tasks || [],
           });
           
           // Update local state
