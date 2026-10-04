@@ -312,93 +312,96 @@ export default function BudgetManager() {
         onClose={resetForm}
         title={editingId ? 'Edit Item Anggaran' : 'Tambah Item Anggaran'}
       >
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              required
-            >
-              {BUDGET_CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Nama Item</label>
-            <input
-              type="text"
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-              placeholder="Contoh: Gedung Serbaguna"
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Biaya</label>
-            <input
-              type="number"
-              value={estimatedCost}
-              onChange={(e) => setEstimatedCost(e.target.value)}
-              placeholder="0"
-              min="0"
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              required
-            />
-            {estimatedCost && (
-              <p className="text-xs text-gray-500 mt-1">
-                {formatCurrency(parseInt(estimatedCost) || 0, settings.currency)}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Biaya Aktual</label>
-            <input
-              type="number"
-              value={actualCost}
-              onChange={(e) => setActualCost(e.target.value)}
-              placeholder="0"
-              min="0"
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-            />
-            {actualCost && (
-              <p className="text-xs text-gray-500 mt-1">
-                {formatCurrency(parseInt(actualCost) || 0, settings.currency)}
-              </p>
-            )}
-          </div>
-
-          {/* Preview Status */}
-          {estimatedCost && (
-            <div className="bg-[#F5F0E8] rounded-xl p-4">
-              <p className="text-xs text-gray-600 mb-2">Preview Status:</p>
-              <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(
-                calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)
-              )}`}>
-                {calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)}
-              </span>
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <div className="space-y-5 flex-1">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              >
+                {BUDGET_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
             </div>
-          )}
 
-          <div className="flex gap-3 pt-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nama Item</label>
+              <input
+                type="text"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+                placeholder="Contoh: Gedung Serbaguna"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Biaya</label>
+              <input
+                type="number"
+                value={estimatedCost}
+                onChange={(e) => setEstimatedCost(e.target.value)}
+                placeholder="0"
+                min="0"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              />
+              {estimatedCost && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatCurrency(parseInt(estimatedCost) || 0, settings.currency)}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Biaya Aktual</label>
+              <input
+                type="number"
+                value={actualCost}
+                onChange={(e) => setActualCost(e.target.value)}
+                placeholder="0"
+                min="0"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              />
+              {actualCost && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatCurrency(parseInt(actualCost) || 0, settings.currency)}
+                </p>
+              )}
+            </div>
+
+            {/* Preview Status */}
+            {estimatedCost && (
+              <div className="bg-[#F5F0E8] rounded-xl p-4">
+                <p className="text-xs text-gray-600 mb-2">Preview Status:</p>
+                <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(
+                  calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)
+                )}`}>
+                  {calculateItemStatus(parseInt(estimatedCost) || 0, parseInt(actualCost) || 0)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Footer dengan tombol sticky */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 -mx-6 px-6 py-4 mt-5 rounded-b-2xl flex gap-3">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+            >
+              Batal
+            </button>
             <button
               type="submit"
               className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
             >
-              {editingId ? 'Update Item' : 'Simpan Item'}
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
-            >
-              Batal
+              {editingId ? 'Update' : 'Simpan'}
             </button>
           </div>
         </form>
