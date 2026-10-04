@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus } from '../store';
 import { formatCurrency } from '../helpers';
 import { useToastStore } from '../toastStore';
-import Modal from './Modal';
 import ComparisonAnalysis from './ComparisonAnalysis';
 import {
   Plus,
@@ -129,6 +128,9 @@ export default function VendorManager() {
     setReview(vendor.review || '');
     setEditingId(vendor.id);
     setShowForm(true);
+
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDelete = (id: string, vendorName: string) => {
@@ -177,13 +179,15 @@ export default function VendorManager() {
             <TrendingUp size={16} />
             Analisis
           </button>
-          <button
-            onClick={() => { resetForm(); setShowForm(true); }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
-          >
-            <Plus size={16} />
-            Tambah Vendor
-          </button>
+          {!showForm && (
+            <button
+              onClick={() => { resetForm(); setShowForm(true); }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+            >
+              <Plus size={16} />
+              Tambah Vendor
+            </button>
+          )}
         </div>
       </div>
 
@@ -338,13 +342,21 @@ export default function VendorManager() {
         </div>
       )}
 
-      {/* Form Modal */}
-      <Modal
-        isOpen={showForm}
-        onClose={resetForm}
-        title={editingId ? 'Edit Vendor' : 'Tambah Vendor Baru'}
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Inline Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-heading text-lg font-semibold text-gray-800">
+              {editingId ? '✏️ Edit Vendor' : '✨ Tambah Vendor Baru'}
+            </h3>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+          </div>
           {/* Nama */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -568,7 +580,7 @@ export default function VendorManager() {
             </button>
           </div>
         </form>
-      </Modal>
+      )}
 
       {/* Comparison Analysis Modal */}
       <ComparisonAnalysis isOpen={showComparison} onClose={() => setShowComparison(false)} />

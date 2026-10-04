@@ -10,8 +10,7 @@ import {
   calculateProgressPercentage,
 } from '../helpers';
 import { useToastStore } from '../toastStore';
-import Modal from './Modal';
-import { Plus, Trash2, PiggyBank, Target, TrendingUp, Calendar } from 'lucide-react';
+import { Plus, Trash2, PiggyBank, Target, TrendingUp, Calendar, X } from 'lucide-react';
 
 const SAVINGS_SOURCES = ['Gaji', 'Bonus', 'Hadiah', 'Tabungan Lama', 'Lainnya'];
 
@@ -19,7 +18,7 @@ export default function SavingsTracker() {
   const { settings, savings, budgetItems, addSavings, deleteSavings } = useWeddingStore();
   const { addToast } = useToastStore();
   
-  const [showModal, setShowModal] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   // Form state
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -40,7 +39,7 @@ export default function SavingsTracker() {
     setSource(SAVINGS_SOURCES[0]);
     setAmount('');
     setNote('');
-    setShowModal(false);
+    setShowForm(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,13 +83,15 @@ export default function SavingsTracker() {
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-gray-800">Tracker Tabungan</h2>
           <p className="text-sm text-gray-500 mt-1">Catat semua tabungan untuk pernikahanmu</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
-        >
-          <Plus size={16} />
-          Tambah Tabungan
-        </button>
+        {!showForm && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
+          >
+            <Plus size={16} />
+            Tambah Tabungan
+          </button>
+        )}
       </div>
 
       {/* Summary Cards */}
@@ -253,14 +254,23 @@ export default function SavingsTracker() {
         </div>
       )}
 
-      {/* Modal Form */}
-      <Modal
-        isOpen={showModal}
-        onClose={resetForm}
-        title="Tambah Tabungan"
-      >
-        <form onSubmit={handleSubmit} className="flex flex-col h-full">
-          <div className="space-y-5 flex-1">
+      {/* Inline Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-heading text-lg font-semibold text-gray-800">
+              💰 Tambah Tabungan Baru
+            </h3>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
               <input
@@ -306,18 +316,17 @@ export default function SavingsTracker() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Catatan (opsional)</label>
-              <textarea
+              <input
+                type="text"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Tambahkan catatan..."
-                rows={3}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
 
-          {/* Footer dengan tombol sticky */}
-          <div className="sticky bottom-0 bg-white border-t border-gray-200 -mx-6 px-6 py-4 mt-5 rounded-b-2xl flex gap-3">
+          <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={resetForm}
@@ -333,7 +342,7 @@ export default function SavingsTracker() {
             </button>
           </div>
         </form>
-      </Modal>
+      )}
     </div>
   );
 }
