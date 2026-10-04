@@ -1,14 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useWeddingStore } from '../store';
 import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculateTotalBudget, calculateTotalSavings } from '../helpers';
-import { Calendar, HardDrive, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useToastStore } from '../toastStore';
+import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { settings, updateSettings, resetData, budgetItems, savings, guests } = useWeddingStore();
+  const { settings, updateSettings, resetData, importData, budgetItems, savings, guests } = useWeddingStore();
+  const { addToast } = useToastStore();
+  
   const [showConfirm, setShowConfirm] = useState(false);
   const [weddingDate, setWeddingDate] = useState(settings.weddingDate);
   const [currency, setCurrency] = useState(settings.currency);
   const [saved, setSaved] = useState(false);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Preview calculations
   const remainingMonths = weddingDate ? calculateRemainingMonths(weddingDate) : 0;
@@ -25,10 +30,120 @@ export default function SettingsPage() {
     setWeddingDate('');
     setCurrency('IDR');
     setShowConfirm(false);
+    addToast('Semua data berhasil dihapus', 'success');
   };
 
   const totalBudget = calculateTotalBudget(budgetItems);
   const totalSavings = calculateTotalSavings(savings);
+
+  // ============================================
+  // EXPORT DATA
+  // ============================================
+  const handleExport = () => {
+    try {
+      const exportData = {
+        version: '1.0',
+        exportDate: new Date().toISOString(),
+        settings,
+        budgetItems,
+        savings,
+        guests,
+      };
+
+      const jsonString = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      // Generate filename with date
+      const today = new Date().toISOString().split('T')[0];
+      const filename = `weddingplan-backup-${today}.json`;
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      addToast('Data berhasil di-export!', 'success');
+    } catch (error) {
+      console.error('Export error:', error);
+      addToast('Gagal meng-export data', 'error');
+    }
+  };
+
+  // ============================================
+  // IMPORT DATA
+  // ============================================
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    // Validate file type
+    if (!file.name.endsWith('.json')) {
+      addToast('File harus berformat JSON', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+
+        // Validate structure
+        if (!data.settings || !data.budgetItems || !data.savings || !data.guests) {
+          addToast('File tidak valid! Struktur data tidak sesuai.', 'error');
+          return;
+        }
+
+        // Validate arrays
+        if (!Array.isArray(data.budgetItems) || !Array.isArray(data.savings) || !Array.isArray(data.guests)) {
+          addToast('File tidak valid! Data harus berupa array.', 'error');
+          return;
+        }
+
+        // Show confirmation
+        const confirmMessage = `Data saat ini akan diganti dengan data dari file.\n\nFile berisi:\n- ${data.budgetItems.length} item anggaran\n- ${data.savings.length} catatan tabungan\n- ${data.guests.length} tamu\n\nLanjutkan?`;
+        
+        if (window.confirm(confirmMessage)) {
+          importData({
+            settings: data.settings,
+            budgetItems: data.budgetItems,
+            savings: data.savings,
+            guests: data.guests,
+          });
+          
+          // Update local state
+          setWeddingDate(data.settings.weddingDate || '');
+          setCurrency(data.settings.currency || 'IDR');
+          
+          addToast('Data berhasil di-restore!', 'success');
+        }
+      } catch (error) {
+        console.error('Import error:', error);
+        addToast('File tidak valid! Gagal membaca JSON.', 'error');
+      }
+    };
+
+    reader.onerror = () => {
+      addToast('Gagal membaca file', 'error');
+    };
+
+    reader.readAsText(file);
+  };
 
   return (
     <div className="space-y-6">
@@ -187,6 +302,54 @@ export default function SettingsPage() {
               <p className="text-xs text-gray-500">Daftar Tamu</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Backup & Restore Section */}
+      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <Download size={20} className="text-emerald-500" />
+          </div>
+          <div>
+            <h3 className="font-heading text-lg font-semibold text-gray-800">Backup & Restore</h3>
+            <p className="text-xs text-gray-400">Backup data Anda secara berkala untuk mencegah kehilangan data</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
+          {/* Export Button */}
+          <button
+            onClick={handleExport}
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all font-medium"
+          >
+            <Download size={18} />
+            <span>Export Data (JSON)</span>
+          </button>
+
+          {/* Import Button */}
+          <button
+            onClick={handleImportClick}
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium"
+          >
+            <Upload size={18} />
+            <span>Import Data (JSON)</span>
+          </button>
+
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+
+        <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+          <p className="text-xs text-blue-700">
+            💡 <strong>Tips:</strong> Export data Anda sebelum melakukan reset atau membersihkan cache browser. File backup dapat digunakan untuk restore data di perangkat lain.
+          </p>
         </div>
       </div>
 

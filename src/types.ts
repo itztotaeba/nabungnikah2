@@ -61,4 +61,12 @@ export interface AppState {
 
   // Reset
   resetData: () => void;
+
+  // Import/Export
+  importData: (data: {
+    settings: WeddingSettings;
+    budgetItems: BudgetItem[];
+    savings: SavingsEntry[];
+    guests: Guest[];
+  }) => void;
 }
