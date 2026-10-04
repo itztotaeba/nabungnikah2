@@ -1,0 +1,362 @@
+import { useState, useMemo } from 'react';
+import { useWeddingStore, Task, TaskCategory } from '../store';
+import { calculateRemainingMonths } from '../helpers';
+import { useToastStore } from '../toastStore';
+import Modal from './Modal';
+import {
+  Plus,
+  Trash2,
+  CheckCircle2,
+  Circle,
+  Calendar,
+  Clock,
+  Tag,
+  X,
+} from 'lucide-react';
+
+const TASK_CATEGORIES: TaskCategory[] = ['Administrasi', 'Vendor', 'Pakaian', 'Dekorasi', 'Undangan', 'Lainnya'];
+
+const categoryBadge = (category: TaskCategory) => {
+  switch (category) {
+    case 'Administrasi':
+      return 'bg-blue-50 text-blue-700 border-blue-200';
+    case 'Vendor':
+      return 'bg-purple-50 text-purple-700 border-purple-200';
+    case 'Pakaian':
+      return 'bg-pink-50 text-pink-700 border-pink-200';
+    case 'Dekorasi':
+      return 'bg-amber-50 text-amber-700 border-amber-200';
+    case 'Undangan':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    default:
+      return 'bg-gray-100 text-gray-600 border-gray-200';
+  }
+};
+
+export default function TimelineManager() {
+  const { settings, tasks, addTask, toggleTask, deleteTask } = useWeddingStore();
+  const { addToast } = useToastStore();
+
+  const [showForm, setShowForm] = useState(false);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<TaskCategory>('Administrasi');
+  const [monthsBefore, setMonthsBefore] = useState('3');
+
+  // Calculate current month
+  const currentMonth = settings.weddingDate ? calculateRemainingMonths(settings.weddingDate) : null;
+
+  // Calculate progress
+  const completedTasks = tasks.filter(t => t.isCompleted).length;
+  const totalTasks = tasks.length;
+  const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+  // Group tasks by monthsBefore
+  const groupedTasks = useMemo(() => {
+    const groups: Record<number, Task[]> = {};
+    
+    tasks.forEach(task => {
+      if (!groups[task.monthsBefore]) {
+        groups[task.monthsBefore] = [];
+      }
+      groups[task.monthsBefore].push(task);
+    });
+
+    // Sort by monthsBefore descending
+    return Object.entries(groups)
+      .map(([month, tasks]) => ({
+        month: parseInt(month),
+        tasks: tasks.sort((a, b) => {
+          if (a.isCompleted === b.isCompleted) return 0;
+          return a.isCompleted ? 1 : -1;
+        }),
+      }))
+      .sort((a, b) => b.month - a.month);
+  }, [tasks]);
+
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setCategory('Administrasi');
+    setMonthsBefore('3');
+    setShowForm(false);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!title.trim()) {
+      addToast('Judul tugas wajib diisi', 'error');
+      return;
+    }
+
+    addTask({
+      title: title.trim(),
+      description: description.trim() || undefined,
+      category,
+      monthsBefore: parseInt(monthsBefore),
+      isDefault: false,
+    });
+
+    addToast('Tugas berhasil ditambahkan', 'success');
+    resetForm();
+  };
+
+  const handleToggle = (id: string) => {
+    toggleTask(id);
+  };
+
+  const handleDelete = (id: string, taskTitle: string) => {
+    if (window.confirm(`Hapus tugas "${taskTitle}"?`)) {
+      deleteTask(id);
+      addToast('Tugas berhasil dihapus', 'success');
+    }
+  };
+
+  const getMonthLabel = (months: number) => {
+    if (months === 0) return 'Hari H (1 Minggu Sebelum)';
+    if (months === 1) return '1 Bulan Sebelum';
+    return `${months} Bulan Sebelum`;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h2 className="font-heading text-2xl sm:text-3xl font-bold text-gray-800">Timeline & Checklist</h2>
+        <p className="text-sm text-gray-500 mt-1">Kelola tugas-tugas pernikahan Anda</p>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={20} className="text-[#87A878]" />
+            <span className="font-semibold text-gray-800">Progress</span>
+          </div>
+          <span className="text-sm text-gray-600">
+            {completedTasks} dari {totalTasks} tugas selesai
+          </span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+        <p className="text-right text-sm font-semibold text-[#87A878] mt-2">
+          {progressPercentage.toFixed(0)}%
+        </p>
+      </div>
+
+      {/* Current Month Indicator */}
+      {currentMonth !== null && (
+        <div className="bg-gradient-to-r from-[#B76E79]/10 to-[#87A878]/10 rounded-xl p-4 border border-[#B76E79]/20">
+          <div className="flex items-center gap-2">
+            <Clock size={18} className="text-[#B76E79]" />
+            <span className="text-sm font-medium text-gray-700">
+              Saat ini: <strong>{getMonthLabel(currentMonth)}</strong>
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Timeline Groups */}
+      {groupedTasks.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Calendar size={28} className="text-gray-400" />
+          </div>
+          <p className="text-gray-500 font-medium">Belum ada tugas</p>
+          <p className="text-sm text-gray-400 mt-1">Mulai tambahkan tugas untuk pernikahan Anda</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {groupedTasks.map(({ month, tasks: monthTasks }) => {
+            const isCurrentMonth = currentMonth !== null && month === currentMonth;
+            const completedInMonth = monthTasks.filter(t => t.isCompleted).length;
+            
+            return (
+              <div key={month} className="bg-white rounded-xl border border-[#E8E0D4] overflow-hidden">
+                {/* Month Header */}
+                <div className={`px-5 py-3 border-b border-[#E8E0D4] ${isCurrentMonth ? 'bg-gradient-to-r from-[#B76E79]/10 to-[#87A878]/10' : 'bg-[#F5F0E8]/50'}`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={18} className={isCurrentMonth ? 'text-[#B76E79]' : 'text-gray-500'} />
+                      <h3 className={`font-semibold ${isCurrentMonth ? 'text-[#B76E79]' : 'text-gray-700'}`}>
+                        {getMonthLabel(month)}
+                      </h3>
+                      {isCurrentMonth && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#B76E79] text-white font-medium">
+                          SEDANG BERJALAN
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {completedInMonth}/{monthTasks.length} selesai
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tasks List */}
+                <div className="divide-y divide-[#F5F0E8]">
+                  {monthTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      className={`px-5 py-4 flex items-start gap-3 hover:bg-[#FDFBF7] transition-colors ${
+                        task.isCompleted ? 'opacity-60' : ''
+                      }`}
+                    >
+                      {/* Custom Checkbox */}
+                      <button
+                        onClick={() => handleToggle(task.id)}
+                        className="flex-shrink-0 mt-0.5"
+                      >
+                        {task.isCompleted ? (
+                          <CheckCircle2 size={22} className="text-[#87A878] transition-all" />
+                        ) : (
+                          <Circle size={22} className="text-gray-300 hover:text-[#87A878] transition-all" />
+                        )}
+                      </button>
+
+                      {/* Task Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <p className={`font-medium ${task.isCompleted ? 'line-through text-gray-500' : 'text-gray-800'} transition-all`}>
+                              {task.title}
+                            </p>
+                            {task.description && (
+                              <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                            )}
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${categoryBadge(task.category)}`}>
+                                {task.category}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Delete Button (only for custom tasks) */}
+                          {!task.isDefault && (
+                            <button
+                              onClick={() => handleDelete(task.id, task.title)}
+                              className="flex-shrink-0 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Hapus tugas"
+                            >
+                              <Trash2 size={16} className="text-red-600" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Add Task Button */}
+      {!showForm && (
+        <button
+          onClick={() => setShowForm(true)}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+        >
+          <Plus size={16} />
+          Tambah Tugas Custom
+        </button>
+      )}
+
+      {/* Inline Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-heading text-lg font-semibold text-gray-800">
+              ✨ Tambah Tugas Baru
+            </h3>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Judul Tugas <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Contoh: Booking fotografer"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Kategori</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as TaskCategory)}
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              >
+                {TASK_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Bulan Sebelum Pernikahan</label>
+              <select
+                value={monthsBefore}
+                onChange={(e) => setMonthsBefore(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              >
+                <option value="12">12 Bulan</option>
+                <option value="9">9 Bulan</option>
+                <option value="6">6 Bulan</option>
+                <option value="3">3 Bulan</option>
+                <option value="1">1 Bulan</option>
+                <option value="0">Hari H (0 Bulan)</option>
+              </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi (opsional)</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Deskripsi tugas..."
+                rows={2}
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            >
+              Tambah Tugas
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}

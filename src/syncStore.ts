@@ -132,6 +132,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           savings: data.savings || [],
           guests: data.guests || [],
           vendors: data.vendors || [],
+          tasks: data.tasks || [],
         });
 
         set({ 
