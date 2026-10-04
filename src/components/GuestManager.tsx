@@ -561,129 +561,131 @@ export default function GuestManager() {
         onClose={resetForm}
         title={editingId ? 'Edit Tamu' : 'Tambah Tamu Baru'}
       >
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Nama */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nama Tamu <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Masukkan nama lengkap..."
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-              required
-            />
-          </div>
-
-          {/* Kategori */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-            <div className="grid grid-cols-2 gap-2">
-              {GUEST_CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategory(cat)}
-                  className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
-                    category === cat
-                      ? categoryBadge(cat) + ' border-current'
-                      : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <div className="space-y-5 flex-1">
+            {/* Nama */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nama Tamu <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Masukkan nama lengkap..."
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                required
+              />
             </div>
-          </div>
 
-          {/* Pax */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah Pax</label>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setPax((prev) => String(Math.max(1, parseInt(prev) - 1)))}
-                className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
-              >
-                −
-              </button>
+            {/* Kategori */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+              <div className="grid grid-cols-2 gap-2">
+                {GUEST_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategory(cat)}
+                    className={`px-3 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
+                      category === cat
+                        ? categoryBadge(cat) + ' border-current'
+                        : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Pax */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah Pax</label>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPax((prev) => String(Math.max(1, parseInt(prev) - 1)))}
+                  className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  value={pax}
+                  onChange={(e) => setPax(e.target.value)}
+                  min="1"
+                  max="10"
+                  className="w-20 text-center px-3 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPax((prev) => String(Math.min(10, parseInt(prev) + 1)))}
+                  className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+                >
+                  +
+                </button>
+                <span className="text-xs text-gray-400 ml-2">orang</span>
+              </div>
+            </div>
+
+            {/* Estimasi Amplop */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Amplop</label>
               <input
                 type="number"
-                value={pax}
-                onChange={(e) => setPax(e.target.value)}
-                min="1"
-                max="10"
-                className="w-20 text-center px-3 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
+                value={estimatedGift}
+                onChange={(e) => setEstimatedGift(e.target.value)}
+                placeholder="0"
+                min="0"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
-              <button
-                type="button"
-                onClick={() => setPax((prev) => String(Math.min(10, parseInt(prev) + 1)))}
-                className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
-              >
-                +
-              </button>
-              <span className="text-xs text-gray-400 ml-2">orang</span>
+              {estimatedGift && parseInt(estimatedGift) > 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatCurrency(parseInt(estimatedGift), settings.currency)}
+                </p>
+              )}
+            </div>
+
+            {/* RSVP Status */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Status RSVP</label>
+              <div className="flex gap-2 flex-wrap">
+                {RSVP_OPTIONS.map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setRsvpStatus(opt)}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
+                      rsvpStatus === opt
+                        ? rsvpBadge(opt) + ' border-current'
+                        : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
+                    }`}
+                  >
+                    {opt === 'Hadir' && '✅ '}
+                    {opt === 'Tidak Hadir' && '❌ '}
+                    {opt === 'Belum Respon' && '⏳ '}
+                    {opt}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Estimasi Amplop */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Amplop</label>
-            <input
-              type="number"
-              value={estimatedGift}
-              onChange={(e) => setEstimatedGift(e.target.value)}
-              placeholder="0"
-              min="0"
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
-            />
-            {estimatedGift && parseInt(estimatedGift) > 0 && (
-              <p className="text-xs text-gray-500 mt-1">
-                {formatCurrency(parseInt(estimatedGift), settings.currency)}
-              </p>
-            )}
-          </div>
-
-          {/* RSVP Status */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status RSVP</label>
-            <div className="flex gap-2 flex-wrap">
-              {RSVP_OPTIONS.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => setRsvpStatus(opt)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
-                    rsvpStatus === opt
-                      ? rsvpBadge(opt) + ' border-current'
-                      : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
-                  }`}
-                >
-                  {opt === 'Hadir' && '✅ '}
-                  {opt === 'Tidak Hadir' && '❌ '}
-                  {opt === 'Belum Respon' && '⏳ '}
-                  {opt}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-3 pt-2">
+          {/* Footer dengan tombol sticky */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 -mx-6 px-6 py-4 mt-5 rounded-b-2xl flex gap-3">
+            <button
+              type="button"
+              onClick={resetForm}
+              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+            >
+              Batal
+            </button>
             <button
               type="submit"
               className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
             >
-              {editingId ? 'Update Tamu' : 'Simpan Tamu'}
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
-            >
-              Batal
+              {editingId ? 'Update' : 'Simpan'}
             </button>
           </div>
         </form>
