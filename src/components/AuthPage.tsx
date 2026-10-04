@@ -12,6 +12,10 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Debug: Log Supabase configuration
+  console.log('🔍 AuthPage - Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+  console.log('🔍 AuthPage - Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20) + '...');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -31,23 +35,34 @@ export default function AuthPage() {
       return;
     }
 
-    if (isLogin) {
-      // Login
-      const { error } = await signIn(email, password);
-      if (error) {
-        addToast(error, 'error');
+    try {
+      if (isLogin) {
+        // Login
+        console.log('🔐 Attempting login for:', email);
+        const { error } = await signIn(email, password);
+        if (error) {
+          console.error('❌ Login error:', error);
+          addToast(`Login gagal: ${error}`, 'error');
+        } else {
+          console.log('✅ Login successful');
+          addToast('Login berhasil!', 'success');
+        }
       } else {
-        addToast('Login berhasil!', 'success');
+        // Register
+        console.log('📝 Attempting signup for:', email);
+        const { error } = await signUp(email, password);
+        if (error) {
+          console.error('❌ Signup error:', error);
+          addToast(`Registrasi gagal: ${error}`, 'error');
+        } else {
+          console.log('✅ Signup successful');
+          addToast('Registrasi berhasil! Silakan cek email untuk verifikasi.', 'success');
+          setIsLogin(true);
+        }
       }
-    } else {
-      // Register
-      const { error } = await signUp(email, password);
-      if (error) {
-        addToast(error, 'error');
-      } else {
-        addToast('Registrasi berhasil! Silakan cek email untuk verifikasi.', 'success');
-        setIsLogin(true);
-      }
+    } catch (err: any) {
+      console.error('💥 Unexpected error:', err);
+      addToast(`Terjadi kesalahan: ${err.message || 'Unknown error'}`, 'error');
     }
   };
 

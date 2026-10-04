@@ -4,11 +4,16 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Throw error jika credentials tidak ada agar user tahu ada masalah konfigurasi
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase credentials not found. Cloud sync will be disabled.');
+  throw new Error(
+    'Missing Supabase credentials. Please check your .env.local file.\n' +
+    'Required: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY'
+  );
 }
 
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
-);
+console.log('🔧 Supabase Configuration:');
+console.log('  URL:', supabaseUrl);
+console.log('  Key:', supabaseAnonKey.substring(0, 20) + '...');
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
