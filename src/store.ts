@@ -23,6 +23,7 @@ export type {
   ContractStatus,
   Task,
   TaskCategory,
+  TaskAssignee,
   AppState 
 } from './types';
 

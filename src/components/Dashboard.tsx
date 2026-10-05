@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useWeddingStore } from '../store';
 import {
   calculateTotalBudget,
@@ -14,13 +15,13 @@ import {
 } from '../helpers';
 import { generateFullReport } from '../helpers/pdfGenerator';
 import { useToastStore } from '../toastStore';
-import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText } from 'lucide-react';
+import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText, User, CheckCircle2 } from 'lucide-react';
 import BudgetPieChart from './BudgetPieChart';
 import SavingsLineChart from './SavingsLineChart';
 import DeadlineCalendar from './DeadlineCalendar';
 
 export default function Dashboard() {
-  const { settings, budgetItems, savings, guests } = useWeddingStore();
+  const { settings, budgetItems, savings, guests, tasks } = useWeddingStore();
   const { addToast } = useToastStore();
 
   // Semua perhitungan menggunakan helper functions
@@ -32,6 +33,24 @@ export default function Dashboard() {
   const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
   const progress = calculateProgressPercentage(totalSavings, totalBudget);
   const totalGuests = guests.reduce((sum, g) => sum + g.pax, 0);
+
+  // Task assignment statistics
+  const taskStats = useMemo(() => {
+    const stats = {
+      Pria: { total: 0, completed: 0 },
+      Wanita: { total: 0, completed: 0 },
+      Bersama: { total: 0, completed: 0 },
+    };
+
+    tasks.forEach(task => {
+      stats[task.assignee].total++;
+      if (task.isCompleted) {
+        stats[task.assignee].completed++;
+      }
+    });
+
+    return stats;
+  }, [tasks]);
 
   const formattedDate = settings.weddingDate
     ? new Date(settings.weddingDate).toLocaleDateString('id-ID', {
@@ -278,6 +297,67 @@ export default function Dashboard() {
                       className="h-full rounded-full bg-gradient-to-r from-[#B76E79] to-[#D4959E] transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Task Assignment Summary */}
+      {tasks.length > 0 && (
+        <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+          <div className="flex items-center gap-2 mb-4">
+            <CheckCircle2 size={20} className="text-[#87A878]" />
+            <h3 className="font-heading text-lg font-semibold text-gray-800">Pembagian Tugas</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {(['Pria', 'Wanita', 'Bersama'] as const).map((assigneeType) => {
+              const stats = taskStats[assigneeType];
+              const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
+              
+              return (
+                <div key={assigneeType} className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 border border-gray-100">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      assigneeType === 'Pria' ? 'bg-blue-100' :
+                      assigneeType === 'Wanita' ? 'bg-pink-100' : 'bg-purple-100'
+                    }`}>
+                      {assigneeType === 'Bersama' ? (
+                        <Users size={16} className="text-purple-600" />
+                      ) : (
+                        <User size={16} className={
+                          assigneeType === 'Pria' ? 'text-blue-600' : 'text-pink-600'
+                        } />
+                      )}
+                    </div>
+                    <span className={`text-sm font-semibold ${
+                      assigneeType === 'Pria' ? 'text-blue-700' :
+                      assigneeType === 'Wanita' ? 'text-pink-700' : 'text-purple-700'
+                    }`}>
+                      {assigneeType}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-2xl font-bold text-gray-800">
+                        {stats.completed}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        / {stats.total} tugas
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 ${
+                          assigneeType === 'Pria' ? 'bg-blue-500' :
+                          assigneeType === 'Wanita' ? 'bg-pink-500' : 'bg-purple-500'
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">{percentage.toFixed(0)}% selesai</p>
                   </div>
                 </div>
               );

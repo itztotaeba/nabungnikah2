@@ -14,6 +14,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Administrasi',
     monthsBefore: 12,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Buat anggaran awal',
@@ -21,6 +22,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Administrasi',
     monthsBefore: 12,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Booking venue/gedung',
@@ -28,6 +30,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Vendor',
     monthsBefore: 12,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Tentukan konsep pernikahan',
@@ -35,6 +38,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Dekorasi',
     monthsBefore: 12,
     isDefault: true,
+    assignee: 'Bersama',
   },
 
   // ============================================
@@ -46,6 +50,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Vendor',
     monthsBefore: 9,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Booking MUA (Makeup Artist)',
@@ -53,6 +58,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Pakaian',
     monthsBefore: 9,
     isDefault: true,
+    assignee: 'Wanita',
   },
   {
     title: 'Booking fotografer & videografer',
@@ -60,6 +66,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Vendor',
     monthsBefore: 9,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Buat daftar tamu awal',
@@ -67,24 +74,35 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Administrasi',
     monthsBefore: 9,
     isDefault: true,
+    assignee: 'Bersama',
   },
 
   // ============================================
   // 6 BULAN SEBELUM
   // ============================================
   {
-    title: 'Pilih gaun/jas pengantin',
-    description: 'Coba berbagai model dan pilih yang terbaik',
+    title: 'Pilih gaun pengantin',
+    description: 'Coba berbagai model gaun dan pilih yang terbaik',
     category: 'Pakaian',
     monthsBefore: 6,
     isDefault: true,
+    assignee: 'Wanita',
   },
   {
-    title: 'Pilih gaun bridesmaid & jas groomsmen',
-    description: 'Koordinasi dengan teman/keluarga dekat',
+    title: 'Pilih jas pengantin',
+    description: 'Pilih dan pesan jas pengantin pria',
     category: 'Pakaian',
     monthsBefore: 6,
     isDefault: true,
+    assignee: 'Pria',
+  },
+  {
+    title: 'Pilih gaun bridesmaid',
+    description: 'Koordinasi dengan bridesmaid untuk gaun',
+    category: 'Pakaian',
+    monthsBefore: 6,
+    isDefault: true,
+    assignee: 'Wanita',
   },
   {
     title: 'Booking dekorasi & bunga',
@@ -92,6 +110,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Dekorasi',
     monthsBefore: 6,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Booking entertainment',
@@ -99,6 +118,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Vendor',
     monthsBefore: 6,
     isDefault: true,
+    assignee: 'Bersama',
   },
 
   // ============================================
@@ -110,6 +130,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Undangan',
     monthsBefore: 3,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Pilih cincin pernikahan',
@@ -117,6 +138,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Administrasi',
     monthsBefore: 3,
     isDefault: true,
+    assignee: 'Pria',
   },
   {
     title: 'Booking katering',
@@ -124,6 +146,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Vendor',
     monthsBefore: 3,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Pilih souvenir',
@@ -131,6 +154,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Lainnya',
     monthsBefore: 3,
     isDefault: true,
+    assignee: 'Wanita',
   },
 
   // ============================================
@@ -142,6 +166,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Undangan',
     monthsBefore: 1,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Final fitting pakaian',
@@ -149,6 +174,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Pakaian',
     monthsBefore: 1,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Meeting teknis dengan vendor',
@@ -156,6 +182,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Vendor',
     monthsBefore: 1,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Siapkan dokumen administrasi',
@@ -163,6 +190,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Administrasi',
     monthsBefore: 1,
     isDefault: true,
+    assignee: 'Pria',
   },
 
   // ============================================
@@ -174,6 +202,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Undangan',
     monthsBefore: 0,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Siapkan amplop & angpao',
@@ -181,6 +210,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Administrasi',
     monthsBefore: 0,
     isDefault: true,
+    assignee: 'Wanita',
   },
   {
     title: 'Gladi bersih',
@@ -188,6 +218,7 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Lainnya',
     monthsBefore: 0,
     isDefault: true,
+    assignee: 'Bersama',
   },
   {
     title: 'Istirahat cukup',
@@ -195,5 +226,6 @@ export const defaultTasks: Omit<Task, 'id' | 'isCompleted' | 'completedAt'>[] = 
     category: 'Lainnya',
     monthsBefore: 0,
     isDefault: true,
+    assignee: 'Bersama',
   },
 ];

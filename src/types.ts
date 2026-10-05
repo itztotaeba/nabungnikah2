@@ -67,6 +67,7 @@ export interface Vendor {
 // TASK TYPES
 // ============================================
 export type TaskCategory = 'Administrasi' | 'Vendor' | 'Pakaian' | 'Dekorasi' | 'Undangan' | 'Lainnya';
+export type TaskAssignee = 'Pria' | 'Wanita' | 'Bersama';
 
 export interface Task {
   id: string;
@@ -77,6 +78,7 @@ export interface Task {
   isCompleted: boolean;
   completedAt?: string; // ISO Date
   isDefault: boolean; // True untuk template bawaan, False untuk custom user
+  assignee: TaskAssignee; // Pembagian tugas: Pria, Wanita, atau Bersama
 }
 
 export interface AppState {
