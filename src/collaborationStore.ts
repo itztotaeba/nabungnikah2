@@ -24,6 +24,7 @@ interface CollaborationState {
   
   // Actions
   initializeWedding: () => Promise<void>;
+  initializeWeddingSession: () => Promise<void>;
   inviteMember: (email: string) => Promise<{ success: boolean; error?: string }>;
   removeMember: (userId: string) => Promise<{ success: boolean; error?: string }>;
   fetchMembers: () => Promise<void>;
@@ -123,6 +124,76 @@ export const useCollaborationStore = create<CollaborationState>()(
             'Gagal menginisialisasi wedding: ' + (error.message || 'Unknown error'),
             'error'
           );
+        }
+      },
+
+      initializeWeddingSession: async () => {
+        if (!supabase) {
+          throw new Error('Supabase not configured');
+        }
+
+        try {
+          const { data: userData, error: userError } = await supabase.auth.getUser();
+          
+          if (userError || !userData.user) {
+            throw new Error('No user found');
+          }
+
+          // 1. Cari wedding_id dari tabel wedding_members
+          const { data: memberData, error: memberError } = await supabase
+            .from('wedding_members')
+            .select('wedding_id, role')
+            .eq('user_id', userData.user.id)
+            .single();
+
+          if (memberError && memberError.code !== 'PGRST116') {
+            throw memberError;
+          }
+
+          let weddingId = memberData?.wedding_id;
+          let role = memberData?.role || 'owner';
+
+          // 2. Jika user baru dan belum punya wedding, buat wedding baru
+          if (!weddingId) {
+            const { data: newWedding, error: createError } = await supabase
+              .from('wedding_data')
+              .insert([{ 
+                settings: {}, 
+                budget_items: [], 
+                savings: [], 
+                guests: [], 
+                vendors: [], 
+                tasks: [] 
+              }])
+              .select()
+              .single();
+            
+            if (createError) throw createError;
+            weddingId = newWedding.id;
+
+            // Daftarkan user sebagai owner di wedding_members
+            const { error: memberInsertError } = await supabase
+              .from('wedding_members')
+              .insert({
+                wedding_id: weddingId,
+                user_id: userData.user.id,
+                role: 'owner'
+              });
+
+            if (memberInsertError) throw memberInsertError;
+          }
+
+          // 3. Simpan ke store
+          set({ 
+            currentWeddingId: weddingId, 
+            userRole: role as 'owner' | 'member'
+          });
+
+          console.log('✅ Wedding session initialized:', { weddingId, role });
+          
+        } catch (error: any) {
+          console.error('Init session error:', error);
+          throw error;
         }
       },
 

@@ -51,12 +51,15 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
           setIsSyncing(true);
 
           try {
-            // PENTING: await syncFromCloud dan tunggu sampai data masuk ke store
-            // syncFromCloud tidak boleh showToast sendiri, biarkan provider yang handle
+            // LANGKAH 1: Inisialisasi wedding session dulu (dapatkan currentWeddingId)
+            const initializeWeddingSession = useCollaborationStore.getState().initializeWeddingSession;
+            await initializeWeddingSession();
+
+            // LANGKAH 2: Baru tarik data dari cloud
             const success = await syncFromCloud(false); // showToast = false
 
             if (success) {
-              // BARU tampilkan toast SETELAH data berhasil dimuat
+              // LANGKAH 3: BARU tampilkan toast SETELAH data berhasil dimuat
               addToast('Data berhasil disinkronkan dari cloud', 'success');
             } else {
               // Jika sync gagal, tampilkan toast warning
@@ -64,7 +67,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
             }
           } catch (error) {
             console.error('Error syncing from cloud after login:', error);
-            addToast('Terjadi kesalahan saat memuat data dari cloud', 'error');
+            addToast('Gagal memuat data. Silakan coba sync manual.', 'error');
           } finally {
             // Set loading state ke false SETELAH semua proses selesai
             setIsSyncing(false);

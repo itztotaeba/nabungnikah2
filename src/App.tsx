@@ -38,20 +38,13 @@ export default function App() {
   
   // Initialize auth store saat app load
   const initialize = useAuthStore((state) => state.initialize);
-  const user = useAuthStore((state) => state.user);
-  const initializeWedding = useCollaborationStore((state) => state.initializeWedding);
-  const currentWeddingId = useCollaborationStore((state) => state.currentWeddingId);
   
   useEffect(() => {
     initialize();
   }, [initialize]);
 
-  // Initialize wedding setelah user login
-  useEffect(() => {
-    if (user && !currentWeddingId) {
-      initializeWedding();
-    }
-  }, [user, currentWeddingId, initializeWedding]);
+  // Note: initializeWeddingSession sekarang di-handle oleh SupabaseSyncProvider
+  // saat event SIGNED_IN terjadi, jadi tidak perlu dipanggil terpisah di sini
 
   const renderContent = () => {
     switch (activeTab) {
