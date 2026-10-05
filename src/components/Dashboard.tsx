@@ -20,6 +20,7 @@ import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText, FileSprea
 import BudgetPieChart from './BudgetPieChart';
 import SavingsLineChart from './SavingsLineChart';
 import DeadlineCalendar from './DeadlineCalendar';
+import EmergencyBufferAlert from './EmergencyBufferAlert';
 
 export default function Dashboard() {
   const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
@@ -342,6 +343,9 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Emergency Buffer Alert */}
+      <EmergencyBufferAlert />
 
       {/* Task Assignment Summary */}
       {safeTasks.length > 0 && (
