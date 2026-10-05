@@ -1,3 +1,5 @@
+'use client';
+
 import { useWeddingStore } from '../store';
 import {
   calculateTotalBudget,
@@ -13,6 +15,9 @@ import {
 import { generateFullReport } from '../helpers/pdfGenerator';
 import { useToastStore } from '../toastStore';
 import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText } from 'lucide-react';
+import BudgetPieChart from './BudgetPieChart';
+import SavingsLineChart from './SavingsLineChart';
+import DeadlineCalendar from './DeadlineCalendar';
 
 export default function Dashboard() {
   const { settings, budgetItems, savings, guests } = useWeddingStore();
@@ -268,6 +273,25 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Visualisasi Data Section */}
+      <div className="space-y-6">
+        <h2 className="font-heading text-xl font-bold text-gray-800">Visualisasi Data</h2>
+        
+        {/* Desktop: 2 kolom, Mobile: 1 kolom */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Kolom Kiri: Pie Chart & Area Chart */}
+          <div className="space-y-6">
+            <BudgetPieChart />
+            <SavingsLineChart />
+          </div>
+
+          {/* Kolom Kanan: Deadline Calendar */}
+          <div className="lg:row-span-2">
+            <DeadlineCalendar />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
