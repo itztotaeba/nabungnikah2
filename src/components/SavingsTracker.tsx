@@ -9,6 +9,7 @@ import {
   calculateMonthlyTarget,
   calculateProgressPercentage,
 } from '../helpers';
+import { formatAuditInfo } from '../helpers/timeAgo';
 import { useToastStore } from '../toastStore';
 import { Plus, Trash2, PiggyBank, Target, TrendingUp, Calendar, X } from 'lucide-react';
 
@@ -247,6 +248,12 @@ export default function SavingsTracker() {
                   >
                     <Trash2 size={16} className="text-red-600" />
                   </button>
+                </div>
+                {/* Audit Info */}
+                <div className="pt-2 border-t border-gray-100">
+                  <p className="text-xs text-gray-500 text-right">
+                    {formatAuditInfo(entry.updatedBy, entry.updatedAt)}
+                  </p>
                 </div>
               </div>
             ))}

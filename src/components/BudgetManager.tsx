@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWeddingStore } from '../store';
 import { formatCurrency, calculateTotalBudget, calculateTotalActual, calculateItemStatus } from '../helpers';
+import { formatAuditInfo } from '../helpers/timeAgo';
 import { generateBudgetPDF } from '../helpers/pdfGenerator';
 import { useToastStore } from '../toastStore';
 import { Plus, Pencil, Trash2, Receipt, TrendingUp, Minus, X, FileText } from 'lucide-react';
@@ -332,6 +333,7 @@ export default function BudgetManager() {
                   <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Selisih</th>
                   <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                   <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Terakhir Diubah</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#F5F0E8]">
@@ -369,6 +371,9 @@ export default function BudgetManager() {
                             <Trash2 size={16} className="text-red-600" />
                           </button>
                         </div>
+                      </td>
+                      <td className="px-5 py-4 text-xs text-gray-500 hidden lg:table-cell">
+                        {formatAuditInfo(item.updatedBy, item.updatedAt)}
                       </td>
                     </tr>
                   );
@@ -436,6 +441,12 @@ export default function BudgetManager() {
                         {formatCurrency(Math.abs(difference), settings.currency)}
                       </p>
                     </div>
+                  </div>
+                  {/* Audit Info */}
+                  <div className="pt-2 border-t border-gray-100">
+                    <p className="text-xs text-gray-500 text-right">
+                      {formatAuditInfo(item.updatedBy, item.updatedAt)}
+                    </p>
                   </div>
                 </div>
               );
