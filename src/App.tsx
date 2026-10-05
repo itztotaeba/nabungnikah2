@@ -10,7 +10,7 @@ import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
 import LiveSyncIndicator from './components/LiveSyncIndicator';
 import LoadingOverlay from './components/LoadingOverlay';
-import { useAuthSync } from './hooks/useAuthSync';
+import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
 
@@ -35,9 +35,6 @@ const NAV_ITEMS: NavItem[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  // Setup auth sync listener di root component
-  useAuthSync();
   
   // Initialize auth store saat app load
   const initialize = useAuthStore((state) => state.initialize);
@@ -70,6 +67,7 @@ export default function App() {
   };
 
   return (
+    <SupabaseSyncProvider>
     <div className="min-h-screen bg-[#FDFBF7] flex">
       {/* ============================================
           DESKTOP SIDEBAR
@@ -259,5 +257,6 @@ export default function App() {
       {/* Toast Notifications */}
       <ToastContainer />
     </div>
+    </SupabaseSyncProvider>
   );
 }

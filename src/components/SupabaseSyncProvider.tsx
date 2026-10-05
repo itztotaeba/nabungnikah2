@@ -8,10 +8,16 @@ import { supabase } from '../lib/supabase';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 /**
- * Custom hook untuk sinkronisasi state autentikasi Supabase dengan Zustand Store
- * Harus dipanggil di root component (App.tsx) untuk memastikan listener aktif
+ * SupabaseSyncProvider - Komponen Provider untuk menangani Auth State Change
+ * 
+ * Komponen ini mendengarkan perubahan auth state dari Supabase dan menangani:
+ * - SIGNED_IN: Auto-sync data dari cloud dengan loading state
+ * - SIGNED_OUT: Reset semua data store
+ * 
+ * PENTING: Toast notification dipanggil SETELAH data berhasil dimuat,
+ * bukan di dalam store, untuk menghindari race condition.
  */
-export function useAuthSync() {
+export default function SupabaseSyncProvider({ children }: { children: React.ReactNode }) {
   const { setUser, setSession } = useAuthStore();
   const { syncFromCloud, setIsSyncing } = useSyncStore();
   const { addToast } = useToastStore();
@@ -25,7 +31,7 @@ export function useAuthSync() {
       return;
     }
 
-    console.log('🔗 Setting up auth state listener...');
+    console.log('🔗 Setting up auth state listener in SupabaseSyncProvider...');
 
     // Setup listener untuk mendeteksi perubahan auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -38,16 +44,29 @@ export function useAuthSync() {
           setUser(session.user);
           setSession(session);
 
-          // Tampilkan toast notification
+          // Tampilkan toast notification awal
           addToast('Berhasil login! Memuat data dari cloud...', 'success');
 
-          // Auto-sync data dari cloud dengan loading state
+          // Set loading state
           setIsSyncing(true);
+
           try {
-            await syncFromCloud(true); // showToast = true
+            // PENTING: await syncFromCloud dan tunggu sampai data masuk ke store
+            // syncFromCloud tidak boleh showToast sendiri, biarkan provider yang handle
+            const success = await syncFromCloud(false); // showToast = false
+
+            if (success) {
+              // BARU tampilkan toast SETELAH data berhasil dimuat
+              addToast('Data berhasil disinkronkan dari cloud', 'success');
+            } else {
+              // Jika sync gagal, tampilkan toast warning
+              addToast('Gagal memuat data dari cloud. Silakan coba sync manual.', 'warning');
+            }
           } catch (error) {
             console.error('Error syncing from cloud after login:', error);
+            addToast('Terjadi kesalahan saat memuat data dari cloud', 'error');
           } finally {
+            // Set loading state ke false SETELAH semua proses selesai
             setIsSyncing(false);
           }
         } else if (event === 'SIGNED_OUT') {
@@ -55,12 +74,13 @@ export function useAuthSync() {
           console.log('👋 User signed out');
           setUser(null);
           setSession(null);
-          
+
           // Reset semua data store
           resetWeddingStore();
           resetCollaborationStore();
-          
-          addToast('Logout berhasil', 'success');
+
+          // Tampilkan toast notification
+          addToast('Anda telah logout', 'success');
         } else if (event === 'TOKEN_REFRESHED') {
           // Token di-refresh, update session
           console.log('🔄 Token refreshed');
@@ -80,8 +100,10 @@ export function useAuthSync() {
 
     // Cleanup function untuk unsubscribe saat component unmount
     return () => {
-      console.log('🧹 Cleaning up auth listener...');
+      console.log('🧹 Cleaning up auth listener in SupabaseSyncProvider...');
       subscription.unsubscribe();
     };
-  }, [setUser, setSession, syncFromCloud, addToast, setIsSyncing, resetWeddingStore, resetCollaborationStore]);
+  }, [setUser, setSession, syncFromCloud, setIsSyncing, addToast, resetWeddingStore, resetCollaborationStore]);
+
+  return <>{children}</>;
 }
