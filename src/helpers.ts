@@ -205,3 +205,92 @@ export function getDefaultSettings(): WeddingSettings {
     currency: 'IDR',
   };
 }
+
+// ============================================
+// EMERGENCY BUFFER FUNCTIONS
+// ============================================
+
+/**
+ * Hitung dana darurat (emergency buffer)
+ * @param totalBudget - Total anggaran
+ * @param percentage - Persentase buffer (default 15%)
+ * @returns Object dengan informasi buffer
+ */
+export function calculateEmergencyBuffer(
+  totalBudget: number, 
+  percentage: number = 15
+): {
+  bufferAmount: number;
+  percentage: number;
+  totalWithBuffer: number;
+} {
+  // Validasi input
+  if (isNaN(totalBudget) || totalBudget < 0) {
+    return {
+      bufferAmount: 0,
+      percentage,
+      totalWithBuffer: 0
+    };
+  }
+
+  const bufferAmount = totalBudget * (percentage / 100);
+  
+  return {
+    bufferAmount,
+    percentage,
+    totalWithBuffer: totalBudget + bufferAmount
+  };
+}
+
+/**
+ * Cek status dana darurat
+ * @param totalBudget - Total anggaran
+ * @param totalActual - Total realisasi
+ * @param bufferPercentage - Persentase buffer (default 15%)
+ * @returns Object dengan status buffer
+ */
+export function checkEmergencyBufferStatus(
+  totalBudget: number, 
+  totalActual: number, 
+  bufferPercentage: number = 15
+): {
+  bufferAmount: number;
+  totalWithBuffer: number;
+  remainingSafe: number;
+  remainingBuffer: number;
+  isBufferTouched: boolean;
+  bufferUsagePercentage: number;
+} {
+  // Validasi input
+  if (isNaN(totalBudget) || isNaN(totalActual)) {
+    return {
+      bufferAmount: 0,
+      totalWithBuffer: 0,
+      remainingSafe: 0,
+      remainingBuffer: 0,
+      isBufferTouched: false,
+      bufferUsagePercentage: 0
+    };
+  }
+
+  const { bufferAmount, totalWithBuffer } = calculateEmergencyBuffer(totalBudget, bufferPercentage);
+  
+  const remainingSafe = totalBudget - totalActual; // Dana aman yang tersisa
+  const remainingBuffer = totalWithBuffer - totalActual; // Dana darurat yang tersisa
+  const isBufferTouched = totalActual > totalBudget; // Jika realisasi > anggaran, berarti dana darurat tersentuh
+  
+  // Hitung persentase penggunaan buffer
+  let bufferUsagePercentage = 0;
+  if (isBufferTouched && bufferAmount > 0) {
+    bufferUsagePercentage = ((totalActual - totalBudget) / bufferAmount) * 100;
+  }
+  
+  return {
+    bufferAmount,
+    totalWithBuffer,
+    remainingSafe: Math.max(0, remainingSafe),
+    remainingBuffer: Math.max(0, remainingBuffer),
+    isBufferTouched,
+    bufferUsagePercentage: Math.min(100, bufferUsagePercentage) // Cap di 100%
+  };
+}
