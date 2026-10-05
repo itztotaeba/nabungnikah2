@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useSyncStore } from '../syncStore';
 import { useToastStore } from '../toastStore';
+import { useAuthStore } from '../authStore';
+import { useWeddingStore } from '../store';
 
 /**
  * Hook untuk Supabase Realtime subscription
@@ -43,7 +45,38 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
             return;
           }
 
-          // Sync data dari cloud dengan error handling
+          // 1. Cek apakah update berasal dari user lain (bukan diri sendiri)
+          const currentUser = useAuthStore.getState().user;
+          const payloadNew = payload.new as any;
+          const isFromSelf = payloadNew?.user_id === currentUser?.id;
+
+          // 2. Cek apakah data benar-benar berbeda (mencegah infinite loop)
+          const currentData = useWeddingStore.getState();
+          const currentDataJson = JSON.stringify({
+            settings: currentData.settings,
+            budget_items: currentData.budgetItems,
+            savings: currentData.savings,
+            guests: currentData.guests,
+            vendors: currentData.vendors,
+            tasks: currentData.tasks,
+          });
+          const newDataJson = JSON.stringify({
+            settings: payloadNew?.settings,
+            budget_items: payloadNew?.budget_items,
+            savings: payloadNew?.savings,
+            guests: payloadNew?.guests,
+            vendors: payloadNew?.vendors,
+            tasks: payloadNew?.tasks,
+          });
+          const isDataSame = currentDataJson === newDataJson;
+
+          // 3. Jika dari diri sendiri ATAU data sama, JANGAN update state dan JANGAN tampilkan toast
+          if (isFromSelf || isDataSame) {
+            console.log('⏭️ Realtime update from self or same data, skipping...');
+            return;
+          }
+
+          // 4. Baru update state dan tampilkan toast (update dari user lain)
           try {
             const success = await syncFromCloud(false); // showToast = false
             
