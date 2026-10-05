@@ -103,7 +103,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
   },
 
-  syncFromCloud: async (showToast = true) => {
+  syncFromCloud: async (showToast = false) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
     
@@ -129,8 +129,9 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
 
     try {
-      set({ status: 'syncing', isSyncing: true });
+      set({ status: 'syncing' });
       
+      // Fetch data dari Supabase
       const { data, error } = await supabase
         .from('wedding_data')
         .select('*')
@@ -139,7 +140,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
       if (error) {
         if (error.code === 'PGRST116') {
-          // No data found in cloud
+          // No data found in cloud - ini normal untuk user baru
           set({ status: 'synced' });
           return false;
         }
@@ -147,6 +148,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       }
 
       if (data) {
+        // PENTING: Update state SETELAH data berhasil diambil
         const { importData } = useWeddingStore.getState();
         
         importData({
@@ -160,14 +162,13 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
         set({ 
           status: 'synced', 
-          lastSync: new Date(),
-          isSyncing: false
+          lastSync: new Date()
         });
         
-        // Tampilkan toast hanya jika showToast true
+        // Tampilkan toast hanya jika showToast true (untuk manual sync)
         if (showToast) {
           useToastStore.getState().addToast(
-            'Data berhasil disinkronkan dari cloud',
+            'Data berhasil dimuat dari cloud',
             'success'
           );
         }
@@ -175,11 +176,9 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         return true;
       }
       
-      set({ isSyncing: false });
       return false;
     } catch (error: any) {
       console.error('Error syncing from cloud:', error);
-      set({ isSyncing: false });
       
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
