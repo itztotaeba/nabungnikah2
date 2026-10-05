@@ -1,14 +1,16 @@
 import { useState, useRef } from 'react';
 import { useWeddingStore } from '../store';
+import { useAuthStore } from '../authStore';
 import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculateTotalBudget, calculateTotalSavings } from '../helpers';
 import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
-import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet } from 'lucide-react';
+import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet, Users } from 'lucide-react';
 import CloudSyncSection from './CloudSyncSection';
 import CollaborationSection from './CollaborationSection';
 
 export default function SettingsPage() {
   const { settings, updateSettings, resetData, importData, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
+  const { user } = useAuthStore();
   const { addToast } = useToastStore();
   
   const [showConfirm, setShowConfirm] = useState(false);
@@ -331,8 +333,31 @@ export default function SettingsPage() {
       {/* Cloud Sync Section */}
       <CloudSyncSection />
 
-      {/* Collaboration Section */}
-      <CollaborationSection />
+      {/* Collaboration Section - Only show if user is logged in */}
+      {user ? (
+        <CollaborationSection />
+      ) : (
+        <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+              <Users size={20} className="text-purple-500" />
+            </div>
+            <div>
+              <h3 className="font-heading text-lg font-semibold text-gray-800">Kolaborasi & Tim</h3>
+              <p className="text-xs text-gray-400">Undang pasangan untuk mengelola wedding bersama</p>
+            </div>
+          </div>
+          <div className="text-center py-6 bg-[#F5F0E8] rounded-xl">
+            <Users size={48} className="mx-auto text-gray-400 mb-3" />
+            <p className="text-sm text-gray-600 mb-2">
+              Fitur kolaborasi tersedia setelah login
+            </p>
+            <p className="text-xs text-gray-500">
+              Login untuk mengundang pasangan dan mengelola wedding bersama secara real-time
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Backup & Restore Section */}
       <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
