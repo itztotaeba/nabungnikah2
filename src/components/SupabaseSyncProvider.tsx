@@ -63,11 +63,11 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
               return;
             }
 
-            // Cek apakah wedding session berhasil diinisialisasi
+            // Cek apakah user sudah punya wedding
             const { currentWeddingId } = useCollaborationStore.getState();
             if (!currentWeddingId) {
-              console.warn('⚠️ Wedding session not initialized, skipping sync');
-              addToast('Gagal menginisialisasi wedding. Silakan coba lagi.', 'warning');
+              console.log('ℹ️ User belum punya wedding, skip sync');
+              addToast('Selamat datang! Buat wedding baru atau tunggu di-invite untuk mulai kolaborasi.', 'info');
               setIsSyncing(false);
               return;
             }

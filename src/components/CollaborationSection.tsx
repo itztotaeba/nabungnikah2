@@ -5,20 +5,13 @@ import { useToastStore } from '../toastStore';
 import { Users, Mail, Trash2, Crown, UserPlus, Loader2 } from 'lucide-react';
 
 export default function CollaborationSection() {
-  const { currentWeddingId, userRole, members, isLoading, initializeWedding, inviteMember, removeMember, fetchMembers } = useCollaborationStore();
+  const { currentWeddingId, userRole, members, isLoading, createWedding, inviteMember, removeMember, fetchMembers } = useCollaborationStore();
   const { user } = useAuthStore();
   const { addToast } = useToastStore();
   
   const [inviteEmail, setInviteEmail] = useState('');
   const [isInviting, setIsInviting] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
-
-  // Initialize wedding saat component mount
-  useEffect(() => {
-    if (user && !currentWeddingId && !isLoading) {
-      handleInitialize();
-    }
-  }, [user, currentWeddingId, isLoading]);
+  const [isCreating, setIsCreating] = useState(false);
 
   // Fetch members saat component mount atau saat currentWeddingId berubah
   useEffect(() => {
@@ -27,10 +20,16 @@ export default function CollaborationSection() {
     }
   }, [currentWeddingId, fetchMembers]);
 
-  const handleInitialize = async () => {
-    setIsInitializing(true);
-    await initializeWedding();
-    setIsInitializing(false);
+  const handleCreateWedding = async () => {
+    setIsCreating(true);
+    const result = await createWedding();
+    setIsCreating(false);
+    
+    if (result.success) {
+      addToast('Wedding berhasil dibuat! Anda sekarang owner.', 'success');
+    } else {
+      addToast(result.error || 'Gagal membuat wedding', 'error');
+    }
   };
 
   const handleInvite = async (e: React.FormEvent) => {
@@ -64,12 +63,12 @@ export default function CollaborationSection() {
   };
 
   // Loading state
-  if (isLoading || isInitializing) {
+  if (isLoading || isCreating) {
     return (
       <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
         <div className="flex items-center justify-center py-8">
           <Loader2 size={24} className="animate-spin text-[#87A878]" />
-          <span className="ml-3 text-gray-600">Menginisialisasi wedding...</span>
+          <span className="ml-3 text-gray-600">Membuat wedding...</span>
         </div>
       </div>
     );
@@ -90,12 +89,17 @@ export default function CollaborationSection() {
         </div>
 
         <div className="text-center py-6">
-          <p className="text-gray-600 mb-4">Belum ada wedding yang terhubung</p>
+          <div className="mb-6">
+            <Users size={48} className="mx-auto text-gray-300 mb-3" />
+            <p className="text-gray-600 mb-2">Anda belum memiliki wedding</p>
+            <p className="text-sm text-gray-500">Buat wedding baru untuk mulai mengundang pasangan, atau tunggu di-invite oleh pasangan Anda</p>
+          </div>
           <button
-            onClick={handleInitialize}
-            className="px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            onClick={handleCreateWedding}
+            disabled={isCreating}
+            className="px-5 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Buat Wedding Baru
+            {isCreating ? 'Membuat...' : 'Buat Wedding Baru'}
           </button>
         </div>
       </div>

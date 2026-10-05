@@ -25,6 +25,7 @@ interface CollaborationState {
   // Actions
   initializeWedding: () => Promise<void>;
   initializeWeddingSession: () => Promise<void>;
+  createWedding: () => Promise<{ success: boolean; error?: string }>;
   inviteMember: (email: string) => Promise<{ success: boolean; error?: string }>;
   removeMember: (userId: string) => Promise<{ success: boolean; error?: string }>;
   fetchMembers: () => Promise<void>;
@@ -152,7 +153,7 @@ export const useCollaborationStore = create<CollaborationState>()(
           }
 
           let weddingId: string | null = null;
-          let role: 'owner' | 'member' = 'owner';
+          let role: 'owner' | 'member' | null = null;
 
           if (existingMembership) {
             // ✅ User sudah di-invite ke wedding lain, gunakan wedding_id yang ada
@@ -160,28 +161,10 @@ export const useCollaborationStore = create<CollaborationState>()(
             role = existingMembership.role as 'owner' | 'member';
             console.log('✅ User already invited to wedding:', weddingId, 'with role:', role);
           } else {
-            // ❌ User belum punya wedding, buat baru menggunakan RPC
-            console.log('🆕 User belum punya wedding, memanggil RPC create_initial_wedding...');
-            
-            const { data: newWeddingId, error: rpcError } = await supabase
-              .rpc('create_initial_wedding');
-
-            if (rpcError) {
-              console.error('❌ RPC Error:', rpcError);
-              throw new Error('Gagal inisialisasi wedding: ' + (rpcError.message || 'Unknown error'));
-            }
-
-            if (!newWeddingId) {
-              throw new Error('RPC did not return wedding_id');
-            }
-
-            if (typeof newWeddingId !== 'string') {
-              throw new Error('Invalid wedding_id type');
-            }
-
-            weddingId = newWeddingId;
-            role = 'owner';
-            console.log('✅ New wedding created via RPC:', weddingId);
+            // ❌ User belum punya wedding, biarkan null (tidak otomatis buat)
+            console.log('ℹ️ User belum punya wedding, menunggu di-invite atau buat manual');
+            weddingId = null;
+            role = null;
           }
 
           // LANGKAH 2: Simpan ke store
@@ -205,6 +188,63 @@ export const useCollaborationStore = create<CollaborationState>()(
           
           // Throw error agar SupabaseSyncProvider bisa handle
           throw error;
+        }
+      },
+
+      createWedding: async () => {
+        const { user } = useAuthStore.getState();
+        
+        if (!user) {
+          return { success: false, error: 'User tidak terautentikasi' };
+        }
+
+        if (!supabase) {
+          return { success: false, error: 'Supabase tidak dikonfigurasi' };
+        }
+
+        try {
+          set({ isLoading: true });
+
+          console.log('🆕 Creating new wedding via RPC...');
+          
+          // Panggil RPC untuk buat wedding baru
+          const { data: newWeddingId, error: rpcError } = await supabase
+            .rpc('create_initial_wedding');
+
+          if (rpcError) {
+            console.error('❌ RPC Error:', rpcError);
+            set({ isLoading: false });
+            return { success: false, error: 'Gagal membuat wedding: ' + (rpcError.message || 'Unknown error') };
+          }
+
+          if (!newWeddingId) {
+            set({ isLoading: false });
+            return { success: false, error: 'RPC tidak mengembalikan wedding_id' };
+          }
+
+          if (typeof newWeddingId !== 'string') {
+            set({ isLoading: false });
+            return { success: false, error: 'Invalid wedding_id type' };
+          }
+
+          // Simpan ke store
+          set({ 
+            currentWeddingId: newWeddingId, 
+            userRole: 'owner',
+            isLoading: false
+          });
+
+          console.log('✅ New wedding created:', newWeddingId);
+          
+          // Fetch members
+          await get().fetchMembers();
+          
+          return { success: true };
+          
+        } catch (error: any) {
+          console.error('❌ Create wedding error:', error);
+          set({ isLoading: false });
+          return { success: false, error: error.message || 'Unknown error' };
         }
       },
 
