@@ -4,33 +4,44 @@ import { useAuthStore } from './authStore';
 import { useWeddingStore } from './store';
 import { useToastStore } from './toastStore';
 import { useCollaborationStore } from './collaborationStore';
-import { mergeWithConflictDetection } from './helpers/auditTrail';
 
 type SyncStatus = 'synced' | 'syncing' | 'offline' | 'error';
 
 interface SyncState {
   status: SyncStatus;
   lastSync: Date | null;
+  lastSyncTimestamp: string | null; // ISO timestamp untuk filter realtime
   isAutoSyncEnabled: boolean;
-  isSyncing: boolean; // Loading state saat auto-sync setelah login
+  isSyncing: boolean;
+  isRemoteUpdate: boolean; // Flag untuk mencegah sync loop
   
   // Actions
   syncToCloud: (showToast?: boolean) => Promise<boolean>;
-  syncFromCloud: (showToast?: boolean) => Promise<boolean>;
+  syncFromCloud: (showToast?: boolean, isRealtime?: boolean) => Promise<boolean>;
   setStatus: (status: SyncStatus) => void;
   setAutoSyncEnabled: (enabled: boolean) => void;
   setIsSyncing: (syncing: boolean) => void;
+  setLastSyncTimestamp: (timestamp: string | null) => void;
 }
 
 export const useSyncStore = create<SyncState>((set, get) => ({
   status: 'synced',
   lastSync: null,
+  lastSyncTimestamp: null,
   isAutoSyncEnabled: true,
   isSyncing: false,
+  isRemoteUpdate: false,
 
   syncToCloud: async (showToast = false) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
+    const { isRemoteUpdate } = get();
+    
+    // FIX: Skip sync jika ini adalah update dari remote (mencegah loop)
+    if (isRemoteUpdate) {
+      console.log('⏭️ Skipping syncToCloud (remote update in progress)');
+      return false;
+    }
     
     if (!user) {
       console.log('No user logged in, skipping sync');
@@ -58,6 +69,9 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       
       const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore.getState();
       
+      // Generate unique timestamp untuk update ini
+      const now = new Date().toISOString();
+      
       const data = {
         id: currentWeddingId,
         user_id: user.id,
@@ -67,7 +81,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         guests,
         vendors,
         tasks,
-        updated_at: new Date().toISOString(),
+        updated_at: now,
       };
 
       const { error } = await supabase
@@ -78,12 +92,13 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         throw error;
       }
 
+      // FIX: Simpan timestamp untuk filter realtime
       set({ 
         status: 'synced', 
-        lastSync: new Date() 
+        lastSync: new Date(),
+        lastSyncTimestamp: now
       });
       
-      // Tampilkan toast hanya jika showToast true (untuk manual sync)
       if (showToast) {
         useToastStore.getState().addToast(
           'Data berhasil disinkronkan ke cloud',
@@ -97,7 +112,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     } catch (error: any) {
       console.error('Error syncing to cloud:', error);
       
-      // Check if offline
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
         if (showToast) {
@@ -105,8 +119,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
             'Gagal sync ke cloud, data disimpan lokal',
             'warning'
           );
-        } else {
-          console.warn('⚠️ Auto-sync failed (offline), data saved locally');
         }
       } else {
         set({ status: 'error' });
@@ -115,8 +127,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
             'Gagal sync ke cloud: ' + (error.message || 'Unknown error'),
             'error'
           );
-        } else {
-          console.error('❌ Auto-sync failed:', error.message);
         }
       }
       
@@ -124,7 +134,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
   },
 
-  syncFromCloud: async (showToast = false) => {
+  syncFromCloud: async (showToast = false, isRealtime = false) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
     
@@ -134,7 +144,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
 
     if (!currentWeddingId) {
-      console.warn('Cannot sync: No currentWeddingId');
+      console.log('No wedding ID, skipping sync');
       return false;
     }
 
@@ -150,9 +160,8 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
 
     try {
-      set({ status: 'syncing' });
+      set({ status: 'syncing', isRemoteUpdate: true }); // Set flag untuk mencegah loop
       
-      // Fetch data dari Supabase menggunakan currentWeddingId yang sudah pasti ada
       const { data, error } = await supabase
         .from('wedding_data')
         .select('*')
@@ -161,135 +170,48 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
       if (error) {
         if (error.code === 'PGRST116') {
-          // No data found in cloud - ini normal untuk user baru
-          set({ status: 'synced' });
+          set({ status: 'synced', isRemoteUpdate: false });
           return false;
         }
         throw error;
       }
 
       if (data) {
-        // Validasi data structure sebelum update state
-        try {
-          // Validasi required fields
-          if (!data.settings || typeof data.settings !== 'object') {
-            console.warn('⚠️ Invalid settings data, using default');
-            data.settings = {};
-          }
+        // FIX: Langsung REPLACE data lokal, jangan merge
+        // Ini memastikan data yang dihapus di cloud juga terhapus di lokal
+        const { importData } = useWeddingStore.getState();
+        
+        importData({
+          settings: data.settings || {},
+          budgetItems: Array.isArray(data.budget_items) ? data.budget_items : [],
+          savings: Array.isArray(data.savings) ? data.savings : [],
+          guests: Array.isArray(data.guests) ? data.guests : [],
+          vendors: Array.isArray(data.vendors) ? data.vendors : [],
+          tasks: Array.isArray(data.tasks) ? data.tasks : [],
+        });
 
-          // Validasi arrays
-          const safeBudgetItems = Array.isArray(data.budget_items) ? data.budget_items : [];
-          const safeSavings = Array.isArray(data.savings) ? data.savings : [];
-          const safeGuests = Array.isArray(data.guests) ? data.guests : [];
-          const safeVendors = Array.isArray(data.vendors) ? data.vendors : [];
-          const safeTasks = Array.isArray(data.tasks) ? data.tasks : [];
-
-          // CONFLICT DETECTION: Merge data lokal dengan data cloud
-          const { 
-            budgetItems: localBudgetItems,
-            savings: localSavings,
-            guests: localGuests,
-            vendors: localVendors,
-            tasks: localTasks,
-          } = useWeddingStore.getState();
-
-          let hasConflict = false;
-
-          const mergedBudgetItems = mergeWithConflictDetection(
-            localBudgetItems,
-            safeBudgetItems,
-            (local, remote) => {
-              console.warn('⚠️ Conflict detected in budget item:', local.id);
-              hasConflict = true;
-            }
+        set({ 
+          status: 'synced', 
+          lastSync: new Date(),
+          lastSyncTimestamp: data.updated_at || new Date().toISOString(),
+          isRemoteUpdate: false // Reset flag
+        });
+        
+        if (showToast) {
+          useToastStore.getState().addToast(
+            'Data berhasil dimuat dari cloud',
+            'success'
           );
-
-          const mergedSavings = mergeWithConflictDetection(
-            localSavings,
-            safeSavings,
-            (local, remote) => {
-              console.warn('⚠️ Conflict detected in savings:', local.id);
-              hasConflict = true;
-            }
-          );
-
-          const mergedGuests = mergeWithConflictDetection(
-            localGuests,
-            safeGuests,
-            (local, remote) => {
-              console.warn('⚠️ Conflict detected in guest:', local.id);
-              hasConflict = true;
-            }
-          );
-
-          const mergedVendors = mergeWithConflictDetection(
-            localVendors,
-            safeVendors,
-            (local, remote) => {
-              console.warn('⚠️ Conflict detected in vendor:', local.id);
-              hasConflict = true;
-            }
-          );
-
-          const mergedTasks = mergeWithConflictDetection(
-            localTasks,
-            safeTasks,
-            (local, remote) => {
-              console.warn('⚠️ Conflict detected in task:', local.id);
-              hasConflict = true;
-            }
-          );
-
-          if (hasConflict) {
-            console.log('🔀 Conflicts detected and resolved (remote wins strategy)');
-          }
-
-          // PENTING: Update state SETELAH data berhasil divalidasi dan di-merge
-          const { importData } = useWeddingStore.getState();
-          
-          importData({
-            settings: data.settings,
-            budgetItems: mergedBudgetItems,
-            savings: mergedSavings,
-            guests: mergedGuests,
-            vendors: mergedVendors,
-            tasks: mergedTasks,
-          });
-
-          set({ 
-            status: 'synced', 
-            lastSync: new Date()
-          });
-          
-          // Tampilkan toast hanya jika showToast true (untuk manual sync)
-          if (showToast) {
-            useToastStore.getState().addToast(
-              hasConflict 
-                ? 'Data berhasil dimuat dari cloud (beberapa konflik terdeteksi dan diselesaikan)'
-                : 'Data berhasil dimuat dari cloud',
-              hasConflict ? 'warning' : 'success'
-            );
-          }
-          
-          return true;
-        } catch (validationError) {
-          console.error('❌ Data validation error:', validationError);
-          set({ status: 'error' });
-          
-          if (showToast) {
-            useToastStore.getState().addToast(
-              'Data dari cloud tidak valid. Menggunakan data lokal.',
-              'warning'
-            );
-          }
-          
-          return false;
         }
+        
+        return true;
       }
       
+      set({ isRemoteUpdate: false });
       return false;
     } catch (error: any) {
-      console.error('Sync error:', error);
+      console.error('Error syncing from cloud:', error);
+      set({ isRemoteUpdate: false });
       
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
@@ -309,34 +231,46 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         }
       }
       
-      // Lempar error agar Provider bisa catch dan tampilkan toast gagal
-      throw error;
+      return false;
     }
   },
 
   setStatus: (status) => set({ status }),
   setAutoSyncEnabled: (enabled) => set({ isAutoSyncEnabled: enabled }),
   setIsSyncing: (syncing) => set({ isSyncing: syncing }),
+  setLastSyncTimestamp: (timestamp) => set({ lastSyncTimestamp: timestamp }),
 }));
 
-// Auto-sync hook with debounce
-let syncTimeout: ReturnType<typeof setTimeout> | null = null;
+// ============================================
+// AUTO-SYNC TO CLOUD (Debounce)
+// ============================================
 
-export function triggerAutoSync() {
-  const { isAutoSyncEnabled, syncToCloud } = useSyncStore.getState();
-  const { user } = useAuthStore.getState();
-  
-  if (!isAutoSyncEnabled || !user) {
-    return;
+let autoSyncTimer: ReturnType<typeof setTimeout> | null = null;
+
+useWeddingStore.subscribe((state, prevState) => {
+  const hasDataChanged = 
+    state.budgetItems !== prevState.budgetItems ||
+    state.savings !== prevState.savings ||
+    state.guests !== prevState.guests ||
+    state.vendors !== prevState.vendors ||
+    state.tasks !== prevState.tasks ||
+    state.settings !== prevState.settings;
+
+  if (hasDataChanged) {
+    const { user } = useAuthStore.getState();
+    const { currentWeddingId } = useCollaborationStore.getState();
+    const { isSyncing, syncToCloud, isRemoteUpdate } = useSyncStore.getState();
+
+    // FIX: Skip auto-sync jika ini adalah update dari remote
+    if (user && currentWeddingId && !isSyncing && !isRemoteUpdate) {
+      if (autoSyncTimer) {
+        clearTimeout(autoSyncTimer);
+      }
+
+      autoSyncTimer = setTimeout(() => {
+        console.log('🔄 Auto-syncing to cloud...');
+        syncToCloud();
+      }, 2000);
+    }
   }
-
-  // Clear previous timeout
-  if (syncTimeout) {
-    clearTimeout(syncTimeout);
-  }
-
-  // Debounce: wait 2 seconds before syncing
-  syncTimeout = setTimeout(() => {
-    syncToCloud();
-  }, 2000);
-}
+});

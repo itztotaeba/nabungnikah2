@@ -3,19 +3,19 @@ import { supabase } from '../lib/supabase';
 import { useSyncStore } from '../syncStore';
 import { useToastStore } from '../toastStore';
 import { useAuthStore } from '../authStore';
-import { useWeddingStore } from '../store';
 
 /**
  * Hook untuk Supabase Realtime subscription
  * Mendengarkan perubahan data wedding_data secara real-time
  * 
- * @param weddingId - ID wedding event yang sedang diakses
- * @param enabled - Apakah realtime sync aktif (default: true)
+ * FIX: Menggunakan updated_at timestamp untuk filter self-update
+ * bukan user_id yang bisa berubah-ubah
  */
 export function useRealtimeSync(weddingId: string | null, enabled: boolean = true) {
-  const { syncFromCloud } = useSyncStore();
+  const { syncFromCloud, lastSyncTimestamp } = useSyncStore();
   const { addToast } = useToastStore();
   const channelRef = useRef<any>(null);
+  const lastProcessedTimestamp = useRef<string | null>(null);
 
   useEffect(() => {
     // Skip jika tidak ada weddingId atau realtime disabled
@@ -31,76 +31,58 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen semua event: INSERT, UPDATE, DELETE
+          event: 'UPDATE', // Hanya listen UPDATE, bukan INSERT/DELETE
           schema: 'public',
           table: 'wedding_data',
-          filter: `id=eq.${weddingId}`, // Hanya untuk wedding ini
+          filter: `id=eq.${weddingId}`,
         },
         async (payload) => {
           console.log('🔄 Realtime update received:', payload);
 
           // Validasi payload structure
-          if (!payload || !payload.eventType) {
+          if (!payload || !payload.new) {
             console.warn('⚠️ Invalid realtime payload:', payload);
             return;
           }
 
-          // 1. Cek apakah update berasal dari user lain (bukan diri sendiri)
-          const currentUser = useAuthStore.getState().user;
           const payloadNew = payload.new as any;
-          const isFromSelf = payloadNew?.user_id === currentUser?.id;
+          const remoteUpdatedAt = payloadNew?.updated_at;
 
-          // 2. Cek apakah data benar-benar berbeda (mencegah infinite loop)
-          const currentData = useWeddingStore.getState();
-          const currentDataJson = JSON.stringify({
-            settings: currentData.settings,
-            budget_items: currentData.budgetItems,
-            savings: currentData.savings,
-            guests: currentData.guests,
-            vendors: currentData.vendors,
-            tasks: currentData.tasks,
-          });
-          const newDataJson = JSON.stringify({
-            settings: payloadNew?.settings,
-            budget_items: payloadNew?.budget_items,
-            savings: payloadNew?.savings,
-            guests: payloadNew?.guests,
-            vendors: payloadNew?.vendors,
-            tasks: payloadNew?.tasks,
-          });
-          const isDataSame = currentDataJson === newDataJson;
-
-          // 3. Jika dari diri sendiri ATAU data sama, JANGAN update state dan JANGAN tampilkan toast
-          if (isFromSelf || isDataSame) {
-            console.log('⏭️ Realtime update from self or same data, skipping...');
+          // FIX 1: Gunakan updated_at untuk filter self-update
+          // Jika updated_at sama dengan lastSyncTimestamp kita, ini dari diri sendiri
+          if (remoteUpdatedAt && remoteUpdatedAt === lastProcessedTimestamp.current) {
+            console.log('⏭️ Skipping own update (same timestamp)');
             return;
           }
 
-          // 4. Baru update state dan tampilkan toast (update dari user lain)
+          // FIX 2: Cek apakah updated_at sangat dekat dengan lastSync (dalam 2 detik)
+          // Ini mencegah echo dari auto-sync kita sendiri
+          if (remoteUpdatedAt && lastSyncTimestamp) {
+            const remoteTime = new Date(remoteUpdatedAt).getTime();
+            const localTime = new Date(lastSyncTimestamp).getTime();
+            const diff = Math.abs(remoteTime - localTime);
+            
+            if (diff < 2000) { // Dalam 2 detik = kemungkinan dari diri sendiri
+              console.log('⏭️ Skipping recent update (within 2s threshold)');
+              return;
+            }
+          }
+
+          // Simpan timestamp untuk filter berikutnya
+          lastProcessedTimestamp.current = remoteUpdatedAt;
+
+          // FIX 3: Sync dari cloud dengan REPLACE, bukan MERGE
           try {
-            const success = await syncFromCloud(false); // showToast = false
+            const success = await syncFromCloud(false, true); // showToast = false, isRealtime = true
             
             if (success) {
               // Tampilkan notifikasi hanya jika sync berhasil
-              const eventType = payload.eventType;
-              let message = 'Data diperbarui oleh pasangan Anda';
-
-              if (eventType === 'UPDATE') {
-                message = 'Data diperbarui oleh pasangan Anda';
-              } else if (eventType === 'INSERT') {
-                message = 'Data baru ditambahkan oleh pasangan Anda';
-              } else if (eventType === 'DELETE') {
-                message = 'Data dihapus oleh pasangan Anda';
-              }
-
-              addToast(message, 'info');
+              addToast('Data diperbarui oleh pasangan Anda', 'info');
             } else {
               console.warn('⚠️ Realtime sync failed silently');
             }
           } catch (error) {
             console.error('❌ Error during realtime sync:', error);
-            // Jangan tampilkan toast error untuk realtime sync
-            // Biarkan user tetap menggunakan data lokal
           }
         }
       )
@@ -111,10 +93,8 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
           console.log('✅ Successfully connected to realtime channel');
         } else if (status === 'CHANNEL_ERROR') {
           console.error('❌ Realtime channel error');
-          addToast('Koneksi realtime terputus', 'error');
         } else if (status === 'TIMED_OUT') {
           console.warn('⏱️ Realtime subscription timed out');
-          addToast('Koneksi realtime timeout', 'warning');
         }
       });
 
@@ -129,9 +109,9 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
         channelRef.current = null;
       }
     };
-  }, [weddingId, enabled, syncFromCloud, addToast]);
+  }, [weddingId, enabled, syncFromCloud, addToast, lastSyncTimestamp]);
 
-  // Return status koneksi (bisa digunakan untuk UI indicator)
+  // Return status koneksi
   return {
     isConnected: channelRef.current !== null,
   };
