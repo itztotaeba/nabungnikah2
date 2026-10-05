@@ -50,20 +50,38 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
             return;
           }
 
-          // FIX: Threshold check - jika timestamp sangat dekat (dalam 3 detik), kemungkinan dari diri sendiri
+          // FIX: Threshold check - jika timestamp sangat dekat (dalam 5 detik), kemungkinan dari diri sendiri
           if (remoteUpdatedAt && lastSyncTimestamp) {
             const remoteTime = new Date(remoteUpdatedAt).getTime();
             const localTime = new Date(lastSyncTimestamp).getTime();
             const diff = Math.abs(remoteTime - localTime);
             
-            if (diff < 3000) {
-              console.log(`⏭️ Skipping recent update (${diff}ms threshold)`);
+            if (diff < 5000) {
+              console.log(`⏭️ Skipping recent update (${diff}ms < 5000ms threshold)`);
               return;
             }
           }
 
+          // FIX: Check global sync state
+          const syncState = (window as any).__SYNC_STATE__;
+          if (syncState?.isSyncingFromCloud() || syncState?.isSyncingToCloud()) {
+            console.log('⏭️ Skipping realtime update (sync in progress)');
+            return;
+          }
+
+          // FIX: Check cooldown - skip jika baru saja sync
+          const now = Date.now();
+          const timeSinceLastSyncToCloud = now - (syncState?.lastSyncToCloudTime() || 0);
+          const timeSinceLastSyncFromCloud = now - (syncState?.lastSyncFromCloudTime() || 0);
+          
+          if (timeSinceLastSyncToCloud < 5000 || timeSinceLastSyncFromCloud < 5000) {
+            console.log(`⏭️ Skipping realtime update (cooldown: toCloud=${timeSinceLastSyncToCloud}ms, fromCloud=${timeSinceLastSyncFromCloud}ms)`);
+            return;
+          }
+
           // Process update dari user lain
           try {
+            console.log('✅ Processing update from other user');
             const success = await syncFromCloud(false);
             
             if (success) {
