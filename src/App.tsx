@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, ListTodo, Menu, X, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, ListTodo, Menu, X, LogIn, LogOut, type LucideIcon } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import BudgetManager from './components/BudgetManager';
 import SavingsTracker from './components/SavingsTracker';
@@ -11,6 +11,7 @@ import ToastContainer from './components/ToastContainer';
 import LiveSyncIndicator from './components/LiveSyncIndicator';
 import LoadingOverlay from './components/LoadingOverlay';
 import SupabaseSyncProvider from './components/SupabaseSyncProvider';
+import AuthModal from './components/AuthModal';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
 
@@ -38,13 +39,22 @@ const NAV_ITEMS: NavItem[] = [
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   
   // Initialize auth store saat app load
   const initialize = useAuthStore((state) => state.initialize);
+  const user = useAuthStore((state) => state.user);
+  const signOut = useAuthStore((state) => state.signOut);
   
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  const handleLogout = async () => {
+    if (window.confirm('Apakah Anda yakin ingin logout?')) {
+      await signOut();
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -187,9 +197,41 @@ export default function App() {
 
             <div className="flex items-center gap-3">
               <LiveSyncIndicator />
-              <span className="text-xs text-gray-400 hidden sm:block">
-                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-              </span>
+              
+              {/* Auth Button / User Info */}
+              {!user ? (
+                <button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-sm text-sm"
+                >
+                  <LogIn size={16} />
+                  <span className="hidden sm:inline">Login / Daftar</span>
+                  <span className="sm:hidden">Login</span>
+                </button>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-lg">
+                    <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-[#2F6A43]">
+                      <img 
+                        src={PHOTO_URL} 
+                        alt="User" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-[#1E4A2E]">
+                      {user.email?.split('@')[0]}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-medium transition-all text-sm"
+                    title="Logout"
+                  >
+                    <LogOut size={16} />
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -232,6 +274,12 @@ export default function App() {
 
       <LoadingOverlay />
       <ToastContainer />
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </div>
     </SupabaseSyncProvider>
   );
