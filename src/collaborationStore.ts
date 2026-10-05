@@ -29,6 +29,7 @@ interface CollaborationState {
   fetchMembers: () => Promise<void>;
   setCurrentWeddingId: (id: string | null) => void;
   setUserRole: (role: 'owner' | 'member' | null) => void;
+  resetData: () => void;
 }
 
 export const useCollaborationStore = create<CollaborationState>()(
@@ -252,6 +253,11 @@ export const useCollaborationStore = create<CollaborationState>()(
 
       setCurrentWeddingId: (id) => set({ currentWeddingId: id }),
       setUserRole: (role) => set({ userRole: role }),
+      resetData: () => set({ 
+        currentWeddingId: null, 
+        userRole: null, 
+        members: [] 
+      }),
     }),
     {
       name: 'weddingplan-collaboration',

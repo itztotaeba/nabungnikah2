@@ -11,18 +11,21 @@ interface SyncState {
   status: SyncStatus;
   lastSync: Date | null;
   isAutoSyncEnabled: boolean;
+  isSyncing: boolean; // Loading state saat auto-sync setelah login
   
   // Actions
   syncToCloud: () => Promise<boolean>;
-  syncFromCloud: () => Promise<boolean>;
+  syncFromCloud: (showToast?: boolean) => Promise<boolean>;
   setStatus: (status: SyncStatus) => void;
   setAutoSyncEnabled: (enabled: boolean) => void;
+  setIsSyncing: (syncing: boolean) => void;
 }
 
 export const useSyncStore = create<SyncState>((set, get) => ({
   status: 'synced',
   lastSync: null,
   isAutoSyncEnabled: true,
+  isSyncing: false,
 
   syncToCloud: async () => {
     const { user } = useAuthStore.getState();
@@ -100,7 +103,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
   },
 
-  syncFromCloud: async () => {
+  syncFromCloud: async (showToast = true) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
     
@@ -116,15 +119,17 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
     if (!supabase) {
       console.warn('Supabase not configured, cannot sync from cloud');
-      useToastStore.getState().addToast(
-        'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.',
-        'error'
-      );
+      if (showToast) {
+        useToastStore.getState().addToast(
+          'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.',
+          'error'
+        );
+      }
       return false;
     }
 
     try {
-      set({ status: 'syncing' });
+      set({ status: 'syncing', isSyncing: true });
       
       const { data, error } = await supabase
         .from('wedding_data')
@@ -155,34 +160,43 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
         set({ 
           status: 'synced', 
-          lastSync: new Date() 
+          lastSync: new Date(),
+          isSyncing: false
         });
         
-        // Jangan tampilkan toast saat auto-sync dari realtime
-        // useToastStore.getState().addToast(
-        //   'Data berhasil dimuat dari cloud',
-        //   'success'
-        // );
+        // Tampilkan toast hanya jika showToast true
+        if (showToast) {
+          useToastStore.getState().addToast(
+            'Data berhasil disinkronkan dari cloud',
+            'success'
+          );
+        }
         
         return true;
       }
       
+      set({ isSyncing: false });
       return false;
     } catch (error: any) {
       console.error('Error syncing from cloud:', error);
+      set({ isSyncing: false });
       
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
-        useToastStore.getState().addToast(
-          'Gagal memuat data dari cloud (offline)',
-          'warning'
-        );
+        if (showToast) {
+          useToastStore.getState().addToast(
+            'Gagal memuat data dari cloud (offline)',
+            'warning'
+          );
+        }
       } else {
         set({ status: 'error' });
-        useToastStore.getState().addToast(
-          'Gagal memuat data dari cloud: ' + (error.message || 'Unknown error'),
-          'error'
-        );
+        if (showToast) {
+          useToastStore.getState().addToast(
+            'Gagal memuat data dari cloud: ' + (error.message || 'Unknown error'),
+            'error'
+          );
+        }
       }
       
       return false;
@@ -191,6 +205,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
   setStatus: (status) => set({ status }),
   setAutoSyncEnabled: (enabled) => set({ isAutoSyncEnabled: enabled }),
+  setIsSyncing: (syncing) => set({ isSyncing: syncing }),
 }));
 
 // Auto-sync hook with debounce
