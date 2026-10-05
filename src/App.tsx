@@ -14,6 +14,9 @@ import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
 
+// Logo foto Mahes & Aira
+const PHOTO_URL = "https://is3.cloudhost.id/totaeba/mahesaira.jpg";
+
 type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'timeline' | 'settings';
 
 interface NavItem {
@@ -63,11 +66,15 @@ export default function App() {
       <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-[#D6E5DC] z-40">
         <div className="px-6 py-6 border-b border-[#D6E5DC]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-xl flex items-center justify-center">
-              <span className="text-white text-lg">💒</span>
+            <div className="relative w-12 h-12 flex-shrink-0">
+              <img 
+                src={PHOTO_URL} 
+                alt="Logo Mahes & Aira" 
+                className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
+              />
             </div>
             <div>
-              <h1 className="font-heading text-xl font-bold text-gray-800">Mahes&Aira</h1>
+              <h1 className="font-heading text-xl font-bold text-gray-800">Mahes & Aira</h1>
               <p className="text-xs text-gray-400">Wedding Plan</p>
             </div>
           </div>
@@ -108,8 +115,12 @@ export default function App() {
           <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">
             <div className="px-6 py-5 border-b border-[#D6E5DC] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-xl flex items-center justify-center">
-                  <span className="text-white text-sm">💒</span>
+                <div className="relative w-10 h-10 flex-shrink-0">
+                  <img 
+                    src={PHOTO_URL} 
+                    alt="Logo Mahes & Aira" 
+                    className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
+                  />
                 </div>
                 <h1 className="font-heading text-lg font-bold text-gray-800">Mahes&Aira</h1>
               </div>
@@ -160,8 +171,12 @@ export default function App() {
                 <Menu size={22} className="text-gray-600" />
               </button>
               <div className="lg:hidden flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xs">💒</span>
+                <div className="relative w-9 h-9 flex-shrink-0">
+                  <img 
+                    src={PHOTO_URL} 
+                    alt="Logo Mahes & Aira" 
+                    className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
+                  />
                 </div>
                 <h1 className="font-heading text-lg font-bold text-gray-800">Mahes&Aira</h1>
               </div>
