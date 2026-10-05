@@ -158,6 +158,7 @@ export const useCollaborationStore = create<CollaborationState>()(
             const { data: newWedding, error: createError } = await supabase
               .from('wedding_data')
               .insert([{ 
+                user_id: userData.user.id, // WAJIB untuk memenuhi RLS policy
                 settings: {}, 
                 budget_items: [], 
                 savings: [], 
