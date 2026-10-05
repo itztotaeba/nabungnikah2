@@ -52,8 +52,11 @@ const assigneeIcon = (assignee: TaskAssignee) => {
 };
 
 export default function TimelineManager() {
-  const { settings, tasks, addTask, toggleTask, deleteTask } = useWeddingStore();
+  const { settings, tasks: rawTasks, addTask, toggleTask, deleteTask } = useWeddingStore();
   const { addToast } = useToastStore();
+
+  // Safe data access dengan fallback
+  const tasks = Array.isArray(rawTasks) ? rawTasks : [];
 
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
@@ -63,14 +66,14 @@ export default function TimelineManager() {
   const [assignee, setAssignee] = useState<TaskAssignee>('Bersama');
 
   // Calculate current month
-  const currentMonth = settings.weddingDate ? calculateRemainingMonths(settings.weddingDate) : null;
+  const currentMonth = settings?.weddingDate ? calculateRemainingMonths(settings.weddingDate) : null;
 
-  // Calculate progress
-  const completedTasks = tasks.filter(t => t.isCompleted).length;
+  // Calculate progress dengan safe access
+  const completedTasks = tasks.filter(t => t?.isCompleted).length;
   const totalTasks = tasks.length;
   const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
-  // Calculate assignee statistics
+  // Calculate assignee statistics dengan fallback untuk assignee
   const assigneeStats = useMemo(() => {
     const stats = {
       Pria: { total: 0, completed: 0 },
@@ -79,24 +82,33 @@ export default function TimelineManager() {
     };
 
     tasks.forEach(task => {
-      stats[task.assignee].total++;
-      if (task.isCompleted) {
-        stats[task.assignee].completed++;
+      // Fallback assignee ke 'Bersama' jika undefined
+      const taskAssignee = task?.assignee || 'Bersama';
+      
+      // Validasi assignee ada di stats
+      if (stats[taskAssignee]) {
+        stats[taskAssignee].total++;
+        if (task?.isCompleted) {
+          stats[taskAssignee].completed++;
+        }
       }
     });
 
     return stats;
   }, [tasks]);
 
-  // Group tasks by monthsBefore
+  // Group tasks by monthsBefore dengan safe access
   const groupedTasks = useMemo(() => {
     const groups: Record<number, Task[]> = {};
     
     tasks.forEach(task => {
-      if (!groups[task.monthsBefore]) {
-        groups[task.monthsBefore] = [];
+      // Fallback monthsBefore ke 0 jika undefined
+      const months = task?.monthsBefore ?? 0;
+      
+      if (!groups[months]) {
+        groups[months] = [];
       }
-      groups[task.monthsBefore].push(task);
+      groups[months].push(task);
     });
 
     // Sort by monthsBefore descending
@@ -104,8 +116,8 @@ export default function TimelineManager() {
       .map(([month, tasks]) => ({
         month: parseInt(month),
         tasks: tasks.sort((a, b) => {
-          if (a.isCompleted === b.isCompleted) return 0;
-          return a.isCompleted ? 1 : -1;
+          if ((a?.isCompleted || false) === (b?.isCompleted || false)) return 0;
+          return a?.isCompleted ? 1 : -1;
         }),
       }))
       .sort((a, b) => b.month - a.month);
@@ -285,60 +297,71 @@ export default function TimelineManager() {
 
                 {/* Tasks List */}
                 <div className="divide-y divide-[#F5F0E8]">
-                  {monthTasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className={`px-5 py-4 flex items-start gap-3 hover:bg-[#FDFBF7] transition-colors ${
-                        task.isCompleted ? 'opacity-60' : ''
-                      }`}
-                    >
-                      {/* Custom Checkbox */}
-                      <button
-                        onClick={() => handleToggle(task.id)}
-                        className="flex-shrink-0 mt-0.5"
+                  {monthTasks.map((task) => {
+                    // Safe access dengan fallback
+                    const taskId = task?.id || '';
+                    const taskTitle = task?.title || 'Tugas tanpa judul';
+                    const taskDescription = task?.description;
+                    const taskCategory = task?.category || 'Lainnya';
+                    const taskAssignee = task?.assignee || 'Bersama';
+                    const taskIsCompleted = task?.isCompleted || false;
+                    const taskIsDefault = task?.isDefault || false;
+
+                    return (
+                      <div
+                        key={taskId}
+                        className={`px-5 py-4 flex items-start gap-3 hover:bg-[#FDFBF7] transition-colors ${
+                          taskIsCompleted ? 'opacity-60' : ''
+                        }`}
                       >
-                        {task.isCompleted ? (
-                          <CheckCircle2 size={22} className="text-[#87A878] transition-all" />
-                        ) : (
-                          <Circle size={22} className="text-gray-300 hover:text-[#87A878] transition-all" />
-                        )}
-                      </button>
-
-                      {/* Task Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <p className={`font-medium ${task.isCompleted ? 'line-through text-gray-500' : 'text-gray-800'} transition-all`}>
-                              {task.title}
-                            </p>
-                            {task.description && (
-                              <p className="text-sm text-gray-500 mt-1">{task.description}</p>
-                            )}
-                            <div className="flex items-center gap-2 mt-2 flex-wrap">
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${categoryBadge(task.category)}`}>
-                                {task.category}
-                              </span>
-                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium border flex items-center gap-1 ${assigneeBadge(task.assignee)}`}>
-                                {assigneeIcon(task.assignee)}
-                                {task.assignee}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Delete Button (only for custom tasks) */}
-                          {!task.isDefault && (
-                            <button
-                              onClick={() => handleDelete(task.id, task.title)}
-                              className="flex-shrink-0 p-2 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Hapus tugas"
-                            >
-                              <Trash2 size={16} className="text-red-600" />
-                            </button>
+                        {/* Custom Checkbox */}
+                        <button
+                          onClick={() => handleToggle(taskId)}
+                          className="flex-shrink-0 mt-0.5"
+                        >
+                          {taskIsCompleted ? (
+                            <CheckCircle2 size={22} className="text-[#87A878] transition-all" />
+                          ) : (
+                            <Circle size={22} className="text-gray-300 hover:text-[#87A878] transition-all" />
                           )}
+                        </button>
+
+                        {/* Task Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1">
+                              <p className={`font-medium ${taskIsCompleted ? 'line-through text-gray-500' : 'text-gray-800'} transition-all`}>
+                                {taskTitle}
+                              </p>
+                              {taskDescription && (
+                                <p className="text-sm text-gray-500 mt-1">{taskDescription}</p>
+                              )}
+                              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${categoryBadge(taskCategory)}`}>
+                                  {taskCategory}
+                                </span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium border flex items-center gap-1 ${assigneeBadge(taskAssignee)}`}>
+                                  {assigneeIcon(taskAssignee)}
+                                  {taskAssignee}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Delete Button (only for custom tasks) */}
+                            {!taskIsDefault && (
+                              <button
+                                onClick={() => handleDelete(taskId, taskTitle)}
+                                className="flex-shrink-0 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Hapus tugas"
+                              >
+                                <Trash2 size={16} className="text-red-600" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             );

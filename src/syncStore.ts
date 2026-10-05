@@ -14,7 +14,7 @@ interface SyncState {
   isSyncing: boolean; // Loading state saat auto-sync setelah login
   
   // Actions
-  syncToCloud: () => Promise<boolean>;
+  syncToCloud: (showToast?: boolean) => Promise<boolean>;
   syncFromCloud: (showToast?: boolean) => Promise<boolean>;
   setStatus: (status: SyncStatus) => void;
   setAutoSyncEnabled: (enabled: boolean) => void;
@@ -27,7 +27,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   isAutoSyncEnabled: true,
   isSyncing: false,
 
-  syncToCloud: async () => {
+  syncToCloud: async (showToast = false) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
     
@@ -43,10 +43,12 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
     if (!supabase) {
       console.warn('Supabase not configured, cannot sync to cloud');
-      useToastStore.getState().addToast(
-        'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.',
-        'error'
-      );
+      if (showToast) {
+        useToastStore.getState().addToast(
+          'Supabase tidak dikonfigurasi. Cloud Sync tidak tersedia.',
+          'error'
+        );
+      }
       return false;
     }
 
@@ -80,6 +82,16 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         lastSync: new Date() 
       });
       
+      // Tampilkan toast hanya jika showToast true (untuk manual sync)
+      if (showToast) {
+        useToastStore.getState().addToast(
+          'Data berhasil disinkronkan ke cloud',
+          'success'
+        );
+      } else {
+        console.log('✅ Auto-sync to cloud successful');
+      }
+      
       return true;
     } catch (error: any) {
       console.error('Error syncing to cloud:', error);
@@ -87,16 +99,24 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       // Check if offline
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
-        useToastStore.getState().addToast(
-          'Gagal sync ke cloud, data disimpan lokal',
-          'warning'
-        );
+        if (showToast) {
+          useToastStore.getState().addToast(
+            'Gagal sync ke cloud, data disimpan lokal',
+            'warning'
+          );
+        } else {
+          console.warn('⚠️ Auto-sync failed (offline), data saved locally');
+        }
       } else {
         set({ status: 'error' });
-        useToastStore.getState().addToast(
-          'Gagal sync ke cloud: ' + (error.message || 'Unknown error'),
-          'error'
-        );
+        if (showToast) {
+          useToastStore.getState().addToast(
+            'Gagal sync ke cloud: ' + (error.message || 'Unknown error'),
+            'error'
+          );
+        } else {
+          console.error('❌ Auto-sync failed:', error.message);
+        }
       }
       
       return false;

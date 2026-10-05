@@ -15,11 +15,9 @@ export default function CloudSyncSection() {
 
   const handleSyncToCloud = async () => {
     setIsSyncing(true);
-    const success = await syncToCloud();
+    const success = await syncToCloud(true); // showToast = true untuk manual sync
     setIsSyncing(false);
-    if (success) {
-      addToast('Data berhasil disinkronkan ke cloud', 'success');
-    }
+    // Toast sudah di-handle di syncToCloud jika showToast = true
   };
 
   const handleSyncFromCloud = async () => {
