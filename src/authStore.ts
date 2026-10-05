@@ -32,18 +32,26 @@ export const useAuthStore = create<AuthState>()(
           
           // Check if supabase is configured
           if (!supabase) {
-            console.warn('Supabase not configured, skipping auth initialization');
+            console.warn('⚠️ Supabase not configured, skipping auth initialization');
             set({ isLoading: false, isInitialized: true });
             return;
           }
           
-          // Get current session
-          const { data: { session }, error } = await supabase.auth.getSession();
-          
-          if (error) {
-            console.error('Error getting session:', error);
-            set({ isLoading: false, isInitialized: true });
-            return;
+          // Get current session dengan error handling
+          let session = null;
+          try {
+            const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+            
+            if (error) {
+              console.error('❌ Error getting session:', error);
+              // Jangan throw error, biarkan aplikasi tetap berjalan
+              session = null;
+            } else {
+              session = currentSession;
+            }
+          } catch (sessionError) {
+            console.error('❌ Session fetch error:', sessionError);
+            session = null;
           }
           
           set({ 
@@ -53,11 +61,19 @@ export const useAuthStore = create<AuthState>()(
             isInitialized: true 
           });
           
+          console.log('✅ Auth initialized:', session ? 'User logged in' : 'No session');
+          
           // Listener sudah di-setup di useAuthSync hook
           // Tidak perlu setup di sini untuk menghindari duplikasi
         } catch (error) {
-          console.error('Error initializing auth:', error);
-          set({ isLoading: false, isInitialized: true });
+          console.error('❌ Error initializing auth:', error);
+          // Reset state ke default jika error
+          set({ 
+            isLoading: false, 
+            isInitialized: true,
+            user: null,
+            session: null
+          });
         }
       },
 

@@ -25,15 +25,23 @@ export default function Dashboard() {
   const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
   const { addToast } = useToastStore();
 
+  // Safe data access dengan fallback
+  const safeSettings = settings || { weddingDate: '', currency: 'IDR' };
+  const safeBudgetItems = Array.isArray(budgetItems) ? budgetItems : [];
+  const safeSavings = Array.isArray(savings) ? savings : [];
+  const safeGuests = Array.isArray(guests) ? guests : [];
+  const safeVendors = Array.isArray(vendors) ? vendors : [];
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+
   // Semua perhitungan menggunakan helper functions
-  const totalBudget = calculateTotalBudget(budgetItems);
-  const totalActual = calculateTotalActual(budgetItems);
-  const totalSavings = calculateTotalSavings(savings);
+  const totalBudget = calculateTotalBudget(safeBudgetItems);
+  const totalActual = calculateTotalActual(safeBudgetItems);
+  const totalSavings = calculateTotalSavings(safeSavings);
   const fundingGap = calculateFundingGap(totalBudget, totalSavings);
-  const remainingMonths = calculateRemainingMonths(settings.weddingDate);
+  const remainingMonths = calculateRemainingMonths(safeSettings.weddingDate);
   const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
   const progress = calculateProgressPercentage(totalSavings, totalBudget);
-  const totalGuests = guests.reduce((sum, g) => sum + g.pax, 0);
+  const totalGuests = safeGuests.reduce((sum, g) => sum + (g.pax || 0), 0);
 
   // Task assignment statistics
   const taskStats = useMemo(() => {
@@ -43,18 +51,21 @@ export default function Dashboard() {
       Bersama: { total: 0, completed: 0 },
     };
 
-    tasks.forEach(task => {
-      stats[task.assignee].total++;
-      if (task.isCompleted) {
-        stats[task.assignee].completed++;
+    safeTasks.forEach(task => {
+      const assignee = task.assignee || 'Bersama';
+      if (stats[assignee]) {
+        stats[assignee].total++;
+        if (task.isCompleted) {
+          stats[assignee].completed++;
+        }
       }
     });
 
     return stats;
-  }, [tasks]);
+  }, [safeTasks]);
 
-  const formattedDate = settings.weddingDate
-    ? new Date(settings.weddingDate).toLocaleDateString('id-ID', {
+  const formattedDate = safeSettings.weddingDate
+    ? new Date(safeSettings.weddingDate).toLocaleDateString('id-ID', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
@@ -65,14 +76,14 @@ export default function Dashboard() {
   // Handle Export PDF
   const handleExportPDF = () => {
     try {
-      if (budgetItems.length === 0 && guests.length === 0) {
+      if (safeBudgetItems.length === 0 && safeGuests.length === 0) {
         addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
-      generateFullReport(budgetItems, guests, settings);
+      generateFullReport(safeBudgetItems, safeGuests, safeSettings);
       addToast('PDF berhasil dibuat!', 'success');
     } catch (error) {
-      console.error('PDF export error:', error);
+      console.error('❌ PDF export error:', error);
       addToast('Gagal membuat PDF', 'error');
     }
   };
@@ -80,14 +91,21 @@ export default function Dashboard() {
   // Handle Export Excel
   const handleExportExcel = () => {
     try {
-      if (budgetItems.length === 0 && guests.length === 0 && vendors.length === 0 && tasks.length === 0) {
+      if (safeBudgetItems.length === 0 && safeGuests.length === 0 && safeVendors.length === 0 && safeTasks.length === 0) {
         addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
-      exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks });
+      exportToExcel({ 
+        settings: safeSettings, 
+        budgetItems: safeBudgetItems, 
+        savings: safeSavings, 
+        guests: safeGuests, 
+        vendors: safeVendors, 
+        tasks: safeTasks 
+      });
       addToast('File Excel berhasil didownload!', 'success');
     } catch (error) {
-      console.error('Excel export error:', error);
+      console.error('❌ Excel export error:', error);
       addToast('Gagal membuat file Excel', 'error');
     }
   };
@@ -95,7 +113,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Hero Section - Countdown */}
-      {settings.weddingDate && (
+      {safeSettings.weddingDate && (
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#D4A843] via-[#E0BC6A] to-[#2F6A43] p-6 sm:p-8 text-white shadow-lg">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2MkgxNnYtMmgyMHptMC00djJIMjR2LTJoMTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
           <div className="relative">
@@ -132,7 +150,7 @@ export default function Dashboard() {
       </div>
 
       {/* Welcome Message (no date set) */}
-      {!settings.weddingDate && (
+      {!safeSettings.weddingDate && (
         <div className="bg-white rounded-2xl p-8 border border-[#D6E5DC] text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-[#D4A843]/20 to-[#2F6A43]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">💒</span>
@@ -150,13 +168,13 @@ export default function Dashboard() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Anggaran</p>
-              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalBudget, settings.currency)}</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalBudget, safeSettings.currency)}</p>
             </div>
             <div className="w-10 h-10 bg-[#2F6A43]/10 rounded-xl flex items-center justify-center">
               <Wallet size={20} className="text-[#2F6A43]" />
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">{budgetItems.length} item anggaran</p>
+          <p className="text-xs text-gray-400 mt-2">{safeBudgetItems.length} item anggaran</p>
         </div>
 
         {/* Total Realisasi */}
@@ -164,7 +182,7 @@ export default function Dashboard() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Realisasi</p>
-              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalActual, settings.currency)}</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalActual, safeSettings.currency)}</p>
             </div>
             <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
               <TrendingUp size={20} className="text-orange-500" />
@@ -180,13 +198,13 @@ export default function Dashboard() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Tabungan</p>
-              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalSavings, settings.currency)}</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalSavings, safeSettings.currency)}</p>
             </div>
             <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
               <Target size={20} className="text-emerald-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">{savings.length} kali menabung</p>
+          <p className="text-xs text-gray-400 mt-2">{safeSavings.length} kali menabung</p>
         </div>
 
         {/* Kekurangan Dana */}
@@ -195,7 +213,7 @@ export default function Dashboard() {
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Kekurangan Dana</p>
               <p className={`text-xl font-bold mt-1 ${fundingGap > 0 ? 'text-[#D4A843]' : 'text-emerald-600'}`}>
-                {formatCurrency(fundingGap, settings.currency)}
+                {formatCurrency(fundingGap, safeSettings.currency)}
               </p>
             </div>
             <div className="w-10 h-10 bg-[#D4A843]/10 rounded-xl flex items-center justify-center">
@@ -214,7 +232,7 @@ export default function Dashboard() {
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Target/Bulan</p>
               <p className="text-xl font-bold text-gray-800 mt-1">
                 {monthlyTarget > 0 && !isNaN(monthlyTarget) ? (
-                  formatCurrency(monthlyTarget, settings.currency)
+                  formatCurrency(monthlyTarget, safeSettings.currency)
                 ) : (
                   <span className="text-sm font-normal text-gray-400 italic">Belum dihitung</span>
                 )}
@@ -244,7 +262,7 @@ export default function Dashboard() {
               <Users size={20} className="text-blue-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">{guests.length} orang diundang</p>
+          <p className="text-xs text-gray-400 mt-2">{safeGuests.length} orang diundang</p>
         </div>
       </div>
 
@@ -265,31 +283,31 @@ export default function Dashboard() {
           </div>
           {/* Progress markers */}
           <div className="flex justify-between mt-2">
-            <span className="text-xs text-gray-400">{formatCurrency(0, settings.currency)}</span>
-            <span className="text-xs text-gray-400">{formatCurrency(totalBudget / 2, settings.currency)}</span>
-            <span className="text-xs text-gray-400">{formatCurrency(totalBudget, settings.currency)}</span>
+            <span className="text-xs text-gray-400">{formatCurrency(0, safeSettings.currency)}</span>
+            <span className="text-xs text-gray-400">{formatCurrency(totalBudget / 2, safeSettings.currency)}</span>
+            <span className="text-xs text-gray-400">{formatCurrency(totalBudget, safeSettings.currency)}</span>
           </div>
         </div>
 
         <div className="mt-4 flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-[#2F6A43]" />
-            <span className="text-gray-600">Terkumpul: {formatCurrency(totalSavings, settings.currency)}</span>
+            <span className="text-gray-600">Terkumpul: {formatCurrency(totalSavings, safeSettings.currency)}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-[#F3EFE6] border border-gray-200" />
-            <span className="text-gray-600">Sisa: {formatCurrency(fundingGap, settings.currency)}</span>
+            <span className="text-gray-600">Sisa: {formatCurrency(fundingGap, safeSettings.currency)}</span>
           </div>
         </div>
       </div>
 
       {/* Category Breakdown */}
-      {budgetItems.length > 0 && (
+      {safeBudgetItems.length > 0 && (
         <div className="bg-white rounded-xl p-6 border border-[#D6E5DC]">
           <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">Ringkasan per Kategori</h3>
           <div className="space-y-3">
             {Object.entries(
-              budgetItems.reduce((acc, item) => {
+              safeBudgetItems.reduce((acc, item) => {
                 if (!acc[item.category]) acc[item.category] = { estimated: 0, actual: 0 };
                 acc[item.category].estimated += item.estimatedCost;
                 acc[item.category].actual += item.actualCost;
@@ -303,11 +321,11 @@ export default function Dashboard() {
                     <span className="text-sm font-medium text-gray-700">{category}</span>
                     <div className="text-right">
                       <span className="text-sm font-semibold text-gray-800">
-                        {formatCurrency(data.estimated, settings.currency)}
+                        {formatCurrency(data.estimated, safeSettings.currency)}
                       </span>
                       {data.actual > 0 && (
                         <span className="text-xs text-gray-400 ml-2">
-                          ({formatCurrency(data.actual, settings.currency)})
+                          ({formatCurrency(data.actual, safeSettings.currency)})
                         </span>
                       )}
                     </div>
@@ -326,7 +344,7 @@ export default function Dashboard() {
       )}
 
       {/* Task Assignment Summary */}
-      {tasks.length > 0 && (
+      {safeTasks.length > 0 && (
         <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 size={20} className="text-[#87A878]" />

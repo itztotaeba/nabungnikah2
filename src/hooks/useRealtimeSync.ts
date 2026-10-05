@@ -34,25 +34,41 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
           table: 'wedding_data',
           filter: `id=eq.${weddingId}`, // Hanya untuk wedding ini
         },
-        (payload) => {
+        async (payload) => {
           console.log('🔄 Realtime update received:', payload);
 
-          // Sync data dari cloud
-          syncFromCloud();
-
-          // Tampilkan notifikasi
-          const eventType = payload.eventType;
-          let message = 'Data diperbarui oleh pasangan Anda';
-
-          if (eventType === 'UPDATE') {
-            message = 'Data diperbarui oleh pasangan Anda';
-          } else if (eventType === 'INSERT') {
-            message = 'Data baru ditambahkan oleh pasangan Anda';
-          } else if (eventType === 'DELETE') {
-            message = 'Data dihapus oleh pasangan Anda';
+          // Validasi payload structure
+          if (!payload || !payload.eventType) {
+            console.warn('⚠️ Invalid realtime payload:', payload);
+            return;
           }
 
-          addToast(message, 'info');
+          // Sync data dari cloud dengan error handling
+          try {
+            const success = await syncFromCloud(false); // showToast = false
+            
+            if (success) {
+              // Tampilkan notifikasi hanya jika sync berhasil
+              const eventType = payload.eventType;
+              let message = 'Data diperbarui oleh pasangan Anda';
+
+              if (eventType === 'UPDATE') {
+                message = 'Data diperbarui oleh pasangan Anda';
+              } else if (eventType === 'INSERT') {
+                message = 'Data baru ditambahkan oleh pasangan Anda';
+              } else if (eventType === 'DELETE') {
+                message = 'Data dihapus oleh pasangan Anda';
+              }
+
+              addToast(message, 'info');
+            } else {
+              console.warn('⚠️ Realtime sync failed silently');
+            }
+          } catch (error) {
+            console.error('❌ Error during realtime sync:', error);
+            // Jangan tampilkan toast error untuk realtime sync
+            // Biarkan user tetap menggunakan data lokal
+          }
         }
       )
       .subscribe((status) => {
