@@ -153,35 +153,27 @@ export const useCollaborationStore = create<CollaborationState>()(
           let weddingId = memberData?.wedding_id;
           let role = memberData?.role || 'owner';
 
-          // 2. Jika user baru dan belum punya wedding, buat wedding baru
+          // 2. Jika user baru dan belum punya wedding, buat wedding baru menggunakan RPC
           if (!weddingId) {
-            const { data: newWedding, error: createError } = await supabase
-              .from('wedding_data')
-              .insert([{ 
-                user_id: userData.user.id, // WAJIB untuk memenuhi RLS policy
-                settings: {}, 
-                budget_items: [], 
-                savings: [], 
-                guests: [], 
-                vendors: [], 
-                tasks: [] 
-              }])
-              .select()
-              .single();
+            console.log('🆕 Creating new wedding via RPC...');
             
-            if (createError) throw createError;
-            weddingId = newWedding.id;
+            // Panggil fungsi database yang bypass RLS
+            const { data: newWeddingId, error: createError } = await supabase
+              .rpc('create_initial_wedding');
 
-            // Daftarkan user sebagai owner di wedding_members
-            const { error: memberInsertError } = await supabase
-              .from('wedding_members')
-              .insert({
-                wedding_id: weddingId,
-                user_id: userData.user.id,
-                role: 'owner'
-              });
+            if (createError) {
+              console.error('RPC Error:', createError);
+              throw createError;
+            }
 
-            if (memberInsertError) throw memberInsertError;
+            if (!newWeddingId) {
+              throw new Error('RPC did not return wedding_id');
+            }
+
+            weddingId = newWeddingId;
+            role = 'owner';
+            
+            console.log('✅ Wedding created via RPC:', weddingId);
           }
 
           // 3. Simpan ke store
