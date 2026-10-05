@@ -14,14 +14,15 @@ import {
   calculateTotalActual,
 } from '../helpers';
 import { generateFullReport } from '../helpers/pdfGenerator';
+import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
-import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText, User, CheckCircle2 } from 'lucide-react';
+import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText, FileSpreadsheet, User, CheckCircle2 } from 'lucide-react';
 import BudgetPieChart from './BudgetPieChart';
 import SavingsLineChart from './SavingsLineChart';
 import DeadlineCalendar from './DeadlineCalendar';
 
 export default function Dashboard() {
-  const { settings, budgetItems, savings, guests, tasks } = useWeddingStore();
+  const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
   const { addToast } = useToastStore();
 
   // Semua perhitungan menggunakan helper functions
@@ -76,6 +77,21 @@ export default function Dashboard() {
     }
   };
 
+  // Handle Export Excel
+  const handleExportExcel = () => {
+    try {
+      if (budgetItems.length === 0 && guests.length === 0 && vendors.length === 0 && tasks.length === 0) {
+        addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
+        return;
+      }
+      exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks });
+      addToast('File Excel berhasil didownload!', 'success');
+    } catch (error) {
+      console.error('Excel export error:', error);
+      addToast('Gagal membuat file Excel', 'error');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Hero Section - Countdown */}
@@ -97,8 +113,15 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Export PDF Button */}
-      <div className="flex justify-end">
+      {/* Export Buttons */}
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={handleExportExcel}
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg hover:shadow-[#D4A843]/20 transition-all text-sm font-medium"
+        >
+          <FileSpreadsheet size={16} />
+          Export Excel (.xlsx)
+        </button>
         <button
           onClick={handleExportPDF}
           className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg hover:shadow-[#2F6A43]/20 transition-all text-sm font-medium"
