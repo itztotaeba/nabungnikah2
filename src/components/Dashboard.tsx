@@ -114,12 +114,9 @@ export default function Dashboard() {
           <div className="w-16 h-16 bg-gradient-to-br from-[#D4A843]/20 to-[#2F6A43]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">💒</span>
           </div>
-          <h2 className="font-heading text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="font-heading text-2xl font-bold text-gray-800">
             Rangkuman WeddingPlan Mahes dan Aira
           </h2>
-          <p className="text-gray-500 max-w-md mx-auto">
-            Atur tanggal pernikahan di menu Pengaturan untuk melihat countdown dan memulai perencanaan.
-          </p>
         </div>
       )}
 
