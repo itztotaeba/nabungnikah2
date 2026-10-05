@@ -153,8 +153,12 @@ export default function Dashboard() {
       {/* Welcome Message (no date set) */}
       {!safeSettings.weddingDate && (
         <div className="bg-white rounded-2xl p-8 border border-[#D6E5DC] text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#D4A843]/20 to-[#2F6A43]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-3xl">💒</span>
+          <div className="w-20 h-20 mx-auto mb-4">
+            <img 
+              src="https://is3.cloudhost.id/totaeba/mahesaira.jpg" 
+              alt="Mahes & Aira" 
+              className="w-full h-full rounded-full object-cover border-4 border-[#2F6A43] shadow-lg"
+            />
           </div>
           <h2 className="font-heading text-2xl font-bold text-gray-800">
             Rangkuman WeddingPlan Mahes dan Aira
