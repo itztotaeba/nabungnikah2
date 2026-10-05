@@ -13,13 +13,30 @@ import { BudgetItem, SavingsEntry, WeddingSettings } from './types';
 // Formula: Math.ceil((weddingDate - Today) / (1000 * 60 * 60 * 24 * 30))
 // ============================================
 export function calculateRemainingMonths(weddingDate: string): number {
+  // Handle empty or invalid date
+  if (!weddingDate || weddingDate.trim() === '') {
+    return 0;
+  }
+
   const wedding = new Date(weddingDate).getTime();
+  
+  // Check if date is valid
+  if (isNaN(wedding)) {
+    return 0;
+  }
+
   const today = new Date().getTime();
   const diffMs = wedding - today;
 
   if (diffMs <= 0) return 0;
 
   const monthsRemaining = Math.ceil(diffMs / (1000 * 60 * 60 * 24 * 30));
+  
+  // Ensure we don't return NaN
+  if (isNaN(monthsRemaining)) {
+    return 0;
+  }
+  
   return Math.max(0, monthsRemaining);
 }
 
@@ -61,8 +78,24 @@ export function calculateFundingGap(totalBudget: number, totalSavings: number): 
 // Formula: Kekurangan Dana / Sisa Waktu (Bulan)
 // ============================================
 export function calculateMonthlyTarget(fundingGap: number, remainingMonths: number): number {
-  if (remainingMonths <= 0) return fundingGap; // Harus lunas sekarang
-  return Math.ceil(fundingGap / remainingMonths);
+  // Handle invalid inputs
+  if (isNaN(fundingGap) || isNaN(remainingMonths)) {
+    return 0;
+  }
+
+  // Handle zero or negative remaining months
+  if (remainingMonths <= 0) {
+    return fundingGap > 0 ? fundingGap : 0; // Harus lunas sekarang atau tidak ada kekurangan
+  }
+
+  const target = Math.ceil(fundingGap / remainingMonths);
+  
+  // Ensure we don't return NaN or Infinity
+  if (isNaN(target) || !isFinite(target)) {
+    return 0;
+  }
+  
+  return target;
 }
 
 // ============================================
@@ -70,8 +103,21 @@ export function calculateMonthlyTarget(fundingGap: number, remainingMonths: numb
 // Formula: (Total Tabungan / Total Anggaran) * 100 (Maksimal 100%)
 // ============================================
 export function calculateProgressPercentage(totalSavings: number, totalBudget: number): number {
+  // Handle invalid inputs
+  if (isNaN(totalSavings) || isNaN(totalBudget)) {
+    return 0;
+  }
+
+  // Handle division by zero
   if (totalBudget === 0) return 0;
+  
   const percentage = (totalSavings / totalBudget) * 100;
+  
+  // Ensure we don't return NaN or Infinity
+  if (isNaN(percentage) || !isFinite(percentage)) {
+    return 0;
+  }
+  
   return Math.min(100, Math.round(percentage * 100) / 100); // Round to 2 decimal places, max 100
 }
 
@@ -95,6 +141,11 @@ export function calculateItemStatus(estimatedCost: number, actualCost: number): 
  * Format angka ke format mata uang
  */
 export function formatCurrency(amount: number, currency: string = 'IDR'): string {
+  // Handle invalid inputs
+  if (amount === undefined || amount === null || isNaN(amount) || !isFinite(amount)) {
+    amount = 0;
+  }
+
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: currency,
@@ -114,7 +165,18 @@ export function generateId(): string {
  * Hitung sisa waktu dalam format yang lebih readable
  */
 export function formatRemainingTime(weddingDate: string): string {
+  // Handle empty or invalid date
+  if (!weddingDate || weddingDate.trim() === '') {
+    return '';
+  }
+
   const wedding = new Date(weddingDate).getTime();
+  
+  // Check if date is valid
+  if (isNaN(wedding)) {
+    return '';
+  }
+
   const today = new Date().getTime();
   const diffMs = wedding - today;
 
@@ -123,6 +185,11 @@ export function formatRemainingTime(weddingDate: string): string {
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const months = Math.floor(days / 30);
   const remainingDays = days % 30;
+
+  // Ensure we don't return NaN
+  if (isNaN(days) || isNaN(months) || isNaN(remainingDays)) {
+    return '';
+  }
 
   if (months === 0) return `${days} hari lagi`;
   if (remainingDays === 0) return `${months} bulan lagi`;
