@@ -148,32 +148,60 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       }
 
       if (data) {
-        // PENTING: Update state SETELAH data berhasil diambil
-        const { importData } = useWeddingStore.getState();
-        
-        importData({
-          settings: data.settings || {},
-          budgetItems: data.budget_items || [],
-          savings: data.savings || [],
-          guests: data.guests || [],
-          vendors: data.vendors || [],
-          tasks: data.tasks || [],
-        });
+        // Validasi data structure sebelum update state
+        try {
+          // Validasi required fields
+          if (!data.settings || typeof data.settings !== 'object') {
+            console.warn('⚠️ Invalid settings data, using default');
+            data.settings = {};
+          }
 
-        set({ 
-          status: 'synced', 
-          lastSync: new Date()
-        });
-        
-        // Tampilkan toast hanya jika showToast true (untuk manual sync)
-        if (showToast) {
-          useToastStore.getState().addToast(
-            'Data berhasil dimuat dari cloud',
-            'success'
-          );
+          // Validasi arrays
+          const safeBudgetItems = Array.isArray(data.budget_items) ? data.budget_items : [];
+          const safeSavings = Array.isArray(data.savings) ? data.savings : [];
+          const safeGuests = Array.isArray(data.guests) ? data.guests : [];
+          const safeVendors = Array.isArray(data.vendors) ? data.vendors : [];
+          const safeTasks = Array.isArray(data.tasks) ? data.tasks : [];
+
+          // PENTING: Update state SETELAH data berhasil divalidasi
+          const { importData } = useWeddingStore.getState();
+          
+          importData({
+            settings: data.settings,
+            budgetItems: safeBudgetItems,
+            savings: safeSavings,
+            guests: safeGuests,
+            vendors: safeVendors,
+            tasks: safeTasks,
+          });
+
+          set({ 
+            status: 'synced', 
+            lastSync: new Date()
+          });
+          
+          // Tampilkan toast hanya jika showToast true (untuk manual sync)
+          if (showToast) {
+            useToastStore.getState().addToast(
+              'Data berhasil dimuat dari cloud',
+              'success'
+            );
+          }
+          
+          return true;
+        } catch (validationError) {
+          console.error('❌ Data validation error:', validationError);
+          set({ status: 'error' });
+          
+          if (showToast) {
+            useToastStore.getState().addToast(
+              'Data dari cloud tidak valid. Menggunakan data lokal.',
+              'warning'
+            );
+          }
+          
+          return false;
         }
-        
-        return true;
       }
       
       return false;

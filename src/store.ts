@@ -193,15 +193,33 @@ export const useWeddingStore = create<AppState>()(
       resetData: () => set({ ...initialState }),
 
       // ---- Import Data ----
-      importData: (data) =>
-        set({
-          settings: data.settings,
-          budgetItems: data.budgetItems,
-          savings: data.savings,
-          guests: data.guests,
-          vendors: data.vendors || [],
-          tasks: data.tasks || [],
-        }),
+      importData: (data) => {
+        try {
+          // Validasi data sebelum import
+          const safeSettings = data.settings && typeof data.settings === 'object' 
+            ? data.settings 
+            : { weddingDate: '', currency: 'IDR' };
+          
+          const safeBudgetItems = Array.isArray(data.budgetItems) ? data.budgetItems : [];
+          const safeSavings = Array.isArray(data.savings) ? data.savings : [];
+          const safeGuests = Array.isArray(data.guests) ? data.guests : [];
+          const safeVendors = Array.isArray(data.vendors) ? data.vendors : [];
+          const safeTasks = Array.isArray(data.tasks) ? data.tasks : [];
+
+          set({
+            settings: safeSettings,
+            budgetItems: safeBudgetItems,
+            savings: safeSavings,
+            guests: safeGuests,
+            vendors: safeVendors,
+            tasks: safeTasks,
+          });
+        } catch (error) {
+          console.error('❌ Import data error:', error);
+          // Fallback ke initial state jika import gagal
+          set({ ...initialState });
+        }
+      },
     }),
     {
       name: 'weddingplan-storage', // LocalStorage key
@@ -213,6 +231,25 @@ export const useWeddingStore = create<AppState>()(
         vendors: state.vendors,
         tasks: state.tasks,
       }),
+      // Safe hydration: handle corrupted LocalStorage data
+      onRehydrateStorage: () => {
+        return (state, error) => {
+          if (error) {
+            console.error('❌ LocalStorage hydration error:', error);
+            console.log('🔄 Resetting to default state...');
+            
+            // Clear corrupted data
+            try {
+              localStorage.removeItem('weddingplan-storage');
+              console.log('✅ Corrupted LocalStorage cleared');
+            } catch (clearError) {
+              console.error('❌ Failed to clear LocalStorage:', clearError);
+            }
+          } else if (state) {
+            console.log('✅ LocalStorage hydrated successfully');
+          }
+        };
+      },
     }
   )
 );

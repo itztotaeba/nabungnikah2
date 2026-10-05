@@ -55,6 +55,15 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
             const initializeWeddingSession = useCollaborationStore.getState().initializeWeddingSession;
             await initializeWeddingSession();
 
+            // Cek apakah wedding session berhasil diinisialisasi
+            const { currentWeddingId } = useCollaborationStore.getState();
+            if (!currentWeddingId) {
+              console.warn('⚠️ Wedding session not initialized, skipping sync');
+              addToast('Gagal menginisialisasi wedding. Silakan coba lagi.', 'warning');
+              setIsSyncing(false);
+              return;
+            }
+
             // LANGKAH 2: Baru tarik data dari cloud
             const success = await syncFromCloud(false); // showToast = false
 
@@ -68,8 +77,11 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
           } catch (error) {
             // Jangan tampilkan toast error saat inisialisasi wedding gagal
             // Cukup log ke console agar tidak mengganggu pengguna
-            console.error('Gagal inisialisasi wedding:', error);
-            console.log('User bisa melakukan sync manual nanti jika diperlukan');
+            console.error('❌ Gagal inisialisasi wedding:', error);
+            console.log('💡 User bisa melakukan sync manual nanti jika diperlukan');
+            
+            // Tampilkan toast warning jika error
+            addToast('Terjadi kesalahan saat memuat data. Data lokal tetap tersedia.', 'warning');
           } finally {
             // Set loading state ke false SETELAH semua proses selesai
             setIsSyncing(false);
