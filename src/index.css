@@ -5,8 +5,8 @@
    ============================================ */
 
 @theme {
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
   
   /* Primary Colors - Forest Green */
   --color-primary: #2F6A43;
@@ -34,7 +34,7 @@
 
 /* Base styles */
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   background-color: #FAF8F4;
   color: #1A2E23;
   -webkit-font-smoothing: antialiased;
@@ -44,7 +44,7 @@ body {
 /* Heading font */
 h1, h2, h3, h4, h5, h6,
 .font-heading {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* Custom scrollbar */
