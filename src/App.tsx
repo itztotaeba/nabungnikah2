@@ -61,15 +61,15 @@ export default function App() {
 
   return (
     <SupabaseSyncProvider>
-    <div className="min-h-screen bg-[#FDFBF7] flex">
+    <div className="min-h-screen bg-[#FAF8F4] flex">
       {/* ============================================
           DESKTOP SIDEBAR
           ============================================ */}
-      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-[#E8E0D4] z-40">
+      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-[#D6E5DC] z-40">
         {/* Logo */}
-        <div className="px-6 py-6 border-b border-[#E8E0D4]">
+        <div className="px-6 py-6 border-b border-[#D6E5DC]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#B76E79] to-[#87A878] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-xl flex items-center justify-center">
               <span className="text-white text-lg">💒</span>
             </div>
             <div>
@@ -90,14 +90,14 @@ export default function App() {
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-[#87A878]/10 text-[#6B8A5E] shadow-sm'
-                    : 'text-gray-600 hover:bg-[#F5F0E8] hover:text-gray-800'
+                    ? 'bg-[#2F6A43]/10 text-[#1E4A2E] shadow-sm'
+                    : 'text-gray-600 hover:bg-[#F3EFE6] hover:text-gray-800'
                 }`}
               >
-                <Icon size={20} className={isActive ? 'text-[#87A878]' : 'text-gray-400'} />
+                <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-gray-400'} />
                 <span>{item.label}</span>
                 {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#87A878]" />
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#2F6A43]" />
                 )}
               </button>
             );
@@ -105,7 +105,7 @@ export default function App() {
         </nav>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#E8E0D4]">
+        <div className="px-6 py-4 border-t border-[#D6E5DC]">
           <p className="text-xs text-gray-400 text-center">
             © 2024 WeddingPlan
           </p>
@@ -125,9 +125,9 @@ export default function App() {
           {/* Sidebar */}
           <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl animate-slide-in">
             {/* Header */}
-            <div className="px-6 py-5 border-b border-[#E8E0D4] flex items-center justify-between">
+            <div className="px-6 py-5 border-b border-[#D6E5DC] flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-gradient-to-br from-[#B76E79] to-[#87A878] rounded-xl flex items-center justify-center">
+                <div className="w-9 h-9 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-xl flex items-center justify-center">
                   <span className="text-white text-sm">💒</span>
                 </div>
                 <h1 className="font-heading text-lg font-bold text-gray-800">WeddingPlan</h1>
@@ -154,11 +154,11 @@ export default function App() {
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-[#87A878]/10 text-[#6B8A5E]'
-                        : 'text-gray-600 hover:bg-[#F5F0E8]'
+                        ? 'bg-[#2F6A43]/10 text-[#1E4A2E]'
+                        : 'text-gray-600 hover:bg-[#F3EFE6]'
                     }`}
                   >
-                    <Icon size={20} className={isActive ? 'text-[#87A878]' : 'text-gray-400'} />
+                    <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-gray-400'} />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -173,18 +173,18 @@ export default function App() {
           ============================================ */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#E8E0D4]">
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#D6E5DC]">
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             {/* Left: Menu button (mobile) + Title */}
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-[#F5F0E8] rounded-lg"
+                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-lg"
               >
                 <Menu size={22} className="text-gray-600" />
               </button>
               <div className="lg:hidden flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#B76E79] to-[#87A878] rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-lg flex items-center justify-center">
                   <span className="text-white text-xs">💒</span>
                 </div>
                 <h1 className="font-heading text-lg font-bold text-gray-800">WeddingPlan</h1>
@@ -215,7 +215,7 @@ export default function App() {
       {/* ============================================
           MOBILE BOTTOM NAVIGATION
           ============================================ */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#E8E0D4] shadow-lg">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#D6E5DC] shadow-lg">
         <div className="flex items-center justify-around px-2 py-2">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -226,14 +226,14 @@ export default function App() {
                 onClick={() => setActiveTab(item.id)}
                 className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl min-w-[56px] transition-all ${
                   isActive
-                    ? 'text-[#87A878]'
+                    ? 'text-[#2F6A43]'
                     : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
-                <div className={`p-1.5 rounded-lg ${isActive ? 'bg-[#87A878]/10' : ''}`}>
+                <div className={`p-1.5 rounded-lg ${isActive ? 'bg-[#2F6A43]/10' : ''}`}>
                   <Icon size={20} />
                 </div>
-                <span className={`text-[10px] font-medium ${isActive ? 'text-[#6B8A5E]' : ''}`}>
+                <span className={`text-[10px] font-medium ${isActive ? 'text-[#1E4A2E]' : ''}`}>
                   {item.label}
                 </span>
               </button>

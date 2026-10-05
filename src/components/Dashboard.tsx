@@ -80,7 +80,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Hero Section - Countdown */}
       {settings.weddingDate && (
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#B76E79] via-[#C4838C] to-[#87A878] p-6 sm:p-8 text-white shadow-lg">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#D4A843] via-[#E0BC6A] to-[#2F6A43] p-6 sm:p-8 text-white shadow-lg">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2MkgxNnYtMmgyMHptMC00djJIMjR2LTJoMTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
           <div className="relative">
             <div className="flex items-center gap-2 mb-2">
@@ -101,7 +101,7 @@ export default function Dashboard() {
       <div className="flex justify-end">
         <button
           onClick={handleExportPDF}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg hover:shadow-[#2F6A43]/20 transition-all text-sm font-medium"
         >
           <FileText size={16} />
           Cetak Laporan Lengkap (PDF)
@@ -110,8 +110,8 @@ export default function Dashboard() {
 
       {/* Welcome Message (no date set) */}
       {!settings.weddingDate && (
-        <div className="bg-white rounded-2xl p-8 border border-[#E8E0D4] text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#B76E79]/20 to-[#87A878]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white rounded-2xl p-8 border border-[#D6E5DC] text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-[#D4A843]/20 to-[#2F6A43]/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">💒</span>
           </div>
           <h2 className="font-heading text-2xl font-bold text-gray-800 mb-2">
@@ -126,14 +126,14 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Anggaran */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl p-5 border border-[#D6E5DC] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Anggaran</p>
               <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(totalBudget, settings.currency)}</p>
             </div>
-            <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
-              <Wallet size={20} className="text-[#87A878]" />
+            <div className="w-10 h-10 bg-[#2F6A43]/10 rounded-xl flex items-center justify-center">
+              <Wallet size={20} className="text-[#2F6A43]" />
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">{budgetItems.length} item anggaran</p>
@@ -170,15 +170,15 @@ export default function Dashboard() {
         </div>
 
         {/* Kekurangan Dana */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl p-5 border border-[#D6E5DC] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Kekurangan Dana</p>
-              <p className={`text-xl font-bold mt-1 ${fundingGap > 0 ? 'text-[#B76E79]' : 'text-emerald-600'}`}>
+              <p className={`text-xl font-bold mt-1 ${fundingGap > 0 ? 'text-[#D4A843]' : 'text-emerald-600'}`}>
                 {formatCurrency(fundingGap, settings.currency)}
               </p>
             </div>
-            <div className="w-10 h-10 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#D4A843]/10 rounded-xl flex items-center justify-center">
               <span className="text-lg">{fundingGap > 0 ? '⚠️' : '✅'}</span>
             </div>
           </div>
@@ -188,7 +188,7 @@ export default function Dashboard() {
         </div>
 
         {/* Target Bulanan */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-xl p-5 border border-[#D6E5DC] hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Target/Bulan</p>
@@ -200,8 +200,8 @@ export default function Dashboard() {
                 )}
               </p>
             </div>
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-              <Calendar size={20} className="text-purple-500" />
+            <div className="w-10 h-10 bg-[#D4A843]/10 rounded-xl flex items-center justify-center">
+              <Calendar size={20} className="text-[#D4A843]" />
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">
@@ -229,17 +229,17 @@ export default function Dashboard() {
       </div>
 
       {/* Progress Section */}
-      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+      <div className="bg-white rounded-xl p-6 border border-[#D6E5DC]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-lg font-semibold text-gray-800">Progress Tabungan</h3>
-          <span className="text-2xl font-bold text-[#87A878]">{progress}%</span>
+          <span className="text-2xl font-bold text-[#2F6A43]">{progress}%</span>
         </div>
         
         {/* Progress Bar */}
         <div className="relative">
-          <div className="w-full bg-[#F5F0E8] rounded-full h-4 overflow-hidden">
+          <div className="w-full bg-[#F3EFE6] rounded-full h-4 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-700 ease-out"
+              className="h-full rounded-full bg-gradient-to-r from-[#2F6A43] to-[#4A9B65] transition-all duration-700 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -253,11 +253,11 @@ export default function Dashboard() {
 
         <div className="mt-4 flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#87A878]" />
+            <div className="w-3 h-3 rounded-full bg-[#2F6A43]" />
             <span className="text-gray-600">Terkumpul: {formatCurrency(totalSavings, settings.currency)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#F5F0E8] border border-gray-200" />
+            <div className="w-3 h-3 rounded-full bg-[#F3EFE6] border border-gray-200" />
             <span className="text-gray-600">Sisa: {formatCurrency(fundingGap, settings.currency)}</span>
           </div>
         </div>
@@ -265,7 +265,7 @@ export default function Dashboard() {
 
       {/* Category Breakdown */}
       {budgetItems.length > 0 && (
-        <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+        <div className="bg-white rounded-xl p-6 border border-[#D6E5DC]">
           <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">Ringkasan per Kategori</h3>
           <div className="space-y-3">
             {Object.entries(
@@ -292,9 +292,9 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="w-full bg-[#F5F0E8] rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-[#F3EFE6] rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#B76E79] to-[#D4959E] transition-all duration-500"
+                      className="h-full rounded-full bg-gradient-to-r from-[#D4A843] to-[#E8CC8A] transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
