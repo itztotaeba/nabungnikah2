@@ -32,7 +32,7 @@ function createCoverPage(
   // Subtitle
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
-  doc.text('WeddingPlan', pageWidth / 2, 60, { align: 'center' });
+  doc.text('Mahes&Aira Wedding Plan', pageWidth / 2, 60, { align: 'center' });
 
   // Reset warna teks
   doc.setTextColor(0, 0, 0);
@@ -78,7 +78,7 @@ function createCoverPage(
   doc.setFontSize(9);
   doc.setFont('helvetica', 'italic');
   doc.setTextColor(128, 128, 128);
-  doc.text('Dokumen ini digenerate otomatis oleh WeddingPlan', pageWidth / 2, pageHeight - 20, {
+  doc.text('Dokumen ini digenerate otomatis untuk Mahes & Aira', pageWidth / 2, pageHeight - 20, {
     align: 'center',
   });
 }

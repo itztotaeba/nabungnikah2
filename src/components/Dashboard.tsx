@@ -115,10 +115,10 @@ export default function Dashboard() {
             <span className="text-3xl">💒</span>
           </div>
           <h2 className="font-heading text-2xl font-bold text-gray-800 mb-2">
-            Selamat Datang di WeddingPlan
+            Rangkuman WeddingPlan Mahes dan Aira
           </h2>
           <p className="text-gray-500 max-w-md mx-auto">
-            Mulai rencanakan pernikahan impianmu. Atur tanggal pernikahan di menu Pengaturan untuk melihat countdown.
+            Atur tanggal pernikahan di menu Pengaturan untuk melihat countdown dan memulai perencanaan.
           </p>
         </div>
       )}

@@ -1,7 +1,7 @@
 /**
  * types.ts
  * 
- * Semua type definitions untuk aplikasi WeddingPlan.
+ * Semua type definitions untuk aplikasi Mahes&Aira Wedding Plan.
  * Dipisahkan untuk menghindari circular dependency.
  */
 

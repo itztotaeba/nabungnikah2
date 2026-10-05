@@ -73,8 +73,8 @@ export default function App() {
               <span className="text-white text-lg">💒</span>
             </div>
             <div>
-              <h1 className="font-heading text-xl font-bold text-gray-800">WeddingPlan</h1>
-              <p className="text-xs text-gray-400">Perencana Pernikahan</p>
+              <h1 className="font-heading text-xl font-bold text-gray-800">Mahes&Aira</h1>
+              <p className="text-xs text-gray-400">Wedding Plan</p>
             </div>
           </div>
         </div>
@@ -104,12 +104,6 @@ export default function App() {
           })}
         </nav>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#D6E5DC]">
-          <p className="text-xs text-gray-400 text-center">
-            © 2024 WeddingPlan
-          </p>
-        </div>
       </aside>
 
       {/* ============================================
@@ -130,7 +124,7 @@ export default function App() {
                 <div className="w-9 h-9 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-xl flex items-center justify-center">
                   <span className="text-white text-sm">💒</span>
                 </div>
-                <h1 className="font-heading text-lg font-bold text-gray-800">WeddingPlan</h1>
+                <h1 className="font-heading text-lg font-bold text-gray-800">Mahes&Aira</h1>
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -187,7 +181,7 @@ export default function App() {
                 <div className="w-8 h-8 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-lg flex items-center justify-center">
                   <span className="text-white text-xs">💒</span>
                 </div>
-                <h1 className="font-heading text-lg font-bold text-gray-800">WeddingPlan</h1>
+                <h1 className="font-heading text-lg font-bold text-gray-800">Mahes&Aira</h1>
               </div>
               <h2 className="hidden lg:block font-heading text-lg font-semibold text-gray-700">
                 {NAV_ITEMS.find(n => n.id === activeTab)?.label}
