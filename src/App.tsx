@@ -12,6 +12,7 @@ import LiveSyncIndicator from './components/LiveSyncIndicator';
 import LoadingOverlay from './components/LoadingOverlay';
 import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import AuthModal from './components/AuthModal';
+import MobileBottomNav from './components/MobileBottomNav';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
 
@@ -243,34 +244,14 @@ export default function App() {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#D6E5DC] shadow-lg">
-        <div className="flex items-center justify-around px-2 py-2">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl min-w-[56px] transition-all ${
-                  isActive
-                    ? 'text-[#2F6A43]'
-                    : 'text-gray-400 hover:text-gray-600'
-                }`}
-              >
-                <div className={`p-1.5 rounded-lg ${isActive ? 'bg-[#2F6A43]/10' : ''}`}>
-                  <Icon size={20} />
-                </div>
-                <span className={`text-[10px] font-medium ${isActive ? 'text-[#1E4A2E]' : ''}`}>
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-        <div className="h-[env(safe-area-inset-bottom)]" />
-      </nav>
+      {/* Mobile Bottom Navigation - 4 menu utama + tombol Lainnya */}
+      <MobileBottomNav 
+        activeTab={activeTab} 
+        onTabChange={(tab) => setActiveTab(tab as Tab)} 
+      />
+      
+      {/* Safe area untuk iOS */}
+      <div className="h-[env(safe-area-inset-bottom)] lg:hidden" />
 
       <LoadingOverlay />
       <ToastContainer />
