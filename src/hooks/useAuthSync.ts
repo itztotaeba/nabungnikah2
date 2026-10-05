@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useAuthStore } from '../authStore';
 import { useSyncStore } from '../syncStore';
 import { useToastStore } from '../toastStore';
+import { useWeddingStore } from '../store';
+import { useCollaborationStore } from '../collaborationStore';
 import { supabase } from '../lib/supabase';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
@@ -11,8 +13,10 @@ import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
  */
 export function useAuthSync() {
   const { setUser, setSession } = useAuthStore();
-  const { syncFromCloud } = useSyncStore();
+  const { syncFromCloud, setIsSyncing } = useSyncStore();
   const { addToast } = useToastStore();
+  const resetWeddingStore = useWeddingStore((state) => state.resetData);
+  const resetCollaborationStore = useCollaborationStore((state) => state.resetData);
 
   useEffect(() => {
     // Skip jika supabase tidak dikonfigurasi
@@ -35,19 +39,26 @@ export function useAuthSync() {
           setSession(session);
 
           // Tampilkan toast notification
-          addToast('Berhasil login! Data disinkronkan dari cloud.', 'success');
+          addToast('Berhasil login! Memuat data dari cloud...', 'success');
 
-          // Auto-sync data dari cloud
+          // Auto-sync data dari cloud dengan loading state
+          setIsSyncing(true);
           try {
-            await syncFromCloud();
+            await syncFromCloud(true); // showToast = true
           } catch (error) {
             console.error('Error syncing from cloud after login:', error);
+          } finally {
+            setIsSyncing(false);
           }
         } else if (event === 'SIGNED_OUT') {
           // User logout
           console.log('👋 User signed out');
           setUser(null);
           setSession(null);
+          
+          // Reset semua data store
+          resetWeddingStore();
+          resetCollaborationStore();
           
           addToast('Logout berhasil', 'success');
         } else if (event === 'TOKEN_REFRESHED') {
@@ -72,5 +83,5 @@ export function useAuthSync() {
       console.log('🧹 Cleaning up auth listener...');
       subscription.unsubscribe();
     };
-  }, [setUser, setSession, syncFromCloud, addToast]);
+  }, [setUser, setSession, syncFromCloud, addToast, setIsSyncing, resetWeddingStore, resetCollaborationStore]);
 }

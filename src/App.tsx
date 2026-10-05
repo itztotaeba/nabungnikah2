@@ -9,6 +9,7 @@ import TimelineManager from './components/TimelineManager';
 import SettingsPage from './components/Settings';
 import ToastContainer from './components/ToastContainer';
 import LiveSyncIndicator from './components/LiveSyncIndicator';
+import LoadingOverlay from './components/LoadingOverlay';
 import { useAuthSync } from './hooks/useAuthSync';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
@@ -251,6 +252,9 @@ export default function App() {
         {/* Safe area for iOS */}
         <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay />
 
       {/* Toast Notifications */}
       <ToastContainer />
