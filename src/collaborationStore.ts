@@ -123,28 +123,30 @@ export const useCollaborationStore = create<CollaborationState>()(
       },
 
       initializeWeddingSession: async () => {
+        const { user } = useAuthStore.getState();
+        
+        if (!user) {
+          console.warn('⚠️ No user logged in');
+          return;
+        }
+
         if (!supabase) {
           console.warn('⚠️ Supabase not configured');
           return;
         }
 
         try {
-          const { data: userData, error: userError } = await supabase.auth.getUser();
-          
-          if (userError || !userData.user) {
-            console.warn('⚠️ No user found');
-            return;
-          }
+          set({ isLoading: true });
 
-          // 1. Cari wedding_id dari tabel wedding_members
+          // 1. Cek apakah user sudah punya wedding_id
           const { data: memberData, error: memberError } = await supabase
             .from('wedding_members')
             .select('wedding_id, role')
-            .eq('user_id', userData.user.id)
-            .maybeSingle(); // Gunakan maybeSingle untuk handle case tidak ada data
+            .eq('user_id', user.id)
+            .maybeSingle();
 
           if (memberError && memberError.code !== 'PGRST116') {
-            console.error('Member query error:', memberError);
+            console.error('❌ Member query error:', memberError);
             throw memberError;
           }
 
@@ -153,48 +155,55 @@ export const useCollaborationStore = create<CollaborationState>()(
 
           // 2. Jika user baru dan belum punya wedding, buat wedding baru menggunakan RPC
           if (!weddingId) {
-            console.log('🆕 Creating new wedding via RPC...');
+            console.log('🆕 User baru, memanggil RPC create_initial_wedding...');
             
-            // Panggil fungsi database yang bypass RLS
-            const { data: newWeddingId, error: createError } = await supabase
+            // PANGGIL RPC
+            const { data: newWeddingId, error: rpcError } = await supabase
               .rpc('create_initial_wedding');
 
-            if (createError) {
-              console.error('RPC Error:', createError);
-              throw createError;
+            if (rpcError) {
+              console.error('❌ RPC Gagal:', rpcError);
+              throw new Error('Gagal membuat data wedding via RPC: ' + (rpcError.message || 'Unknown error'));
             }
 
             if (!newWeddingId) {
               throw new Error('RPC did not return wedding_id');
             }
 
+            // Validasi tipe data
+            if (typeof newWeddingId !== 'string') {
+              throw new Error('Invalid wedding_id type: expected string, got ' + typeof newWeddingId);
+            }
+
             weddingId = newWeddingId;
             role = 'owner';
             
             console.log('✅ Wedding created via RPC:', weddingId);
+          } else {
+            console.log('✅ User already has wedding:', weddingId);
           }
 
-          // 3. Validasi weddingId sebelum simpan ke store
-          if (!weddingId || typeof weddingId !== 'string') {
-            throw new Error('Invalid wedding_id');
-          }
-
-          // 4. Simpan ke store
+          // 3. Simpan ke store
           set({ 
             currentWeddingId: weddingId, 
-            userRole: role as 'owner' | 'member'
+            userRole: role as 'owner' | 'member',
+            isLoading: false
           });
 
           console.log('✅ Wedding session initialized:', { weddingId, role });
           
         } catch (error: any) {
           console.error('❌ Init session error:', error);
-          // Jangan throw error, biarkan aplikasi tetap berjalan
-          // User bisa retry manual sync nanti
+          
+          // Reset state ke default jika error
           set({ 
+            isLoading: false,
             currentWeddingId: null,
             userRole: null
           });
+          
+          // Throw error agar SupabaseSyncProvider bisa handle
+          throw error;
         }
       },
 
