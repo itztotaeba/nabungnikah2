@@ -76,40 +76,25 @@ export const useCollaborationStore = create<CollaborationState>()(
             return;
           }
 
-          // User belum punya wedding, buat baru
-          console.log('🆕 Creating new wedding for user');
+          // User belum punya wedding, buat baru menggunakan RPC
+          console.log('🆕 Creating new wedding for user via RPC...');
           
-          // Insert wedding_data baru
-          const { data: newWedding, error: weddingError } = await supabase
-            .from('wedding_data')
-            .insert({
-              user_id: user.id,
-              settings: {},
-              budget_items: [],
-              savings: [],
-              guests: [],
-              vendors: [],
-              tasks: [],
-            })
-            .select()
-            .single();
+          // Panggil fungsi database yang bypass RLS
+          const { data: newWeddingId, error: createError } = await supabase
+            .rpc('create_initial_wedding');
 
-          if (weddingError) throw weddingError;
+          if (createError) {
+            console.error('RPC Error:', createError);
+            throw createError;
+          }
 
-          // Insert ke wedding_members sebagai owner
-          const { error: memberInsertError } = await supabase
-            .from('wedding_members')
-            .insert({
-              wedding_id: newWedding.id,
-              user_id: user.id,
-              role: 'owner',
-            });
+          if (!newWeddingId) {
+            throw new Error('RPC did not return wedding_id');
+          }
 
-          if (memberInsertError) throw memberInsertError;
-
-          console.log('✅ New wedding created:', newWedding.id);
+          console.log('✅ New wedding created via RPC:', newWeddingId);
           set({
-            currentWeddingId: newWedding.id,
+            currentWeddingId: newWeddingId,
             userRole: 'owner',
             isLoading: false,
           });
@@ -118,12 +103,10 @@ export const useCollaborationStore = create<CollaborationState>()(
           await get().fetchMembers();
 
         } catch (error: any) {
-          console.error('Error initializing wedding:', error);
+          // Jangan tampilkan toast error, cukup log ke console
+          console.error('Gagal inisialisasi wedding:', error);
+          console.log('User bisa melakukan sync manual nanti jika diperlukan');
           set({ isLoading: false });
-          useToastStore.getState().addToast(
-            'Gagal menginisialisasi wedding: ' + (error.message || 'Unknown error'),
-            'error'
-          );
         }
       },
 
