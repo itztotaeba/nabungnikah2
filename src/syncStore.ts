@@ -247,30 +247,35 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
 let autoSyncTimer: ReturnType<typeof setTimeout> | null = null;
 
-useWeddingStore.subscribe((state, prevState) => {
-  const hasDataChanged = 
-    state.budgetItems !== prevState.budgetItems ||
-    state.savings !== prevState.savings ||
-    state.guests !== prevState.guests ||
-    state.vendors !== prevState.vendors ||
-    state.tasks !== prevState.tasks ||
-    state.settings !== prevState.settings;
+// FIX: Defer subscription to avoid circular dependency
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    useWeddingStore.subscribe((state, prevState) => {
+      const hasDataChanged = 
+        state.budgetItems !== prevState.budgetItems ||
+        state.savings !== prevState.savings ||
+        state.guests !== prevState.guests ||
+        state.vendors !== prevState.vendors ||
+        state.tasks !== prevState.tasks ||
+        state.settings !== prevState.settings;
+      
+      if (hasDataChanged) {
+        const { user } = useAuthStore.getState();
+        const { currentWeddingId } = useCollaborationStore.getState();
+        const { isSyncing, syncToCloud, isRemoteUpdate } = useSyncStore.getState();
+        
+        // FIX: Skip auto-sync jika ini adalah update dari remote
+        if (user && currentWeddingId && !isSyncing && !isRemoteUpdate) {
+          if (autoSyncTimer) {
+            clearTimeout(autoSyncTimer);
+          }
 
-  if (hasDataChanged) {
-    const { user } = useAuthStore.getState();
-    const { currentWeddingId } = useCollaborationStore.getState();
-    const { isSyncing, syncToCloud, isRemoteUpdate } = useSyncStore.getState();
-
-    // FIX: Skip auto-sync jika ini adalah update dari remote
-    if (user && currentWeddingId && !isSyncing && !isRemoteUpdate) {
-      if (autoSyncTimer) {
-        clearTimeout(autoSyncTimer);
+          autoSyncTimer = setTimeout(() => {
+            console.log('🔄 Auto-syncing to cloud...');
+            syncToCloud();
+          }, 2000);
+        }
       }
-
-      autoSyncTimer = setTimeout(() => {
-        console.log('🔄 Auto-syncing to cloud...');
-        syncToCloud();
-      }, 2000);
-    }
-  }
-});
+    });
+  }, 0);
+}
