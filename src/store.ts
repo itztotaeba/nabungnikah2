@@ -3,6 +3,7 @@
  * 
  * Zustand store dengan middleware persist untuk menyimpan data di LocalStorage.
  * Semua logika perhitungan menggunakan fungsi dari helpers.ts.
+ * Auto-sync ke cloud setiap kali ada perubahan data.
  */
 
 import { create } from 'zustand';
@@ -253,3 +254,51 @@ export const useWeddingStore = create<AppState>()(
     }
   )
 );
+
+// ============================================
+// AUTO-SYNC TO CLOUD (Debounce)
+// ============================================
+
+// Import stores untuk auto-sync
+import { useSyncStore } from './syncStore';
+import { useAuthStore } from './authStore';
+import { useCollaborationStore } from './collaborationStore';
+
+// Debounce timer untuk auto-sync
+let autoSyncTimer: ReturnType<typeof setTimeout> | null = null;
+
+// Subscribe ke perubahan state untuk auto-sync
+useWeddingStore.subscribe((state, prevState) => {
+  // Cek apakah ada perubahan pada data utama (bukan hanya UI state)
+  const hasDataChanged = 
+    state.budgetItems !== prevState.budgetItems ||
+    state.savings !== prevState.savings ||
+    state.guests !== prevState.guests ||
+    state.vendors !== prevState.vendors ||
+    state.tasks !== prevState.tasks ||
+    state.settings !== prevState.settings;
+
+  if (hasDataChanged) {
+    // Get auth dan collaboration state
+    const { user } = useAuthStore.getState();
+    const { currentWeddingId } = useCollaborationStore.getState();
+    const { isSyncing, syncToCloud } = useSyncStore.getState();
+
+    // Auto-sync hanya berjalan jika:
+    // 1. User sudah login
+    // 2. Ada currentWeddingId
+    // 3. Tidak sedang sync dari cloud (mencegah infinite loop)
+    if (user && currentWeddingId && !isSyncing) {
+      // Clear previous timer
+      if (autoSyncTimer) {
+        clearTimeout(autoSyncTimer);
+      }
+
+      // Set new timer dengan debounce 2 detik
+      autoSyncTimer = setTimeout(() => {
+        console.log('🔄 Auto-syncing to cloud...');
+        syncToCloud();
+      }, 2000);
+    }
+  }
+});
