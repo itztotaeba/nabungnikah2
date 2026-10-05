@@ -10,14 +10,14 @@ type SyncStatus = 'synced' | 'syncing' | 'offline' | 'error';
 interface SyncState {
   status: SyncStatus;
   lastSync: Date | null;
-  lastSyncTimestamp: string | null; // ISO timestamp untuk filter realtime
+  lastSyncTimestamp: string | null;
+  lastRemoteSyncTime: number | null; // Timestamp saat terakhir syncFromCloud berhasil
   isAutoSyncEnabled: boolean;
   isSyncing: boolean;
-  isRemoteUpdate: boolean; // Flag untuk mencegah sync loop
   
   // Actions
   syncToCloud: (showToast?: boolean) => Promise<boolean>;
-  syncFromCloud: (showToast?: boolean, isRealtime?: boolean) => Promise<boolean>;
+  syncFromCloud: (showToast?: boolean) => Promise<boolean>;
   setStatus: (status: SyncStatus) => void;
   setAutoSyncEnabled: (enabled: boolean) => void;
   setIsSyncing: (syncing: boolean) => void;
@@ -28,20 +28,13 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   status: 'synced',
   lastSync: null,
   lastSyncTimestamp: null,
+  lastRemoteSyncTime: null,
   isAutoSyncEnabled: true,
   isSyncing: false,
-  isRemoteUpdate: false,
 
   syncToCloud: async (showToast = false) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
-    const { isRemoteUpdate } = get();
-    
-    // FIX: Skip sync jika ini adalah update dari remote (mencegah loop)
-    if (isRemoteUpdate) {
-      console.log('⏭️ Skipping syncToCloud (remote update in progress)');
-      return false;
-    }
     
     if (!user) {
       console.log('No user logged in, skipping sync');
@@ -69,7 +62,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       
       const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore.getState();
       
-      // Generate unique timestamp untuk update ini
       const now = new Date().toISOString();
       
       const data = {
@@ -92,7 +84,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         throw error;
       }
 
-      // FIX: Simpan timestamp untuk filter realtime
       set({ 
         status: 'synced', 
         lastSync: new Date(),
@@ -134,7 +125,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
   },
 
-  syncFromCloud: async (showToast = false, isRealtime = false) => {
+  syncFromCloud: async (showToast = false) => {
     const { user } = useAuthStore.getState();
     const { currentWeddingId } = useCollaborationStore.getState();
     
@@ -160,7 +151,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
 
     try {
-      set({ status: 'syncing', isRemoteUpdate: true }); // Set flag untuk mencegah loop
+      set({ status: 'syncing' });
       
       const { data, error } = await supabase
         .from('wedding_data')
@@ -170,15 +161,14 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
       if (error) {
         if (error.code === 'PGRST116') {
-          set({ status: 'synced', isRemoteUpdate: false });
+          set({ status: 'synced' });
           return false;
         }
         throw error;
       }
 
       if (data) {
-        // FIX: Langsung REPLACE data lokal, jangan merge
-        // Ini memastikan data yang dihapus di cloud juga terhapus di lokal
+        // REPLACE data lokal dengan data dari cloud
         const { importData } = useWeddingStore.getState();
         
         importData({
@@ -190,11 +180,12 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           tasks: Array.isArray(data.tasks) ? data.tasks : [],
         });
 
+        // FIX: Update lastRemoteSyncTime untuk mencegah auto-sync loop
         set({ 
           status: 'synced', 
           lastSync: new Date(),
           lastSyncTimestamp: data.updated_at || new Date().toISOString(),
-          isRemoteUpdate: false // Reset flag
+          lastRemoteSyncTime: Date.now() // ← KUNCI: Track kapan terakhir terima dari remote
         });
         
         if (showToast) {
@@ -207,11 +198,9 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         return true;
       }
       
-      set({ isRemoteUpdate: false });
       return false;
     } catch (error: any) {
       console.error('Error syncing from cloud:', error);
-      set({ isRemoteUpdate: false });
       
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
@@ -242,12 +231,14 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 }));
 
 // ============================================
-// AUTO-SYNC TO CLOUD (Debounce)
+// AUTO-SYNC TO CLOUD (Debounce dengan Throttle)
 // ============================================
 
 let autoSyncTimer: ReturnType<typeof setTimeout> | null = null;
+const REMOTE_SYNC_THROTTLE_MS = 5000; // 5 detik throttle setelah syncFromCloud
+const AUTO_SYNC_DEBOUNCE_MS = 1500; // 1.5 detik debounce untuk auto-sync
 
-// FIX: Defer subscription to avoid circular dependency
+// Defer subscription to avoid circular dependency
 if (typeof window !== 'undefined') {
   setTimeout(() => {
     useWeddingStore.subscribe((state, prevState) => {
@@ -262,10 +253,21 @@ if (typeof window !== 'undefined') {
       if (hasDataChanged) {
         const { user } = useAuthStore.getState();
         const { currentWeddingId } = useCollaborationStore.getState();
-        const { isSyncing, syncToCloud, isRemoteUpdate } = useSyncStore.getState();
+        const { isSyncing, syncToCloud, lastRemoteSyncTime } = useSyncStore.getState();
         
-        // FIX: Skip auto-sync jika ini adalah update dari remote
-        if (user && currentWeddingId && !isSyncing && !isRemoteUpdate) {
+        // FIX 1: Skip auto-sync jika baru saja terima update dari remote (mencegah loop)
+        const now = Date.now();
+        const timeSinceLastRemoteSync = lastRemoteSyncTime 
+          ? now - lastRemoteSyncTime 
+          : Infinity;
+        
+        if (timeSinceLastRemoteSync < REMOTE_SYNC_THROTTLE_MS) {
+          console.log(`⏭️ Skipping auto-sync (recent remote sync ${timeSinceLastRemoteSync}ms ago)`);
+          return;
+        }
+        
+        // FIX 2: Skip auto-sync jika sedang syncing
+        if (user && currentWeddingId && !isSyncing) {
           if (autoSyncTimer) {
             clearTimeout(autoSyncTimer);
           }
@@ -273,7 +275,7 @@ if (typeof window !== 'undefined') {
           autoSyncTimer = setTimeout(() => {
             console.log('🔄 Auto-syncing to cloud...');
             syncToCloud();
-          }, 2000);
+          }, AUTO_SYNC_DEBOUNCE_MS);
         }
       }
     });
