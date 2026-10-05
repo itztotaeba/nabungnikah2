@@ -173,13 +173,25 @@ export default function Dashboard() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Target/Bulan</p>
-              <p className="text-xl font-bold text-gray-800 mt-1">{formatCurrency(monthlyTarget, settings.currency)}</p>
+              <p className="text-xl font-bold text-gray-800 mt-1">
+                {monthlyTarget > 0 && !isNaN(monthlyTarget) ? (
+                  formatCurrency(monthlyTarget, settings.currency)
+                ) : (
+                  <span className="text-sm font-normal text-gray-400 italic">Belum dihitung</span>
+                )}
+              </p>
             </div>
             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
               <Calendar size={20} className="text-purple-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">{remainingMonths} bulan tersisa</p>
+          <p className="text-xs text-gray-400 mt-2">
+            {remainingMonths > 0 && !isNaN(remainingMonths) ? (
+              `${remainingMonths} bulan tersisa`
+            ) : (
+              <span className="italic">Atur tanggal di Pengaturan</span>
+            )}
+          </p>
         </div>
 
         {/* Total Tamu */}
