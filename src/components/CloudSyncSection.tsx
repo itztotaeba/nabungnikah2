@@ -3,7 +3,7 @@ import { useAuthStore } from '../authStore';
 import { useSyncStore } from '../syncStore';
 import { useToastStore } from '../toastStore';
 import AuthModal from './AuthModal';
-import { Cloud, CloudDownload, LogIn, LogOut } from 'lucide-react';
+import { Cloud, Download, LogIn, LogOut } from 'lucide-react';
 
 export default function CloudSyncSection() {
   const { user, signOut } = useAuthStore();
@@ -117,7 +117,7 @@ export default function CloudSyncSection() {
           disabled={isSyncing}
           className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <CloudDownload size={18} />
+          <Download size={18} />
           <span>Muat dari Cloud</span>
         </button>
       </div>
