@@ -384,18 +384,24 @@ export const useCollaborationStore = create<CollaborationState>()(
         }
 
         try {
-          // Validasi file
-          if (!file.type.startsWith('image/')) {
-            return { success: false, error: 'File harus berupa gambar' };
+          // Validasi ketat: hanya PNG dan JPG
+          const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+          const fileExtension = file.name.toLowerCase().split('.').pop();
+          
+          if (!allowedTypes.includes(file.type) || !['png', 'jpg', 'jpeg'].includes(fileExtension || '')) {
+            return { success: false, error: 'Format file tidak valid. Hanya PNG dan JPG yang diperbolehkan.' };
           }
 
-          if (file.size > 5 * 1024 * 1024) { // 5MB
-            return { success: false, error: 'Ukuran file maksimal 5MB' };
+          // Validasi ketat: maksimal 1MB
+          const maxSize = 1 * 1024 * 1024; // 1MB dalam bytes
+          if (file.size > maxSize) {
+            return { success: false, error: 'Ukuran file terlalu besar. Maksimal 1MB.' };
           }
 
-          // Generate unique filename
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${user.id}/avatar.${fileExt}`;
+          // Generate unique filename dengan timestamp untuk mencegah cache issue
+          const fileExt = fileExtension;
+          const timestamp = Date.now();
+          const fileName = `${user.id}/avatar-${timestamp}.${fileExt}`;
           const filePath = `${fileName}`;
 
           // Upload ke Supabase Storage

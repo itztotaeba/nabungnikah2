@@ -32,6 +32,28 @@ export default function AvatarUpload() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validasi ketat: hanya PNG dan JPG
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    const fileExtension = file.name.toLowerCase().split('.').pop();
+    
+    if (!allowedTypes.includes(file.type) || !['png', 'jpg', 'jpeg'].includes(fileExtension || '')) {
+      addToast('Format file tidak valid. Hanya PNG dan JPG yang diperbolehkan.', 'error');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
+    // Validasi ketat: maksimal 1MB
+    const maxSize = 1 * 1024 * 1024; // 1MB dalam bytes
+    if (file.size > maxSize) {
+      addToast('Ukuran file terlalu besar. Maksimal 1MB.', 'error');
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      return;
+    }
+
     setIsUploading(true);
     const result = await uploadAvatar(file);
     setIsUploading(false);
@@ -135,7 +157,7 @@ export default function AvatarUpload() {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept=".png,.jpg,.jpeg"
             onChange={handleFileSelect}
             className="hidden"
             disabled={isUploading}
@@ -160,7 +182,7 @@ export default function AvatarUpload() {
           </button>
 
           <p className="text-xs text-gray-500 mt-2">
-            Format: JPG, PNG, GIF. Maksimal 5MB.
+            Format: PNG, JPG. Maksimal 1MB.
           </p>
         </div>
       </div>
