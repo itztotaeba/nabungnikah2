@@ -53,7 +53,15 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
           try {
             // LANGKAH 1: Inisialisasi wedding session dulu (dapatkan currentWeddingId)
             const initializeWeddingSession = useCollaborationStore.getState().initializeWeddingSession;
-            await initializeWeddingSession();
+            
+            try {
+              await initializeWeddingSession();
+            } catch (initError: any) {
+              console.error('❌ Initialize wedding session failed:', initError);
+              addToast('Gagal menginisialisasi wedding: ' + (initError.message || 'Unknown error'), 'error');
+              setIsSyncing(false);
+              return;
+            }
 
             // Cek apakah wedding session berhasil diinisialisasi
             const { currentWeddingId } = useCollaborationStore.getState();
@@ -74,9 +82,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
               // Jika sync gagal, tampilkan toast warning
               addToast('Gagal memuat data dari cloud. Silakan coba sync manual.', 'warning');
             }
-          } catch (error) {
-            // Jangan tampilkan toast error saat inisialisasi wedding gagal
-            // Cukup log ke console agar tidak mengganggu pengguna
+          } catch (error: any) {
             console.error('❌ Gagal inisialisasi wedding:', error);
             console.log('💡 User bisa melakukan sync manual nanti jika diperlukan');
             
