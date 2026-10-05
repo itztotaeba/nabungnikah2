@@ -1,13 +1,14 @@
 import { useState, useRef } from 'react';
 import { useWeddingStore } from '../store';
 import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculateTotalBudget, calculateTotalSavings } from '../helpers';
+import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
-import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload } from 'lucide-react';
+import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet } from 'lucide-react';
 import CloudSyncSection from './CloudSyncSection';
 import CollaborationSection from './CollaborationSection';
 
 export default function SettingsPage() {
-  const { settings, updateSettings, resetData, importData, budgetItems, savings, guests } = useWeddingStore();
+  const { settings, updateSettings, resetData, importData, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
   const { addToast } = useToastStore();
   
   const [showConfirm, setShowConfirm] = useState(false);
@@ -73,6 +74,23 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Export error:', error);
       addToast('Gagal meng-export data', 'error');
+    }
+  };
+
+  // ============================================
+  // EXPORT EXCEL
+  // ============================================
+  const handleExportExcel = () => {
+    try {
+      if (budgetItems.length === 0 && guests.length === 0 && vendors.length === 0 && tasks.length === 0) {
+        addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
+        return;
+      }
+      exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks });
+      addToast('File Excel berhasil didownload!', 'success');
+    } catch (error) {
+      console.error('Excel export error:', error);
+      addToast('Gagal membuat file Excel', 'error');
     }
   };
 
@@ -329,13 +347,22 @@ export default function SettingsPage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Export Button */}
+          {/* Export JSON Button */}
           <button
             onClick={handleExport}
             className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all font-medium"
           >
             <Download size={18} />
             <span>Export Data (JSON)</span>
+          </button>
+
+          {/* Export Excel Button */}
+          <button
+            onClick={handleExportExcel}
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg hover:shadow-[#D4A843]/20 transition-all font-medium"
+          >
+            <FileSpreadsheet size={18} />
+            <span>Export Excel (.xlsx)</span>
           </button>
 
           {/* Import Button */}
@@ -355,6 +382,10 @@ export default function SettingsPage() {
             onChange={handleFileChange}
             className="hidden"
           />
+        </div>
+
+        <div className="mt-3 text-xs text-gray-500">
+          💡 Download semua data dalam format Excel untuk backup dan editing offline
         </div>
 
         <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
