@@ -113,7 +113,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
 
     if (!currentWeddingId) {
-      console.log('No wedding ID, skipping sync');
+      console.warn('Cannot sync: No currentWeddingId');
       return false;
     }
 
@@ -131,7 +131,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     try {
       set({ status: 'syncing' });
       
-      // Fetch data dari Supabase
+      // Fetch data dari Supabase menggunakan currentWeddingId yang sudah pasti ada
       const { data, error } = await supabase
         .from('wedding_data')
         .select('*')
@@ -178,7 +178,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       
       return false;
     } catch (error: any) {
-      console.error('Error syncing from cloud:', error);
+      console.error('Sync error:', error);
       
       if (!navigator.onLine || error.message?.includes('Failed to fetch')) {
         set({ status: 'offline' });
@@ -198,7 +198,8 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         }
       }
       
-      return false;
+      // Lempar error agar Provider bisa catch dan tampilkan toast gagal
+      throw error;
     }
   },
 
