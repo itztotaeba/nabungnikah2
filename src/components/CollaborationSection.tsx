@@ -20,6 +20,13 @@ export default function CollaborationSection() {
     }
   }, [user, currentWeddingId, isLoading]);
 
+  // Fetch members saat component mount atau saat currentWeddingId berubah
+  useEffect(() => {
+    if (currentWeddingId) {
+      fetchMembers();
+    }
+  }, [currentWeddingId, fetchMembers]);
+
   const handleInitialize = async () => {
     setIsInitializing(true);
     await initializeWedding();
@@ -149,55 +156,80 @@ export default function CollaborationSection() {
       {/* Members List */}
       <div>
         <h4 className="text-sm font-medium text-gray-700 mb-3">Anggota Tim</h4>
-        <div className="space-y-2">
-          {members.map((member) => {
-            const isOwner = member.role === 'owner';
-            const isCurrentUser = member.user_id === user?.id;
-            
-            return (
-              <div
-                key={member.id}
-                className="flex items-center justify-between p-3 bg-[#FDFBF7] rounded-xl border border-[#E8E0D4]"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    isOwner ? 'bg-amber-100' : 'bg-blue-100'
-                  }`}>
-                    {isOwner ? (
-                      <Crown size={16} className="text-amber-600" />
-                    ) : (
-                      <span className="text-sm font-semibold text-blue-600">
-                        {member.profiles?.email?.charAt(0).toUpperCase() || '?'}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-800">
-                      {member.profiles?.email || 'Unknown'}
-                      {isCurrentUser && (
-                        <span className="ml-2 text-xs text-gray-500">(Anda)</span>
-                      )}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {isOwner ? 'Owner' : 'Member'} • Bergabung {new Date(member.joined_at).toLocaleDateString('id-ID')}
-                    </p>
-                  </div>
-                </div>
+        
+        {/* Loading state */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-6">
+            <Loader2 size={20} className="animate-spin text-[#87A878]" />
+            <span className="ml-2 text-sm text-gray-600">Memuat anggota...</span>
+          </div>
+        )}
 
-                {/* Remove button (hanya untuk owner dan bukan diri sendiri) */}
-                {userRole === 'owner' && !isCurrentUser && (
-                  <button
-                    onClick={() => handleRemove(member.user_id, member.profiles?.email || '')}
-                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                    title="Hapus akses"
-                  >
-                    <Trash2 size={16} className="text-red-600" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {/* Empty state */}
+        {!isLoading && members.length === 0 && (
+          <div className="text-center py-6 bg-[#FDFBF7] rounded-xl border border-[#E8E0D4]">
+            <Users size={32} className="mx-auto text-gray-400 mb-2" />
+            <p className="text-sm text-gray-600">
+              Anda adalah satu-satunya anggota di event ini.
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Undang pasangan Anda untuk mulai berkolaborasi!
+            </p>
+          </div>
+        )}
+
+        {/* Members list */}
+        {!isLoading && members.length > 0 && (
+          <div className="space-y-2">
+            {members.map((member) => {
+              const isOwner = member.role === 'owner';
+              const isCurrentUser = member.user_id === user?.id;
+              
+              return (
+                <div
+                  key={member.id}
+                  className="flex items-center justify-between p-3 bg-[#FDFBF7] rounded-xl border border-[#E8E0D4]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      isOwner ? 'bg-amber-100' : 'bg-blue-100'
+                    }`}>
+                      {isOwner ? (
+                        <Crown size={16} className="text-amber-600" />
+                      ) : (
+                        <span className="text-sm font-semibold text-blue-600">
+                          {member.profiles?.email?.charAt(0).toUpperCase() || '?'}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        {member.profiles?.email || 'Unknown'}
+                        {isCurrentUser && (
+                          <span className="ml-2 text-xs text-gray-500">(Anda)</span>
+                        )}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {isOwner ? 'Owner' : 'Member'} • Bergabung {new Date(member.joined_at).toLocaleDateString('id-ID')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Remove button (hanya untuk owner dan bukan diri sendiri) */}
+                  {userRole === 'owner' && !isCurrentUser && (
+                    <button
+                      onClick={() => handleRemove(member.user_id, member.profiles?.email || '')}
+                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Hapus akses"
+                    >
+                      <Trash2 size={16} className="text-red-600" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Info Box */}
