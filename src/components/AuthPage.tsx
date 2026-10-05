@@ -78,14 +78,14 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#B76E79] to-[#87A878] rounded-2xl mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#D4A843] to-[#2F6A43] rounded-2xl mb-4 shadow-lg">
             <Heart size={32} className="text-white" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-gray-800 mb-2">
-            WeddingPlan
+            Mahes&Aira
           </h1>
           <p className="text-sm text-gray-500">
-            Rencanakan pernikahan impianmu
+            Wedding Plan
           </p>
         </div>
 
@@ -187,11 +187,6 @@ export default function AuthPage() {
             </p>
           </div>
         </div>
-
-        {/* Footer */}
-        <p className="text-center text-xs text-gray-400 mt-6">
-          © 2024 WeddingPlan. All rights reserved.
-        </p>
       </div>
     </div>
   );
