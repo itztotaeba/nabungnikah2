@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useWeddingStore, Guest } from '../store';
 import { formatCurrency } from '../helpers';
+import { formatAuditInfo } from '../helpers/timeAgo';
 import { generateGuestPDF } from '../helpers/pdfGenerator';
 import { useToastStore } from '../toastStore';
 import {
@@ -703,6 +704,12 @@ export default function GuestManager() {
                       {formatCurrency(guest.estimatedGift, settings.currency)}
                     </span>
                   )}
+                </div>
+                {/* Audit Info */}
+                <div className="pt-2 border-t border-gray-100">
+                  <p className="text-xs text-gray-500 text-right">
+                    {formatAuditInfo(guest.updatedBy, guest.updatedAt)}
+                  </p>
                 </div>
               </div>
             ))}

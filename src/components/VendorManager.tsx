@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus } from '../store';
 import { formatCurrency } from '../helpers';
+import { formatAuditInfo } from '../helpers/timeAgo';
 import { useToastStore } from '../toastStore';
 import ComparisonAnalysis from './ComparisonAnalysis';
 import {
@@ -322,6 +323,13 @@ export default function VendorManager() {
                       <span>Jatuh tempo: {new Date(vendor.dueDateFinal).toLocaleDateString('id-ID')}</span>
                     </div>
                   )}
+                </div>
+
+                {/* Audit Info */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs text-gray-500 text-right">
+                    {formatAuditInfo(vendor.updatedBy, vendor.updatedAt)}
+                  </p>
                 </div>
 
                 {/* Actions */}

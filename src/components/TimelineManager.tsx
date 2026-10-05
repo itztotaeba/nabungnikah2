@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useWeddingStore, Task, TaskCategory, TaskAssignee } from '../store';
 import { calculateRemainingMonths } from '../helpers';
+import { formatAuditInfo } from '../helpers/timeAgo';
 import { useToastStore } from '../toastStore';
 import {
   Plus,
@@ -344,6 +345,12 @@ export default function TimelineManager() {
                                   {assigneeIcon(taskAssignee)}
                                   {taskAssignee}
                                 </span>
+                              </div>
+                              {/* Audit Info */}
+                              <div className="mt-2 pt-2 border-t border-gray-100">
+                                <p className="text-xs text-gray-500 text-right">
+                                  {formatAuditInfo(task?.updatedBy, task?.updatedAt)}
+                                </p>
                               </div>
                             </div>
 
