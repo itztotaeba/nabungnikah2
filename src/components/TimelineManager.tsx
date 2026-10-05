@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
-import { useWeddingStore, Task, TaskCategory } from '../store';
+import { useWeddingStore, Task, TaskCategory, TaskAssignee } from '../store';
 import { calculateRemainingMonths } from '../helpers';
 import { useToastStore } from '../toastStore';
-import Modal from './Modal';
 import {
   Plus,
   Trash2,
@@ -10,11 +9,13 @@ import {
   Circle,
   Calendar,
   Clock,
-  Tag,
   X,
+  User,
+  Users,
 } from 'lucide-react';
 
 const TASK_CATEGORIES: TaskCategory[] = ['Administrasi', 'Vendor', 'Pakaian', 'Dekorasi', 'Undangan', 'Lainnya'];
+const TASK_ASSIGNEES: TaskAssignee[] = ['Pria', 'Wanita', 'Bersama'];
 
 const categoryBadge = (category: TaskCategory) => {
   switch (category) {
@@ -33,6 +34,23 @@ const categoryBadge = (category: TaskCategory) => {
   }
 };
 
+const assigneeBadge = (assignee: TaskAssignee) => {
+  if (assignee === 'Pria') {
+    return 'bg-blue-100 text-blue-700 border-blue-200';
+  }
+  if (assignee === 'Wanita') {
+    return 'bg-pink-100 text-pink-700 border-pink-200';
+  }
+  return 'bg-purple-100 text-purple-700 border-purple-200';
+};
+
+const assigneeIcon = (assignee: TaskAssignee) => {
+  if (assignee === 'Pria' || assignee === 'Wanita') {
+    return <User size={12} />;
+  }
+  return <Users size={12} />;
+};
+
 export default function TimelineManager() {
   const { settings, tasks, addTask, toggleTask, deleteTask } = useWeddingStore();
   const { addToast } = useToastStore();
@@ -42,6 +60,7 @@ export default function TimelineManager() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<TaskCategory>('Administrasi');
   const [monthsBefore, setMonthsBefore] = useState('3');
+  const [assignee, setAssignee] = useState<TaskAssignee>('Bersama');
 
   // Calculate current month
   const currentMonth = settings.weddingDate ? calculateRemainingMonths(settings.weddingDate) : null;
@@ -50,6 +69,24 @@ export default function TimelineManager() {
   const completedTasks = tasks.filter(t => t.isCompleted).length;
   const totalTasks = tasks.length;
   const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+  // Calculate assignee statistics
+  const assigneeStats = useMemo(() => {
+    const stats = {
+      Pria: { total: 0, completed: 0 },
+      Wanita: { total: 0, completed: 0 },
+      Bersama: { total: 0, completed: 0 },
+    };
+
+    tasks.forEach(task => {
+      stats[task.assignee].total++;
+      if (task.isCompleted) {
+        stats[task.assignee].completed++;
+      }
+    });
+
+    return stats;
+  }, [tasks]);
 
   // Group tasks by monthsBefore
   const groupedTasks = useMemo(() => {
@@ -79,6 +116,7 @@ export default function TimelineManager() {
     setDescription('');
     setCategory('Administrasi');
     setMonthsBefore('3');
+    setAssignee('Bersama');
     setShowForm(false);
   };
 
@@ -96,6 +134,7 @@ export default function TimelineManager() {
       category,
       monthsBefore: parseInt(monthsBefore),
       isDefault: false,
+      assignee,
     });
 
     addToast('Tugas berhasil ditambahkan', 'success');
@@ -147,6 +186,52 @@ export default function TimelineManager() {
         <p className="text-right text-sm font-semibold text-[#87A878] mt-2">
           {progressPercentage.toFixed(0)}%
         </p>
+      </div>
+
+      {/* Assignee Statistics */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {(['Pria', 'Wanita', 'Bersama'] as const).map((assigneeType) => {
+          const stats = assigneeStats[assigneeType];
+          const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
+          
+          return (
+            <div key={assigneeType} className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  assigneeType === 'Pria' ? 'bg-blue-100' :
+                  assigneeType === 'Wanita' ? 'bg-pink-100' : 'bg-purple-100'
+                }`}>
+                  {assigneeType === 'Bersama' ? (
+                    <Users size={16} className="text-purple-600" />
+                  ) : (
+                    <User size={16} className={
+                      assigneeType === 'Pria' ? 'text-blue-600' : 'text-pink-600'
+                    } />
+                  )}
+                </div>
+                <span className={`text-sm font-semibold ${
+                  assigneeType === 'Pria' ? 'text-blue-700' :
+                  assigneeType === 'Wanita' ? 'text-pink-700' : 'text-purple-700'
+                }`}>
+                  {assigneeType}
+                </span>
+              </div>
+              <p className="text-2xl font-bold text-gray-800">
+                {stats.completed}<span className="text-sm font-normal text-gray-500">/{stats.total}</span>
+              </p>
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-500 ${
+                    assigneeType === 'Pria' ? 'bg-blue-500' :
+                    assigneeType === 'Wanita' ? 'bg-pink-500' : 'bg-purple-500'
+                  }`}
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">{percentage.toFixed(0)}% selesai</p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Current Month Indicator */}
@@ -229,9 +314,13 @@ export default function TimelineManager() {
                             {task.description && (
                               <p className="text-sm text-gray-500 mt-1">{task.description}</p>
                             )}
-                            <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-2 mt-2 flex-wrap">
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${categoryBadge(task.category)}`}>
                                 {task.category}
+                              </span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium border flex items-center gap-1 ${assigneeBadge(task.assignee)}`}>
+                                {assigneeIcon(task.assignee)}
+                                {task.assignee}
                               </span>
                             </div>
                           </div>
@@ -326,6 +415,27 @@ export default function TimelineManager() {
                 <option value="1">1 Bulan</option>
                 <option value="0">Hari H (0 Bulan)</option>
               </select>
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Ditugaskan Kepada</label>
+              <div className="flex gap-2">
+                {TASK_ASSIGNEES.map((assigneeType) => (
+                  <button
+                    key={assigneeType}
+                    type="button"
+                    onClick={() => setAssignee(assigneeType)}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
+                      assignee === assigneeType
+                        ? assigneeBadge(assigneeType) + ' border-current'
+                        : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
+                    }`}
+                  >
+                    {assigneeIcon(assigneeType)}
+                    {assigneeType}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="sm:col-span-2">
