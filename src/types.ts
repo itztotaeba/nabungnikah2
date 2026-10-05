@@ -17,6 +17,8 @@ export interface BudgetItem {
   estimatedCost: number;
   actualCost: number;
   status: 'Belum' | 'DP' | 'Lunas'; // Auto-calculated based on costs
+  updatedBy?: string; // Email user yang terakhir mengubah
+  updatedAt?: string; // ISO timestamp
 }
 
 export interface SavingsEntry {
@@ -25,6 +27,8 @@ export interface SavingsEntry {
   amount: number;
   source: string;
   note: string;
+  updatedBy?: string; // Email user yang terakhir mengubah
+  updatedAt?: string; // ISO timestamp
 }
 
 export interface Guest {
@@ -34,6 +38,8 @@ export interface Guest {
   pax: number;
   estimatedGift: number;
   rsvpStatus: 'Belum Respon' | 'Hadir' | 'Tidak Hadir';
+  updatedBy?: string; // Email user yang terakhir mengubah
+  updatedAt?: string; // ISO timestamp
 }
 
 // ============================================
@@ -61,6 +67,8 @@ export interface Vendor {
   rating?: number; // 1-5
   review?: string;
   createdAt: string;
+  updatedBy?: string; // Email user yang terakhir mengubah
+  updatedAt?: string; // ISO timestamp
 }
 
 // ============================================
@@ -79,6 +87,8 @@ export interface Task {
   completedAt?: string; // ISO Date
   isDefault: boolean; // True untuk template bawaan, False untuk custom user
   assignee: TaskAssignee; // Pembagian tugas: Pria, Wanita, atau Bersama
+  updatedBy?: string; // Email user yang terakhir mengubah
+  updatedAt?: string; // ISO timestamp
 }
 
 export interface AppState {

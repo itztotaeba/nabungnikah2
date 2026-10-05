@@ -9,6 +9,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { calculateItemStatus, generateId, getDefaultSettings } from './helpers';
+import { getAuditMetadata } from './helpers/auditTrail';
 import { AppState } from './types';
 import { defaultTasks } from './data/defaultTasks';
 
@@ -62,27 +63,34 @@ export const useWeddingStore = create<AppState>()(
 
       // ---- Budget Items ----
       addBudgetItem: (item) =>
-        set((state) => ({
-          budgetItems: [
-            ...state.budgetItems,
-            {
-              ...item,
-              id: generateId(),
-              status: calculateItemStatus(item.estimatedCost, item.actualCost),
-            },
-          ],
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            budgetItems: [
+              ...state.budgetItems,
+              {
+                ...item,
+                id: generateId(),
+                status: calculateItemStatus(item.estimatedCost, item.actualCost),
+                ...audit,
+              },
+            ],
+          };
+        }),
 
       updateBudgetItem: (id, updates) =>
-        set((state) => ({
-          budgetItems: state.budgetItems.map((item) => {
-            if (item.id !== id) return item;
-            const updated = { ...item, ...updates };
-            // Auto-calculate status based on costs
-            updated.status = calculateItemStatus(updated.estimatedCost, updated.actualCost);
-            return updated;
-          }),
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            budgetItems: state.budgetItems.map((item) => {
+              if (item.id !== id) return item;
+              const updated = { ...item, ...updates, ...audit };
+              // Auto-calculate status based on costs
+              updated.status = calculateItemStatus(updated.estimatedCost, updated.actualCost);
+              return updated;
+            }),
+          };
+        }),
 
       deleteBudgetItem: (id) =>
         set((state) => ({
@@ -91,15 +99,19 @@ export const useWeddingStore = create<AppState>()(
 
       // ---- Savings ----
       addSavings: (entry) =>
-        set((state) => ({
-          savings: [
-            ...state.savings,
-            {
-              ...entry,
-              id: generateId(),
-            },
-          ],
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            savings: [
+              ...state.savings,
+              {
+                ...entry,
+                id: generateId(),
+                ...audit,
+              },
+            ],
+          };
+        }),
 
       deleteSavings: (id) =>
         set((state) => ({
@@ -108,22 +120,29 @@ export const useWeddingStore = create<AppState>()(
 
       // ---- Guests ----
       addGuest: (guest) =>
-        set((state) => ({
-          guests: [
-            ...state.guests,
-            {
-              ...guest,
-              id: generateId(),
-            },
-          ],
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            guests: [
+              ...state.guests,
+              {
+                ...guest,
+                id: generateId(),
+                ...audit,
+              },
+            ],
+          };
+        }),
 
       updateGuest: (id, updates) =>
-        set((state) => ({
-          guests: state.guests.map((guest) =>
-            guest.id === id ? { ...guest, ...updates } : guest
-          ),
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            guests: state.guests.map((guest) =>
+              guest.id === id ? { ...guest, ...updates, ...audit } : guest
+            ),
+          };
+        }),
 
       deleteGuest: (id) =>
         set((state) => ({
@@ -132,28 +151,35 @@ export const useWeddingStore = create<AppState>()(
 
       // ---- Vendors ----
       addVendor: (vendor) =>
-        set((state) => ({
-          vendors: [
-            ...state.vendors,
-            {
-              ...vendor,
-              id: generateId(),
-              remainingBalance: vendor.dealPrice - vendor.dpAmount,
-              createdAt: new Date().toISOString(),
-            },
-          ],
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            vendors: [
+              ...state.vendors,
+              {
+                ...vendor,
+                id: generateId(),
+                remainingBalance: vendor.dealPrice - vendor.dpAmount,
+                createdAt: new Date().toISOString(),
+                ...audit,
+              },
+            ],
+          };
+        }),
 
       updateVendor: (id, updates) =>
-        set((state) => ({
-          vendors: state.vendors.map((vendor) => {
-            if (vendor.id !== id) return vendor;
-            const updated = { ...vendor, ...updates };
-            // Auto-calculate remainingBalance
-            updated.remainingBalance = updated.dealPrice - updated.dpAmount;
-            return updated;
-          }),
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            vendors: state.vendors.map((vendor) => {
+              if (vendor.id !== id) return vendor;
+              const updated = { ...vendor, ...updates, ...audit };
+              // Auto-calculate remainingBalance
+              updated.remainingBalance = updated.dealPrice - updated.dpAmount;
+              return updated;
+            }),
+          };
+        }),
 
       deleteVendor: (id) =>
         set((state) => ({
@@ -162,28 +188,36 @@ export const useWeddingStore = create<AppState>()(
 
       // ---- Tasks ----
       addTask: (task) =>
-        set((state) => ({
-          tasks: [
-            ...state.tasks,
-            {
-              ...task,
-              id: generateId(),
-              isCompleted: false,
-            },
-          ],
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            tasks: [
+              ...state.tasks,
+              {
+                ...task,
+                id: generateId(),
+                isCompleted: false,
+                ...audit,
+              },
+            ],
+          };
+        }),
 
       toggleTask: (id) =>
-        set((state) => ({
-          tasks: state.tasks.map((task) => {
-            if (task.id !== id) return task;
-            return {
-              ...task,
-              isCompleted: !task.isCompleted,
-              completedAt: !task.isCompleted ? new Date().toISOString() : undefined,
-            };
-          }),
-        })),
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            tasks: state.tasks.map((task) => {
+              if (task.id !== id) return task;
+              return {
+                ...task,
+                isCompleted: !task.isCompleted,
+                completedAt: !task.isCompleted ? new Date().toISOString() : undefined,
+                ...audit,
+              };
+            }),
+          };
+        }),
 
       deleteTask: (id) =>
         set((state) => ({

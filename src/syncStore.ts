@@ -4,6 +4,7 @@ import { useAuthStore } from './authStore';
 import { useWeddingStore } from './store';
 import { useToastStore } from './toastStore';
 import { useCollaborationStore } from './collaborationStore';
+import { mergeWithConflictDetection } from './helpers/auditTrail';
 
 type SyncStatus = 'synced' | 'syncing' | 'offline' | 'error';
 
@@ -183,16 +184,76 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           const safeVendors = Array.isArray(data.vendors) ? data.vendors : [];
           const safeTasks = Array.isArray(data.tasks) ? data.tasks : [];
 
-          // PENTING: Update state SETELAH data berhasil divalidasi
+          // CONFLICT DETECTION: Merge data lokal dengan data cloud
+          const { 
+            budgetItems: localBudgetItems,
+            savings: localSavings,
+            guests: localGuests,
+            vendors: localVendors,
+            tasks: localTasks,
+          } = useWeddingStore.getState();
+
+          let hasConflict = false;
+
+          const mergedBudgetItems = mergeWithConflictDetection(
+            localBudgetItems,
+            safeBudgetItems,
+            (local, remote) => {
+              console.warn('⚠️ Conflict detected in budget item:', local.id);
+              hasConflict = true;
+            }
+          );
+
+          const mergedSavings = mergeWithConflictDetection(
+            localSavings,
+            safeSavings,
+            (local, remote) => {
+              console.warn('⚠️ Conflict detected in savings:', local.id);
+              hasConflict = true;
+            }
+          );
+
+          const mergedGuests = mergeWithConflictDetection(
+            localGuests,
+            safeGuests,
+            (local, remote) => {
+              console.warn('⚠️ Conflict detected in guest:', local.id);
+              hasConflict = true;
+            }
+          );
+
+          const mergedVendors = mergeWithConflictDetection(
+            localVendors,
+            safeVendors,
+            (local, remote) => {
+              console.warn('⚠️ Conflict detected in vendor:', local.id);
+              hasConflict = true;
+            }
+          );
+
+          const mergedTasks = mergeWithConflictDetection(
+            localTasks,
+            safeTasks,
+            (local, remote) => {
+              console.warn('⚠️ Conflict detected in task:', local.id);
+              hasConflict = true;
+            }
+          );
+
+          if (hasConflict) {
+            console.log('🔀 Conflicts detected and resolved (remote wins strategy)');
+          }
+
+          // PENTING: Update state SETELAH data berhasil divalidasi dan di-merge
           const { importData } = useWeddingStore.getState();
           
           importData({
             settings: data.settings,
-            budgetItems: safeBudgetItems,
-            savings: safeSavings,
-            guests: safeGuests,
-            vendors: safeVendors,
-            tasks: safeTasks,
+            budgetItems: mergedBudgetItems,
+            savings: mergedSavings,
+            guests: mergedGuests,
+            vendors: mergedVendors,
+            tasks: mergedTasks,
           });
 
           set({ 
@@ -203,8 +264,10 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           // Tampilkan toast hanya jika showToast true (untuk manual sync)
           if (showToast) {
             useToastStore.getState().addToast(
-              'Data berhasil dimuat dari cloud',
-              'success'
+              hasConflict 
+                ? 'Data berhasil dimuat dari cloud (beberapa konflik terdeteksi dan diselesaikan)'
+                : 'Data berhasil dimuat dari cloud',
+              hasConflict ? 'warning' : 'success'
             );
           }
           
