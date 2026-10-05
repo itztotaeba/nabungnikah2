@@ -138,52 +138,44 @@ export const useCollaborationStore = create<CollaborationState>()(
         try {
           set({ isLoading: true });
 
-          // 1. Cek apakah user sudah punya wedding_id
+          // LANGKAH 1: Panggil RPC (fungsi di database sudah pintar, akan cek sendiri)
+          console.log('🔄 Memanggil RPC create_initial_wedding...');
+          const { data: weddingId, error: rpcError } = await supabase
+            .rpc('create_initial_wedding');
+
+          if (rpcError) {
+            console.error('❌ RPC Error:', rpcError);
+            throw new Error('Gagal inisialisasi wedding: ' + (rpcError.message || 'Unknown error'));
+          }
+
+          if (!weddingId) {
+            throw new Error('RPC did not return wedding_id');
+          }
+
+          // Validasi tipe data
+          if (typeof weddingId !== 'string') {
+            throw new Error('Invalid wedding_id type: expected string, got ' + typeof weddingId);
+          }
+
+          console.log('✅ Wedding ID obtained:', weddingId);
+
+          // LANGKAH 2: Ambil role user dari wedding_members
           const { data: memberData, error: memberError } = await supabase
             .from('wedding_members')
-            .select('wedding_id, role')
+            .select('role')
+            .eq('wedding_id', weddingId)
             .eq('user_id', user.id)
             .maybeSingle();
 
           if (memberError && memberError.code !== 'PGRST116') {
             console.error('❌ Member query error:', memberError);
-            throw memberError;
+            // Jangan throw error, gunakan default role
           }
 
-          let weddingId = memberData?.wedding_id;
-          let role = memberData?.role || 'owner';
+          const role = memberData?.role || 'owner';
+          console.log('✅ User role:', role);
 
-          // 2. Jika user baru dan belum punya wedding, buat wedding baru menggunakan RPC
-          if (!weddingId) {
-            console.log('🆕 User baru, memanggil RPC create_initial_wedding...');
-            
-            // PANGGIL RPC
-            const { data: newWeddingId, error: rpcError } = await supabase
-              .rpc('create_initial_wedding');
-
-            if (rpcError) {
-              console.error('❌ RPC Gagal:', rpcError);
-              throw new Error('Gagal membuat data wedding via RPC: ' + (rpcError.message || 'Unknown error'));
-            }
-
-            if (!newWeddingId) {
-              throw new Error('RPC did not return wedding_id');
-            }
-
-            // Validasi tipe data
-            if (typeof newWeddingId !== 'string') {
-              throw new Error('Invalid wedding_id type: expected string, got ' + typeof newWeddingId);
-            }
-
-            weddingId = newWeddingId;
-            role = 'owner';
-            
-            console.log('✅ Wedding created via RPC:', weddingId);
-          } else {
-            console.log('✅ User already has wedding:', weddingId);
-          }
-
-          // 3. Simpan ke store
+          // LANGKAH 3: Simpan ke store
           set({ 
             currentWeddingId: weddingId, 
             userRole: role as 'owner' | 'member',
