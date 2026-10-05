@@ -66,8 +66,10 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
               addToast('Gagal memuat data dari cloud. Silakan coba sync manual.', 'warning');
             }
           } catch (error) {
-            console.error('Error syncing from cloud after login:', error);
-            addToast('Gagal memuat data. Silakan coba sync manual.', 'error');
+            // Jangan tampilkan toast error saat inisialisasi wedding gagal
+            // Cukup log ke console agar tidak mengganggu pengguna
+            console.error('Gagal inisialisasi wedding:', error);
+            console.log('User bisa melakukan sync manual nanti jika diperlukan');
           } finally {
             // Set loading state ke false SETELAH semua proses selesai
             setIsSyncing(false);
