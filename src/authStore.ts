@@ -61,7 +61,7 @@ export const useAuthStore = create<AuthState>()(
             isInitialized: true 
           });
           
-          console.log('✅ Auth initialized:', session ? 'User logged in' : 'No session');
+
           
           // Listener sudah di-setup di useAuthSync hook
           // Tidak perlu setup di sini untuk menghindari duplikasi

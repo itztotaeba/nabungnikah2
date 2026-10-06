@@ -12,9 +12,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Debug: Log Supabase configuration
-  console.log('🔍 AuthPage - Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-  console.log('🔍 AuthPage - Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY?.substring(0, 20) + '...');
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,24 +36,24 @@ export default function AuthPage() {
     try {
       if (isLogin) {
         // Login
-        console.log('🔐 Attempting login for:', email);
+
         const { error } = await signIn(email, password);
         if (error) {
           console.error('❌ Login error:', error);
           addToast(`Login gagal: ${error}`, 'error');
         } else {
-          console.log('✅ Login successful');
+
           addToast('Login berhasil!', 'success');
         }
       } else {
         // Register
-        console.log('📝 Attempting signup for:', email);
+
         const { error } = await signUp(email, password);
         if (error) {
           console.error('❌ Signup error:', error);
           addToast(`Registrasi gagal: ${error}`, 'error');
         } else {
-          console.log('✅ Signup successful');
+
           addToast('Registrasi berhasil! Silakan cek email untuk verifikasi.', 'success');
           setIsLogin(true);
         }

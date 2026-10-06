@@ -271,17 +271,17 @@ export const useWeddingStore = create<AppState>()(
         return (state, error) => {
           if (error) {
             console.error('❌ LocalStorage hydration error:', error);
-            console.log('🔄 Resetting to default state...');
+
             
             // Clear corrupted data
             try {
               localStorage.removeItem('weddingplan-storage');
-              console.log('✅ Corrupted LocalStorage cleared');
+
             } catch (clearError) {
               console.error('❌ Failed to clear LocalStorage:', clearError);
             }
           } else if (state) {
-            console.log('✅ LocalStorage hydrated successfully');
+
           }
         };
       },
@@ -330,7 +330,7 @@ useWeddingStore.subscribe((state, prevState) => {
 
       // Set new timer dengan debounce 2 detik
       autoSyncTimer = setTimeout(() => {
-        console.log('🔄 Auto-syncing to cloud...');
+
         syncToCloud();
       }, 2000);
     }

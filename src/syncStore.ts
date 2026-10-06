@@ -51,7 +51,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   syncToCloud: async (showToast = false) => {
     // FIX: Skip jika sedang sync (mencegah concurrent sync)
     if (isSyncingToCloud || isSyncingFromCloud) {
-      console.log('⏭️ Skipping syncToCloud (sync in progress)');
+
       return false;
     }
 
@@ -102,7 +102,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       if (showToast) {
         useToastStore.getState().addToast('Data berhasil disinkronkan ke cloud', 'success');
       } else {
-        console.log('✅ syncToCloud successful');
+
       }
       
       return true;
@@ -117,7 +117,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   syncFromCloud: async (showToast = false) => {
     // FIX: Skip jika sedang sync (mencegah concurrent sync)
     if (isSyncingToCloud || isSyncingFromCloud) {
-      console.log('⏭️ Skipping syncFromCloud (sync in progress)');
+
       return false;
     }
 
@@ -172,7 +172,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         if (showToast) {
           useToastStore.getState().addToast('Data berhasil dimuat dari cloud', 'success');
         } else {
-          console.log('✅ syncFromCloud successful');
+
         }
         
         return true;
@@ -222,7 +222,7 @@ if (typeof window !== 'undefined') {
         
         // FIX 1: Skip jika sedang sync
         if (isSyncingToCloud || isSyncingFromCloud) {
-          console.log('⏭️ Skipping auto-sync (sync in progress)');
+
           return;
         }
         
@@ -232,7 +232,7 @@ if (typeof window !== 'undefined') {
         const timeSinceLastSyncFromCloud = now - lastSyncFromCloudTime;
         
         if (timeSinceLastSyncToCloud < SYNC_COOLDOWN_MS || timeSinceLastSyncFromCloud < SYNC_COOLDOWN_MS) {
-          console.log(`⏭️ Skipping auto-sync (cooldown: toCloud=${timeSinceLastSyncToCloud}ms, fromCloud=${timeSinceLastSyncFromCloud}ms)`);
+
           return;
         }
         
@@ -243,7 +243,7 @@ if (typeof window !== 'undefined') {
           }
 
           autoSyncTimer = setTimeout(() => {
-            console.log('🔄 Auto-syncing to cloud...');
+
             useSyncStore.getState().syncToCloud();
           }, AUTO_SYNC_DEBOUNCE_MS);
         }

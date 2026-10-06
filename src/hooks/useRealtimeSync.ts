@@ -20,7 +20,7 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
       return;
     }
 
-    console.log('🔌 Connecting to realtime channel for wedding:', weddingId);
+
 
     const channel = supabase
       .channel(`wedding-room-${weddingId}`)
@@ -33,7 +33,7 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
           filter: `id=eq.${weddingId}`,
         },
         async (payload) => {
-          console.log('🔄 Realtime update received');
+
 
           if (!payload || !payload.new) {
             console.warn('⚠️ Invalid realtime payload');
@@ -46,7 +46,7 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
           // FIX: Filter berdasarkan timestamp
           // Jika remote updated_at sama dengan lastSyncTimestamp kita, ini dari diri sendiri
           if (remoteUpdatedAt && remoteUpdatedAt === lastSyncTimestamp) {
-            console.log('⏭️ Skipping own update (same timestamp)');
+
             return;
           }
 
@@ -81,7 +81,7 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
 
           // Process update dari user lain
           try {
-            console.log('✅ Processing update from other user');
+
             const success = await syncFromCloud(false);
             
             if (success) {
@@ -93,13 +93,13 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
         }
       )
       .subscribe((status) => {
-        console.log('📡 Realtime subscription status:', status);
+
       });
 
     channelRef.current = channel;
 
     return () => {
-      console.log('🔌 Disconnecting from realtime channel');
+
       if (channelRef.current && supabase) {
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
