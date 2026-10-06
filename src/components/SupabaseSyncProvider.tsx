@@ -31,16 +31,16 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
       return;
     }
 
-    console.log('🔗 Setting up auth state listener in SupabaseSyncProvider...');
+
 
     // Setup listener untuk mendeteksi perubahan auth state
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event: AuthChangeEvent, session: Session | null) => {
-        console.log('🔔 Auth state changed:', event);
+
 
         if (event === 'SIGNED_IN' && session) {
           // User berhasil login
-          console.log('✅ User signed in:', session.user.email);
+
           setUser(session.user);
           setSession(session);
 
@@ -66,7 +66,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
             // Cek apakah user sudah punya wedding
             const { currentWeddingId } = useCollaborationStore.getState();
             if (!currentWeddingId) {
-              console.log('ℹ️ User belum punya wedding, skip sync');
+
               addToast('Selamat datang! Buat wedding baru atau tunggu di-invite untuk mulai kolaborasi.', 'info');
               setIsSyncing(false);
               return;
@@ -84,7 +84,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
             }
           } catch (error: any) {
             console.error('❌ Gagal inisialisasi wedding:', error);
-            console.log('💡 User bisa melakukan sync manual nanti jika diperlukan');
+
             
             // Tampilkan toast warning jika error
             addToast('Terjadi kesalahan saat memuat data. Data lokal tetap tersedia.', 'warning');
@@ -94,7 +94,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
           }
         } else if (event === 'SIGNED_OUT') {
           // User logout
-          console.log('👋 User signed out');
+
           setUser(null);
           setSession(null);
 
@@ -106,14 +106,14 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
           addToast('Anda telah logout', 'success');
         } else if (event === 'TOKEN_REFRESHED') {
           // Token di-refresh, update session
-          console.log('🔄 Token refreshed');
+
           if (session) {
             setSession(session);
             setUser(session.user);
           }
         } else if (event === 'USER_UPDATED') {
           // User data di-update
-          console.log('👤 User updated');
+
           if (session) {
             setUser(session.user);
           }
@@ -123,7 +123,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
 
     // Cleanup function untuk unsubscribe saat component unmount
     return () => {
-      console.log('🧹 Cleaning up auth listener in SupabaseSyncProvider...');
+
       subscription.unsubscribe();
     };
   }, [setUser, setSession, syncFromCloud, setIsSyncing, addToast, resetWeddingStore, resetCollaborationStore]);

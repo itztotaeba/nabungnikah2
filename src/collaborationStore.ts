@@ -69,7 +69,7 @@ export const useCollaborationStore = create<CollaborationState>()(
 
           if (existingMembership) {
             // User sudah punya wedding
-            console.log('✅ User already has wedding:', existingMembership.wedding_id);
+
             set({
               currentWeddingId: existingMembership.wedding_id,
               userRole: existingMembership.role,
@@ -82,7 +82,7 @@ export const useCollaborationStore = create<CollaborationState>()(
           }
 
           // User belum punya wedding, buat baru menggunakan RPC
-          console.log('🆕 Creating new wedding for user via RPC...');
+
           
           // Panggil fungsi database yang bypass RLS
           const { data: newWeddingId, error: createError } = await supabase
@@ -102,7 +102,7 @@ export const useCollaborationStore = create<CollaborationState>()(
             throw new Error('Invalid wedding_id type');
           }
 
-          console.log('✅ New wedding created via RPC:', newWeddingId);
+
           set({
             currentWeddingId: newWeddingId,
             userRole: 'owner',
@@ -115,7 +115,7 @@ export const useCollaborationStore = create<CollaborationState>()(
         } catch (error: any) {
           // Jangan tampilkan toast error, cukup log ke console
           console.error('❌ Gagal inisialisasi wedding:', error);
-          console.log('💡 User bisa melakukan sync manual nanti jika diperlukan');
+
           
           // Reset state ke default jika error
           set({ 
@@ -143,7 +143,7 @@ export const useCollaborationStore = create<CollaborationState>()(
           set({ isLoading: true });
 
           // LANGKAH 1: Cek apakah user sudah di-invite ke wedding lain
-          console.log('🔍 Checking if user is already invited to a wedding...');
+
           const { data: existingMembership, error: memberError } = await supabase
             .from('wedding_members')
             .select('wedding_id, role')
@@ -162,10 +162,10 @@ export const useCollaborationStore = create<CollaborationState>()(
             // ✅ User sudah di-invite ke wedding lain, gunakan wedding_id yang ada
             weddingId = existingMembership.wedding_id;
             role = existingMembership.role as 'owner' | 'member';
-            console.log('✅ User already invited to wedding:', weddingId, 'with role:', role);
+
           } else {
             // ❌ User belum punya wedding, biarkan null (tidak otomatis buat)
-            console.log('ℹ️ User belum punya wedding, menunggu di-invite atau buat manual');
+
             weddingId = null;
             role = null;
           }
@@ -177,7 +177,7 @@ export const useCollaborationStore = create<CollaborationState>()(
             isLoading: false
           });
 
-          console.log('✅ Wedding session initialized:', { weddingId, role });
+
           
         } catch (error: any) {
           console.error('❌ Init session error:', error);
@@ -208,7 +208,6 @@ export const useCollaborationStore = create<CollaborationState>()(
         try {
           set({ isLoading: true });
 
-          console.log('🆕 Creating new wedding via RPC...');
           
           // Panggil RPC untuk buat wedding baru
           const { data: newWeddingId, error: rpcError } = await supabase
@@ -237,7 +236,7 @@ export const useCollaborationStore = create<CollaborationState>()(
             isLoading: false
           });
 
-          console.log('✅ New wedding created:', newWeddingId);
+
           
           // Fetch members
           await get().fetchMembers();
@@ -433,7 +432,7 @@ export const useCollaborationStore = create<CollaborationState>()(
             return { success: false, error: 'Gagal update profil: ' + updateError.message };
           }
 
-          console.log('✅ Avatar uploaded successfully:', publicUrl);
+
           return { success: true, url: publicUrl };
 
         } catch (error: any) {
