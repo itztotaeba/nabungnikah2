@@ -1,6 +1,6 @@
 {
-  "name": "Nabung Nikah - Wedding Planner",
-  "short_name": "Nabung Nikah",
+  "name": "M&A Wedding Plan",
+  "short_name": "M&A",
   "description": "Aplikasi Wedding Planner modern dengan fitur kolaborasi multi-user, realtime sync, dan manajemen anggaran",
   "start_url": "/",
   "display": "standalone",

@@ -83,7 +83,7 @@ export default function InstallPWAButton() {
             </div>
             <div>
               <h3 className="font-semibold text-gray-800 text-sm">Install Aplikasi</h3>
-              <p className="text-xs text-gray-500">Nabung Nikah</p>
+              <p className="text-xs text-gray-500">M&A Wedding Plan</p>
             </div>
           </div>
           <button
