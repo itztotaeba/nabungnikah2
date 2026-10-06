@@ -13,6 +13,7 @@ interface WeddingMember {
   profiles?: {
     email: string;
     full_name: string;
+    avatar_url?: string;
   };
 }
 
@@ -29,6 +30,8 @@ interface CollaborationState {
   inviteMember: (email: string) => Promise<{ success: boolean; error?: string }>;
   removeMember: (userId: string) => Promise<{ success: boolean; error?: string }>;
   fetchMembers: () => Promise<void>;
+  uploadAvatar: (file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
+  fetchUserProfile: () => Promise<{ avatar_url?: string } | null>;
   setCurrentWeddingId: (id: string | null) => void;
   setUserRole: (role: 'owner' | 'member' | null) => void;
   resetData: () => void;
@@ -360,7 +363,7 @@ export const useCollaborationStore = create<CollaborationState>()(
         try {
           const { data, error } = await supabase
             .from('wedding_members')
-            .select('*, profiles(email, full_name)')
+            .select('*, profiles(email, full_name, avatar_url)')
             .eq('wedding_id', currentWeddingId)
             .order('joined_at', { ascending: true });
 
@@ -370,6 +373,99 @@ export const useCollaborationStore = create<CollaborationState>()(
 
         } catch (error: any) {
           console.error('Error fetching members:', error);
+        }
+      },
+
+      uploadAvatar: async (file: File) => {
+        const { user } = useAuthStore.getState();
+        
+        if (!user || !supabase) {
+          return { success: false, error: 'User tidak terautentikasi' };
+        }
+
+        try {
+          // Validasi ketat: hanya PNG dan JPG
+          const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+          const fileExtension = file.name.toLowerCase().split('.').pop();
+          
+          if (!allowedTypes.includes(file.type) || !['png', 'jpg', 'jpeg'].includes(fileExtension || '')) {
+            return { success: false, error: 'Format file tidak valid. Hanya PNG dan JPG yang diperbolehkan.' };
+          }
+
+          // Validasi ketat: maksimal 1MB
+          const maxSize = 1 * 1024 * 1024; // 1MB dalam bytes
+          if (file.size > maxSize) {
+            return { success: false, error: 'Ukuran file terlalu besar. Maksimal 1MB.' };
+          }
+
+          // Generate unique filename dengan timestamp untuk mencegah cache issue
+          const fileExt = fileExtension;
+          const timestamp = Date.now();
+          const fileName = `${user.id}/avatar-${timestamp}.${fileExt}`;
+          const filePath = `${fileName}`;
+
+          // Upload ke Supabase Storage
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            return { success: false, error: 'Gagal upload foto: ' + uploadError.message };
+          }
+
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+          // Update profile dengan avatar_url
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ avatar_url: publicUrl })
+            .eq('id', user.id);
+
+          if (updateError) {
+            console.error('Update profile error:', updateError);
+            return { success: false, error: 'Gagal update profil: ' + updateError.message };
+          }
+
+          console.log('✅ Avatar uploaded successfully:', publicUrl);
+          return { success: true, url: publicUrl };
+
+        } catch (error: any) {
+          console.error('Error uploading avatar:', error);
+          return { success: false, error: error.message || 'Gagal upload foto' };
+        }
+      },
+
+      fetchUserProfile: async () => {
+        const { user } = useAuthStore.getState();
+        
+        if (!user || !supabase) {
+          return null;
+        }
+
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', user.id)
+            .single();
+
+          if (error) {
+            console.error('Error fetching profile:', error);
+            return null;
+          }
+
+          return data;
+
+        } catch (error: any) {
+          console.error('Error fetching profile:', error);
+          return null;
         }
       },
 

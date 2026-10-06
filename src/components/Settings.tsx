@@ -7,6 +7,7 @@ import { useToastStore } from '../toastStore';
 import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet, Users } from 'lucide-react';
 import CloudSyncSection from './CloudSyncSection';
 import CollaborationSection from './CollaborationSection';
+import AvatarUpload from './AvatarUpload';
 
 export default function SettingsPage() {
   const { settings, updateSettings, resetData, importData, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
@@ -177,6 +178,9 @@ export default function SettingsPage() {
         <h2 className="font-heading text-2xl sm:text-3xl font-bold text-gray-800">Pengaturan</h2>
         <p className="text-sm text-gray-500 mt-1">Atur detail pernikahan dan preferensi aplikasi</p>
       </div>
+
+      {/* Avatar Upload Section */}
+      {user && <AvatarUpload />}
 
       {/* Wedding Date Section */}
       <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">

@@ -16,8 +16,8 @@ import MobileBottomNav from './components/MobileBottomNav';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
 
-// Logo foto Mahes & Aira
-const PHOTO_URL = "https://is3.cloudhost.id/totaeba/mahesaira.jpg";
+// Logo foto Mahes & Aira (untuk branding, bukan avatar user)
+const LOGO_URL = "https://is3.cloudhost.id/totaeba/mahesaira.jpg";
 
 type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'timeline' | 'settings';
 
@@ -41,15 +41,34 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
   
   // Initialize auth store saat app load
   const initialize = useAuthStore((state) => state.initialize);
   const user = useAuthStore((state) => state.user);
   const signOut = useAuthStore((state) => state.signOut);
+  const fetchUserProfile = useCollaborationStore((state) => state.fetchUserProfile);
   
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Fetch user avatar saat user login
+  useEffect(() => {
+    const loadAvatar = async () => {
+      if (user) {
+        const profile = await fetchUserProfile();
+        if (profile?.avatar_url) {
+          setUserAvatar(profile.avatar_url);
+        } else {
+          setUserAvatar(null);
+        }
+      } else {
+        setUserAvatar(null);
+      }
+    };
+    loadAvatar();
+  }, [user, fetchUserProfile]);
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin logout?')) {
@@ -79,7 +98,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <div className="relative w-12 h-12 flex-shrink-0">
               <img 
-                src={PHOTO_URL} 
+                src={LOGO_URL} 
                 alt="Logo Mahes & Aira" 
                 className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
               />
@@ -128,7 +147,7 @@ export default function App() {
               <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 flex-shrink-0">
                   <img 
-                    src={PHOTO_URL} 
+                    src={LOGO_URL} 
                     alt="Logo Mahes & Aira" 
                     className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
                   />
@@ -184,7 +203,7 @@ export default function App() {
               <div className="lg:hidden flex items-center gap-2">
                 <div className="relative w-9 h-9 flex-shrink-0">
                   <img 
-                    src={PHOTO_URL} 
+                    src={LOGO_URL} 
                     alt="Logo Mahes & Aira" 
                     className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
                   />
@@ -213,11 +232,17 @@ export default function App() {
                 <div className="flex items-center gap-2">
                   <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-lg">
                     <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-[#2F6A43]">
-                      <img 
-                        src={PHOTO_URL} 
-                        alt="User" 
-                        className="w-full h-full object-cover"
-                      />
+                      {userAvatar ? (
+                        <img 
+                          src={userAvatar} 
+                          alt="User Avatar" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-xs font-bold">
+                          {user.email?.charAt(0).toUpperCase() || '?'}
+                        </div>
+                      )}
                     </div>
                     <span className="text-sm font-medium text-[#1E4A2E]">
                       {user.email?.split('@')[0]}
