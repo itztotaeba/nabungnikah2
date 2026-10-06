@@ -113,25 +113,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Section - Countdown */}
-      {safeSettings.weddingDate && (
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#D4A843] via-[#E0BC6A] to-[#2F6A43] p-6 sm:p-8 text-white shadow-lg">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2MkgxNnYtMmgyMHptMC00djJIMjR2LTJoMTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
-          <div className="relative">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock size={18} className="opacity-80" />
-              <span className="text-sm opacity-90 font-medium">Menuju Hari Bahagiamu</span>
-            </div>
-            <p className="text-3xl sm:text-4xl font-heading font-bold mb-1">
-              {formatRemainingTime(settings.weddingDate)}
-            </p>
-            <p className="text-sm opacity-80">
-              {formattedDate}
-            </p>
-          </div>
-        </div>
-      )}
-
       {/* Export Buttons */}
       <div className="flex justify-end gap-3">
         <button
@@ -150,19 +131,36 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Welcome Message (no date set) */}
-      {!safeSettings.weddingDate && (
-        <div className="bg-white rounded-2xl p-8 border border-[#D6E5DC] text-center">
-          <div className="w-20 h-20 mx-auto mb-4">
-            <img 
-              src="https://is3.cloudhost.id/totaeba/mahesaira.jpg" 
-              alt="Mahes & Aira" 
-              className="w-full h-full rounded-full object-cover border-4 border-[#2F6A43] shadow-lg"
-            />
+      {/* Welcome Message */}
+      <div className="bg-white rounded-2xl p-8 border border-[#D6E5DC] text-center">
+        <div className="w-20 h-20 mx-auto mb-4">
+          <img 
+            src="https://is3.cloudhost.id/totaeba/mahesaira.jpg" 
+            alt="Mahes & Aira" 
+            className="w-full h-full rounded-full object-cover border-4 border-[#2F6A43] shadow-lg"
+          />
+        </div>
+        <h2 className="font-heading text-2xl font-bold text-gray-800">
+          Rangkuman WeddingPlan Mahes dan Aira
+        </h2>
+      </div>
+
+      {/* Countdown Section - Always show if weddingDate is set */}
+      {safeSettings.weddingDate && (
+        <div className="bg-gradient-to-br from-[#D4A843] via-[#E0BC6A] to-[#2F6A43] rounded-2xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Clock size={24} />
+              <h3 className="font-heading text-xl font-bold">Countdown Pernikahan</h3>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold">{formatRemainingTime(safeSettings.weddingDate)}</p>
+            </div>
           </div>
-          <h2 className="font-heading text-2xl font-bold text-gray-800">
-            Rangkuman WeddingPlan Mahes dan Aira
-          </h2>
+          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+            <p className="text-sm opacity-90 mb-1">Tanggal Pernikahan:</p>
+            <p className="text-lg font-semibold">{formattedDate}</p>
+          </div>
         </div>
       )}
 

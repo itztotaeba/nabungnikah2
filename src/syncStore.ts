@@ -152,8 +152,14 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         // REPLACE data lokal dengan data dari cloud
         const { importData } = useWeddingStore.getState();
         
+        // FIX: Merge settings, jangan override jika cloud kosong
+        const localSettings = useWeddingStore.getState().settings;
+        const cloudSettings = data.settings && typeof data.settings === 'object' && Object.keys(data.settings).length > 0
+          ? data.settings
+          : localSettings; // Gunakan settings lokal jika cloud kosong
+        
         importData({
-          settings: data.settings || {},
+          settings: cloudSettings,
           budgetItems: Array.isArray(data.budget_items) ? data.budget_items : [],
           savings: Array.isArray(data.savings) ? data.savings : [],
           guests: Array.isArray(data.guests) ? data.guests : [],
