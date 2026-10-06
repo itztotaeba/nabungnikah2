@@ -13,6 +13,7 @@ import LoadingOverlay from './components/LoadingOverlay';
 import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import AuthModal from './components/AuthModal';
 import MobileBottomNav from './components/MobileBottomNav';
+import InstallPWAButton from './components/InstallPWAButton';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
 
@@ -280,6 +281,9 @@ export default function App() {
 
       <LoadingOverlay />
       <ToastContainer />
+      
+      {/* PWA Install Button */}
+      <InstallPWAButton />
       
       {/* Auth Modal */}
       <AuthModal 
