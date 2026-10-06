@@ -217,7 +217,7 @@ npm run preview
 ```env
 # Supabase Configuration
 VITE_SUPABASE_URL=https://abcdefg.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDQwNjQ4MDAsImV4cCI6MjAxMDY0MDgwMH0.abc123xyz
+VITE_SUPABASE_ANON_KEY=xxxxxx
 ```
 
 ### Keamanan Environment
