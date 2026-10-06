@@ -14,8 +14,10 @@ import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import AuthModal from './components/AuthModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import InstallPWAButton from './components/InstallPWAButton';
+import ExitConfirmModal from './components/ExitConfirmModal';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
+import { useBackNavigation } from './hooks/useBackNavigation';
 
 // Logo foto Mahes & Aira (untuk branding, bukan avatar user)
 const LOGO_URL = "https://is3.cloudhost.id/totaeba/mahesaira.jpg";
@@ -70,6 +72,13 @@ export default function App() {
     };
     loadAvatar();
   }, [user, fetchUserProfile]);
+
+  // Custom back navigation handler untuk PWA mobile
+  const {
+    showExitConfirm,
+    handleConfirmExit,
+    handleCancelExit,
+  } = useBackNavigation(activeTab, () => setActiveTab('dashboard'));
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin logout?')) {
@@ -284,6 +293,13 @@ export default function App() {
       
       {/* PWA Install Button */}
       <InstallPWAButton />
+      
+      {/* Exit Confirm Modal */}
+      <ExitConfirmModal
+        isOpen={showExitConfirm}
+        onConfirm={handleConfirmExit}
+        onCancel={handleCancelExit}
+      />
       
       {/* Auth Modal */}
       <AuthModal 
