@@ -1,0 +1,27 @@
+{
+  "name": "Nabung Nikah - Wedding Planner",
+  "short_name": "Nabung Nikah",
+  "description": "Aplikasi Wedding Planner modern dengan fitur kolaborasi multi-user, realtime sync, dan manajemen anggaran",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F4",
+  "theme_color": "#2F6A43",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://image.qwenlm.ai/generated-images/55bfea24-2620-4dc7-9907-6764950a1ffc/_result.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://image.qwenlm.ai/generated-images/55bfea24-2620-4dc7-9907-6764950a1ffc/_result.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["lifestyle", "productivity"],
+  "lang": "id",
+  "dir": "ltr"
+}
