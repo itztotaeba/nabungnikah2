@@ -1,11 +1,16 @@
 {
-  "name": "sandbox-workspace",
+  "name": "nabung-nikah",
+  "version": "1.0.0",
+  "description": "Aplikasi Wedding Planner dengan fitur kolaborasi multi-user, realtime sync, dan manajemen anggaran",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "typecheck": "tsc --noEmit"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
