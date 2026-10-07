@@ -66,6 +66,7 @@ export interface Vendor {
   notes?: string;
   rating?: number; // 1-5
   review?: string;
+  checklist?: Record<string, boolean>; // Checklist detail per kategori
   createdAt: string;
   updatedBy?: string; // Email user yang terakhir mengubah
   updatedAt?: string; // ISO timestamp
