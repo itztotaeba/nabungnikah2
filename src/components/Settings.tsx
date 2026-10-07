@@ -16,7 +16,6 @@ export default function SettingsPage() {
   
   const [showConfirm, setShowConfirm] = useState(false);
   const [weddingDate, setWeddingDate] = useState(settings.weddingDate);
-  const [currency, setCurrency] = useState(settings.currency);
   const [saved, setSaved] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -26,7 +25,7 @@ export default function SettingsPage() {
   const remainingTimeText = weddingDate ? formatRemainingTime(weddingDate) : '';
 
   const handleSave = () => {
-    updateSettings({ weddingDate, currency });
+    updateSettings({ weddingDate });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
@@ -34,7 +33,6 @@ export default function SettingsPage() {
   const handleReset = () => {
     resetData();
     setWeddingDate('');
-    setCurrency('IDR');
     setShowConfirm(false);
     addToast('Semua data berhasil dihapus', 'success');
   };
@@ -154,7 +152,6 @@ export default function SettingsPage() {
           
           // Update local state
           setWeddingDate(data.settings.weddingDate || '');
-          setCurrency(data.settings.currency || 'IDR');
           
           addToast('Data berhasil di-restore!', 'success');
         }
@@ -220,48 +217,6 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Currency Section */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
-            <span className="text-lg">💱</span>
-          </div>
-          <div>
-            <h3 className="font-heading text-lg font-semibold text-gray-800">Mata Uang</h3>
-            <p className="text-xs text-gray-400">Pilih mata uang untuk menampilkan nominal</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { value: 'IDR', label: 'IDR', desc: 'Rupiah' },
-            { value: 'USD', label: 'USD', desc: 'Dollar' },
-            { value: 'MYR', label: 'MYR', desc: 'Ringgit' },
-            { value: 'SGD', label: 'SGD', desc: 'Singapura' },
-          ].map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => setCurrency(opt.value)}
-              className={`p-3 rounded-xl border-2 text-center transition-all ${
-                currency === opt.value
-                  ? 'border-[#87A878] bg-[#87A878]/5 shadow-sm'
-                  : 'border-[#E8E0D4] hover:border-[#87A878]/50 bg-white'
-              }`}
-            >
-              <p className={`text-sm font-bold ${currency === opt.value ? 'text-[#6B8A5E]' : 'text-gray-700'}`}>
-                {opt.label}
-              </p>
-              <p className="text-xs text-gray-400">{opt.desc}</p>
-            </button>
-          ))}
-        </div>
-
-        {/* Preview */}
-        <div className="mt-4 text-sm text-gray-500">
-          Preview: <span className="font-semibold text-gray-700">{formatCurrency(1000000, currency)}</span>
         </div>
       </div>
 

@@ -228,21 +228,21 @@ export function generateGuestPDF(
   doc.text('Daftar Tamu', 14, 20);
 
   // Siapkan data tabel
-  const tableColumn = ['Nama', 'Kategori', 'Pax', 'Est. Amplop', 'Status RSVP'];
+  const tableColumn = ['Nama', 'Kategori', 'Pax', 'Circle', 'Status RSVP'];
   const tableRows: string[][] = [];
 
   let totalPax = 0;
-  let totalAmplop = 0;
+  let totalCircle = 0;
 
   guests.forEach((guest) => {
     totalPax += guest.pax;
-    totalAmplop += guest.estimatedGift;
+    if (guest.circle) totalCircle++;
 
     tableRows.push([
       guest.name,
       guest.category,
       guest.pax.toString(),
-      guest.estimatedGift > 0 ? formatCurrency(guest.estimatedGift, currency) : '-',
+      guest.circle || '-',
       guest.rsvpStatus,
     ]);
   });
@@ -252,7 +252,7 @@ export function generateGuestPDF(
     'TOTAL',
     '',
     totalPax.toString() + ' pax',
-    formatCurrency(totalAmplop, currency),
+    totalCircle.toString() + ' circle',
     '',
   ]);
 
@@ -421,21 +421,21 @@ export function generateFullReport(
     doc.text('Daftar Tamu', 14, 20);
 
     // Siapkan data tabel
-    const tableColumn = ['Nama', 'Kategori', 'Pax', 'Est. Amplop', 'Status RSVP'];
+    const tableColumn = ['Nama', 'Kategori', 'Pax', 'Circle', 'Status RSVP'];
     const tableRows: string[][] = [];
 
     let totalPax = 0;
-    let totalAmplop = 0;
+    let totalCircle = 0;
 
     guests.forEach((guest) => {
       totalPax += guest.pax;
-      totalAmplop += guest.estimatedGift;
+      if (guest.circle) totalCircle++;
 
       tableRows.push([
         guest.name,
         guest.category,
         guest.pax.toString(),
-        guest.estimatedGift > 0 ? formatCurrency(guest.estimatedGift, currency) : '-',
+        guest.circle || '-',
         guest.rsvpStatus,
       ]);
     });
@@ -445,7 +445,7 @@ export function generateFullReport(
       'TOTAL',
       '',
       totalPax.toString() + ' pax',
-      formatCurrency(totalAmplop, currency),
+      totalCircle.toString() + ' circle',
       '',
     ]);
 

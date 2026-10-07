@@ -36,7 +36,7 @@ export interface Guest {
   name: string;
   category: 'Keluarga' | 'Teman' | 'Rekan Kerja' | 'Lainnya';
   pax: number;
-  estimatedGift: number;
+  circle?: string; // Circle/kelompok tamu (manual input)
   rsvpStatus: 'Belum Respon' | 'Hadir' | 'Tidak Hadir';
   updatedBy?: string; // Email user yang terakhir mengubah
   updatedAt?: string; // ISO timestamp
