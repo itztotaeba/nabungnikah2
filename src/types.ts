@@ -46,7 +46,7 @@ export interface Guest {
 // VENDOR TYPES
 // ============================================
 export type VendorType = 'All-in' | 'Satuan';
-export type VendorCategory = 'WO' | 'Katering' | 'Venue' | 'MUA' | 'Fotografi' | 'Dekorasi' | 'Entertainment' | 'Lainnya';
+export type VendorCategory = 'WO' | 'Katering' | 'Venue' | 'MUA' | 'Fotografi' | 'Dekorasi' | 'Entertainment' | 'Busana' | 'MC' | 'Undangan & Souvenir' | 'Lainnya';
 export type ContractStatus = 'Belum Kontrak' | 'Sudah DP' | 'Lunas';
 
 export interface Vendor {
@@ -66,7 +66,7 @@ export interface Vendor {
   notes?: string;
   rating?: number; // 1-5
   review?: string;
-  checklist?: Record<string, boolean>; // Checklist detail per kategori
+  checklist?: Record<string, { checked: boolean; notes: string }>; // Checklist detail per kategori dengan notes
   createdAt: string;
   updatedBy?: string; // Email user yang terakhir mengubah
   updatedAt?: string; // ISO timestamp
