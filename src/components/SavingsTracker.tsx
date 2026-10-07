@@ -184,6 +184,7 @@ export default function SavingsTracker() {
                   <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sumber Dana</th>
                   <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Nominal</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Catatan</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Terakhir Diubah</th>
                   <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
                 </tr>
               </thead>
@@ -205,6 +206,9 @@ export default function SavingsTracker() {
                       {formatCurrency(entry.amount, settings.currency)}
                     </td>
                     <td className="px-5 py-4 text-sm text-gray-600">{entry.note || '-'}</td>
+                    <td className="px-5 py-4 text-xs text-gray-500 hidden lg:table-cell">
+                      {formatAuditInfo(entry.updatedBy, entry.updatedAt)}
+                    </td>
                     <td className="px-5 py-4 text-center">
                       <button
                         onClick={() => handleDelete(entry.id)}
