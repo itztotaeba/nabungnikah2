@@ -44,10 +44,10 @@ export default function AvatarUpload() {
       return;
     }
 
-    // Validasi ketat: maksimal 1MB
-    const maxSize = 1 * 1024 * 1024; // 1MB dalam bytes
+    // Validasi ketat: maksimal 2MB
+    const maxSize = 2 * 1024 * 1024; // 2MB dalam bytes
     if (file.size > maxSize) {
-      addToast('Ukuran file terlalu besar. Maksimal 1MB.', 'error');
+      addToast('Ukuran file terlalu besar. Maksimal 2MB.', 'error');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -182,7 +182,7 @@ export default function AvatarUpload() {
           </button>
 
           <p className="text-xs text-gray-500 mt-2">
-            Format: PNG, JPG. Maksimal 1MB.
+            Format: PNG, JPG. Maksimal 2MB.
           </p>
         </div>
       </div>

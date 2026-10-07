@@ -391,10 +391,10 @@ export const useCollaborationStore = create<CollaborationState>()(
             return { success: false, error: 'Format file tidak valid. Hanya PNG dan JPG yang diperbolehkan.' };
           }
 
-          // Validasi ketat: maksimal 1MB
-          const maxSize = 1 * 1024 * 1024; // 1MB dalam bytes
+          // Validasi ketat: maksimal 2MB
+          const maxSize = 2 * 1024 * 1024; // 2MB dalam bytes
           if (file.size > maxSize) {
-            return { success: false, error: 'Ukuran file terlalu besar. Maksimal 1MB.' };
+            return { success: false, error: 'Ukuran file terlalu besar. Maksimal 2MB.' };
           }
 
           // Generate unique filename dengan timestamp untuk mencegah cache issue
