@@ -14,8 +14,15 @@ import { useAuthStore } from '../authStore';
 export function getAuditMetadata(): { updatedBy: string; updatedAt: string } {
   const user = useAuthStore.getState().user;
   
+  // Ambil username sebelum @ dari email
+  let username = 'Sistem';
+  if (user?.email) {
+    const emailParts = user.email.split('@');
+    username = emailParts[0]; // Ambil bagian sebelum @
+  }
+  
   return {
-    updatedBy: user?.email || 'Sistem',
+    updatedBy: username,
     updatedAt: new Date().toISOString(),
   };
 }
