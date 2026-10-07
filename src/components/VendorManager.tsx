@@ -537,16 +537,18 @@ export default function VendorManager() {
                         {item.description && (
                           <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
                         )}
-                        {/* Input notes muncul saat checkbox dicentang */}
-                        {isChecked && (
-                          <input
-                            type="text"
-                            value={notes}
-                            onChange={(e) => handleChangeChecklistNote(item.id, e.target.value)}
-                            placeholder="Tambahkan catatan (opsional)..."
-                            className="w-full mt-2 text-xs px-3 py-1.5 border-l-2 border-[#B76E79] bg-white rounded-r-lg focus:ring-2 focus:ring-[#B76E79]/30 focus:border-[#B76E79] outline-none"
-                          />
-                        )}
+                        {/* Input notes selalu muncul dengan styling berbeda */}
+                        <input
+                          type="text"
+                          value={notes}
+                          onChange={(e) => handleChangeChecklistNote(item.id, e.target.value)}
+                          placeholder={isChecked ? "Tambahkan catatan (opsional)..." : "Catatan (misal: biaya upgrade...)"}
+                          className={`w-full mt-2 text-xs px-3 py-1.5 border-l-2 rounded-r-lg focus:ring-2 outline-none transition-all ${
+                            isChecked 
+                              ? 'border-[#B76E79] bg-white focus:ring-[#B76E79]/30 focus:border-[#B76E79]' 
+                              : 'border-gray-300 bg-gray-50 focus:ring-gray-300/30 focus:border-gray-400'
+                          }`}
+                        />
                       </div>
                     </div>
                   </div>
