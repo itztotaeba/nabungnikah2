@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
+import { getChecklistForCategory, getDefaultChecklistValues, countCheckedItems } from '../helpers/vendorChecklist';
 import { useToastStore } from '../toastStore';
 import ComparisonAnalysis from './ComparisonAnalysis';
 import {
@@ -18,6 +19,9 @@ import {
   FileText,
   TrendingUp,
   X,
+  CheckSquare,
+  Square,
+  ListChecks,
 } from 'lucide-react';
 
 const VENDOR_CATEGORIES: VendorCategory[] = ['WO', 'Katering', 'Venue', 'MUA', 'Fotografi', 'Dekorasi', 'Entertainment', 'Lainnya'];
@@ -47,6 +51,7 @@ export default function VendorManager() {
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState('');
   const [review, setReview] = useState('');
+  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
 
   const resetForm = () => {
     setName('');
@@ -63,6 +68,7 @@ export default function VendorManager() {
     setNotes('');
     setRating('');
     setReview('');
+    setChecklist({});
     setEditingId(null);
     setShowForm(false);
   };
@@ -99,6 +105,7 @@ export default function VendorManager() {
       notes: notes.trim() || undefined,
       rating: rating ? parseInt(rating) : undefined,
       review: review.trim() || undefined,
+      checklist: Object.keys(checklist).length > 0 ? checklist : undefined,
     };
 
     if (editingId) {
@@ -127,6 +134,7 @@ export default function VendorManager() {
     setNotes(vendor.notes || '');
     setRating(vendor.rating?.toString() || '');
     setReview(vendor.review || '');
+    setChecklist(vendor.checklist || getDefaultChecklistValues(vendor.category));
     setEditingId(vendor.id);
     setShowForm(true);
 
@@ -139,6 +147,19 @@ export default function VendorManager() {
       deleteVendor(id);
       addToast('Vendor berhasil dihapus', 'success');
     }
+  };
+
+  const handleToggleChecklist = (itemId: string) => {
+    setChecklist(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+  };
+
+  const handleCategoryChange = (newCategory: VendorCategory) => {
+    setCategory(newCategory);
+    // Reset checklist dengan kategori baru
+    setChecklist(getDefaultChecklistValues(newCategory));
   };
 
   // Filter vendors
@@ -184,7 +205,11 @@ export default function VendorManager() {
           )}
           {!showForm && (
             <button
-              onClick={() => { resetForm(); setShowForm(true); }}
+              onClick={() => { 
+                resetForm(); 
+                setChecklist(getDefaultChecklistValues('Katering')); // Initialize dengan kategori default
+                setShowForm(true); 
+              }}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
             >
               <Plus size={16} />
@@ -325,6 +350,36 @@ export default function VendorManager() {
                   )}
                 </div>
 
+                {/* Checklist Summary */}
+                {vendor.checklist && countCheckedItems(vendor.checklist) > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <ListChecks size={14} className="text-[#87A878]" />
+                      <span className="font-medium">
+                        {countCheckedItems(vendor.checklist)} item termasuk
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {getChecklistForCategory(vendor.category)
+                        .filter(item => vendor.checklist?.[item.id])
+                        .slice(0, 5)
+                        .map(item => (
+                          <span
+                            key={item.id}
+                            className="text-xs px-2 py-0.5 bg-[#87A878]/10 text-[#6B8A5E] rounded-full border border-[#87A878]/20"
+                          >
+                            {item.question}
+                          </span>
+                        ))}
+                      {countCheckedItems(vendor.checklist) > 5 && (
+                        <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                          +{countCheckedItems(vendor.checklist) - 5} lainnya
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Audit Info */}
                 <div className="mt-3 pt-3 border-t border-gray-100">
                   <p className="text-xs text-gray-500 text-right">
@@ -414,7 +469,7 @@ export default function VendorManager() {
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Kategori</label>
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value as VendorCategory)}
+              onChange={(e) => handleCategoryChange(e.target.value as VendorCategory)}
               disabled={type === 'All-in'}
               className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
@@ -425,6 +480,44 @@ export default function VendorManager() {
             {type === 'All-in' && (
               <p className="text-xs text-gray-500 mt-1">Kategori otomatis WO untuk tipe All-in</p>
             )}
+          </div>
+
+          {/* Checklist Detail */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-gray-700">
+                <ListChecks size={16} className="inline mr-2" />
+                Checklist Detail Paket
+              </label>
+              <span className="text-xs text-gray-500">
+                {countCheckedItems(checklist)} dari {getChecklistForCategory(category).length} item
+              </span>
+            </div>
+            <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2 max-h-96 overflow-y-auto">
+              {getChecklistForCategory(category).map((item) => (
+                <div key={item.id} className="flex items-start gap-3 p-2 hover:bg-white rounded-lg transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => handleToggleChecklist(item.id)}
+                    className="flex-shrink-0 mt-0.5"
+                  >
+                    {checklist[item.id] ? (
+                      <CheckSquare size={20} className="text-[#87A878]" />
+                    ) : (
+                      <Square size={20} className="text-gray-400" />
+                    )}
+                  </button>
+                  <div className="flex-1">
+                    <p className={`text-sm ${checklist[item.id] ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
+                      {item.question}
+                    </p>
+                    {item.description && (
+                      <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Kontak */}
