@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
-import { getChecklistForCategory, getDefaultChecklistValues, countCheckedItems } from '../helpers/vendorChecklist';
+import { getChecklistForCategory, getDefaultChecklistValues, countCheckedItems, migrateChecklistFormat, ChecklistValue } from '../helpers/vendorChecklist';
 import { useToastStore } from '../toastStore';
 import ComparisonAnalysis from './ComparisonAnalysis';
 import {
@@ -24,7 +24,7 @@ import {
   ListChecks,
 } from 'lucide-react';
 
-const VENDOR_CATEGORIES: VendorCategory[] = ['WO', 'Katering', 'Venue', 'MUA', 'Fotografi', 'Dekorasi', 'Entertainment', 'Lainnya'];
+const VENDOR_CATEGORIES: VendorCategory[] = ['WO', 'Katering', 'Venue', 'MUA', 'Fotografi', 'Dekorasi', 'Entertainment', 'Busana', 'MC', 'Undangan & Souvenir', 'Lainnya'];
 const CONTRACT_STATUSES: ContractStatus[] = ['Belum Kontrak', 'Sudah DP', 'Lunas'];
 
 export default function VendorManager() {
@@ -51,7 +51,7 @@ export default function VendorManager() {
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState('');
   const [review, setReview] = useState('');
-  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
+  const [checklist, setChecklist] = useState<Record<string, ChecklistValue>>({});
 
   const resetForm = () => {
     setName('');
@@ -134,7 +134,8 @@ export default function VendorManager() {
     setNotes(vendor.notes || '');
     setRating(vendor.rating?.toString() || '');
     setReview(vendor.review || '');
-    setChecklist(vendor.checklist || getDefaultChecklistValues(vendor.category));
+    // Migrate checklist format jika data lama
+    setChecklist(migrateChecklistFormat(vendor.checklist, vendor.category));
     setEditingId(vendor.id);
     setShowForm(true);
 
@@ -152,7 +153,20 @@ export default function VendorManager() {
   const handleToggleChecklist = (itemId: string) => {
     setChecklist(prev => ({
       ...prev,
-      [itemId]: !prev[itemId]
+      [itemId]: {
+        checked: !prev[itemId]?.checked,
+        notes: prev[itemId]?.notes || ''
+      }
+    }));
+  };
+
+  const handleChangeChecklistNote = (itemId: string, notes: string) => {
+    setChecklist(prev => ({
+      ...prev,
+      [itemId]: {
+        checked: prev[itemId]?.checked || false,
+        notes
+      }
     }));
   };
 
@@ -361,14 +375,18 @@ export default function VendorManager() {
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {getChecklistForCategory(vendor.category)
-                        .filter(item => vendor.checklist?.[item.id])
+                        .filter(item => vendor.checklist?.[item.id]?.checked)
                         .slice(0, 5)
                         .map(item => (
                           <span
                             key={item.id}
                             className="text-xs px-2 py-0.5 bg-[#87A878]/10 text-[#6B8A5E] rounded-full border border-[#87A878]/20"
+                            title={vendor.checklist?.[item.id]?.notes || undefined}
                           >
                             {item.question}
+                            {vendor.checklist?.[item.id]?.notes && (
+                              <span className="ml-1 text-[10px] opacity-75">•</span>
+                            )}
                           </span>
                         ))}
                       {countCheckedItems(vendor.checklist) > 5 && (
@@ -494,29 +512,46 @@ export default function VendorManager() {
               </span>
             </div>
             <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2 max-h-96 overflow-y-auto">
-              {getChecklistForCategory(category).map((item) => (
-                <div key={item.id} className="flex items-start gap-3 p-2 hover:bg-white rounded-lg transition-colors">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleChecklist(item.id)}
-                    className="flex-shrink-0 mt-0.5"
-                  >
-                    {checklist[item.id] ? (
-                      <CheckSquare size={20} className="text-[#87A878]" />
-                    ) : (
-                      <Square size={20} className="text-gray-400" />
-                    )}
-                  </button>
-                  <div className="flex-1">
-                    <p className={`text-sm ${checklist[item.id] ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
-                      {item.question}
-                    </p>
-                    {item.description && (
-                      <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
-                    )}
+              {getChecklistForCategory(category).map((item) => {
+                const isChecked = checklist[item.id]?.checked || false;
+                const notes = checklist[item.id]?.notes || '';
+                
+                return (
+                  <div key={item.id} className="p-2 hover:bg-white rounded-lg transition-colors">
+                    <div className="flex items-start gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleChecklist(item.id)}
+                        className="flex-shrink-0 mt-0.5"
+                      >
+                        {isChecked ? (
+                          <CheckSquare size={20} className="text-[#87A878]" />
+                        ) : (
+                          <Square size={20} className="text-gray-400" />
+                        )}
+                      </button>
+                      <div className="flex-1">
+                        <p className={`text-sm ${isChecked ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
+                          {item.question}
+                        </p>
+                        {item.description && (
+                          <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
+                        )}
+                        {/* Input notes muncul saat checkbox dicentang */}
+                        {isChecked && (
+                          <input
+                            type="text"
+                            value={notes}
+                            onChange={(e) => handleChangeChecklistNote(item.id, e.target.value)}
+                            placeholder="Tambahkan catatan (opsional)..."
+                            className="w-full mt-2 text-xs px-3 py-1.5 border-l-2 border-[#B76E79] bg-white rounded-r-lg focus:ring-2 focus:ring-[#B76E79]/30 focus:border-[#B76E79] outline-none"
+                          />
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
