@@ -14,6 +14,7 @@ import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import AuthModal from './components/AuthModal';
 import MobileBottomNav from './components/MobileBottomNav';
 import InstallPWAButton from './components/InstallPWAButton';
+import PWAUpdateToast from './components/PWAUpdateToast';
 import ExitConfirmModal from './components/ExitConfirmModal';
 import { useAuthStore } from './authStore';
 import { useCollaborationStore } from './collaborationStore';
@@ -293,6 +294,9 @@ export default function App() {
       
       {/* PWA Install Button */}
       <InstallPWAButton />
+      
+      {/* PWA Update Toast */}
+      <PWAUpdateToast />
       
       {/* Exit Confirm Modal */}
       <ExitConfirmModal
