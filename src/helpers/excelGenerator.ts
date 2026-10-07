@@ -112,7 +112,7 @@ export function exportToExcel(data: AppData): void {
       'Nama Tamu': guest.name,
       'Kategori': guest.category,
       'Jumlah Pax': guest.pax,
-      'Estimasi Amplop': guest.estimatedGift,
+      'Circle': guest.circle || '-',
       'Status RSVP': guest.rsvpStatus,
     }));
 
@@ -123,7 +123,7 @@ export function exportToExcel(data: AppData): void {
       { wch: 30 }, // Nama Tamu
       { wch: 15 }, // Kategori
       { wch: 12 }, // Jumlah Pax
-      { wch: 18 }, // Estimasi Amplop
+      { wch: 20 }, // Circle
       { wch: 15 }, // Status RSVP
     ];
 

@@ -66,7 +66,7 @@ export default function GuestManager() {
   const [name, setName] = useState('');
   const [category, setCategory] = useState<Guest['category']>('Keluarga');
   const [pax, setPax] = useState('1');
-  const [estimatedGift, setEstimatedGift] = useState('');
+  const [circle, setCircle] = useState('');
   const [rsvpStatus, setRsvpStatus] = useState<Guest['rsvpStatus']>('Belum Respon');
 
   // ============================================
@@ -83,14 +83,12 @@ export default function GuestManager() {
     const pendingPax = guests
       .filter((g) => g.rsvpStatus === 'Belum Respon')
       .reduce((sum, g) => sum + g.pax, 0);
-    const totalEstimatedGift = guests.reduce((sum, g) => sum + g.estimatedGift, 0);
 
     return {
       totalPax,
       confirmedPax,
       declinedPax,
       pendingPax,
-      totalEstimatedGift,
       totalGuests: guests.length,
     };
   }, [guests]);
@@ -130,7 +128,7 @@ export default function GuestManager() {
     setName('');
     setCategory('Keluarga');
     setPax('1');
-    setEstimatedGift('');
+    setCircle('');
     setRsvpStatus('Belum Respon');
     setEditingId(null);
     setShowForm(false);
@@ -151,17 +149,11 @@ export default function GuestManager() {
       return;
     }
 
-    const giftNum = parseInt(estimatedGift) || 0;
-    if (giftNum < 0) {
-      addToast('Estimasi amplop harus angka positif', 'error');
-      return;
-    }
-
     const guestData = {
       name: name.trim(),
       category,
       pax: paxNum,
-      estimatedGift: giftNum,
+      circle: circle.trim() || undefined,
       rsvpStatus,
     };
 
@@ -180,7 +172,7 @@ export default function GuestManager() {
     setName(guest.name);
     setCategory(guest.category);
     setPax(guest.pax.toString());
-    setEstimatedGift(guest.estimatedGift.toString());
+    setCircle(guest.circle || '');
     setRsvpStatus(guest.rsvpStatus);
     setEditingId(guest.id);
     setShowForm(true);
@@ -302,18 +294,18 @@ export default function GuestManager() {
           <p className="text-xs text-gray-400">pax menunggu</p>
         </div>
 
-        {/* Estimasi Amplop */}
+        {/* Total Circle */}
         <div className="bg-white rounded-xl p-4 border border-[#E8E0D4] col-span-2 sm:col-span-1">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-[#B76E79]/10 rounded-lg flex items-center justify-center">
-              <Gift size={16} className="text-[#B76E79]" />
+              <Users size={16} className="text-[#B76E79]" />
             </div>
           </div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Est. Pemasukan</p>
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Total Circle</p>
           <p className="text-lg font-bold text-[#B76E79] mt-0.5">
-            {formatCurrency(stats.totalEstimatedGift, settings.currency)}
+            {guests.filter(g => g.circle).length}
           </p>
-          <p className="text-xs text-gray-400">dari amplop tamu</p>
+          <p className="text-xs text-gray-400">tamu dengan circle</p>
         </div>
       </div>
 
@@ -397,22 +389,19 @@ export default function GuestManager() {
               </div>
             </div>
 
-            {/* Estimasi Amplop */}
+            {/* Circle */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Estimasi Amplop</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Circle</label>
               <input
-                type="number"
-                value={estimatedGift}
-                onChange={(e) => setEstimatedGift(e.target.value)}
-                placeholder="0"
-                min="0"
+                type="text"
+                value={circle}
+                onChange={(e) => setCircle(e.target.value)}
+                placeholder="Contoh: Kantor A, SMA 5, dll"
                 className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
-              {estimatedGift && parseInt(estimatedGift) > 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatCurrency(parseInt(estimatedGift), settings.currency)}
-                </p>
-              )}
+              <p className="text-xs text-gray-500 mt-1">
+                Kelompok/komunitas tamu (opsional)
+              </p>
             </div>
 
             {/* RSVP Status */}
@@ -579,8 +568,8 @@ export default function GuestManager() {
                   <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Pax
                   </th>
-                  <th className="px-5 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Est. Amplop
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Circle
                   </th>
                   <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status RSVP
@@ -604,10 +593,8 @@ export default function GuestManager() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-sm text-center text-gray-700">{guest.pax}</td>
-                    <td className="px-5 py-4 text-sm text-right text-gray-700">
-                      {guest.estimatedGift > 0
-                        ? formatCurrency(guest.estimatedGift, settings.currency)
-                        : '-'}
+                    <td className="px-5 py-4 text-sm text-left text-gray-700">
+                      {guest.circle || '-'}
                     </td>
                     <td className="px-5 py-4 text-center">
                       <span
@@ -646,11 +633,8 @@ export default function GuestManager() {
                   <td className="px-5 py-3 text-sm text-center font-bold text-gray-800">
                     {filteredGuests.reduce((sum, g) => sum + g.pax, 0)} pax
                   </td>
-                  <td className="px-5 py-3 text-sm text-right font-bold text-[#B76E79]">
-                    {formatCurrency(
-                      filteredGuests.reduce((sum, g) => sum + g.estimatedGift, 0),
-                      settings.currency
-                    )}
+                  <td className="px-5 py-3 text-sm text-left font-bold text-[#B76E79]">
+                    {filteredGuests.filter(g => g.circle).length} circle
                   </td>
                   <td colSpan={2}></td>
                 </tr>
@@ -698,10 +682,11 @@ export default function GuestManager() {
                     <Users size={12} />
                     {guest.pax} pax
                   </span>
-                  {guest.estimatedGift > 0 && (
+                  {guest.circle && (
                     <span className="flex items-center gap-1">
-                      <Gift size={12} />
-                      {formatCurrency(guest.estimatedGift, settings.currency)}
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#B76E79]/10 text-[#B76E79] border border-[#B76E79]/20">
+                        {guest.circle}
+                      </span>
                     </span>
                   )}
                 </div>
@@ -721,10 +706,7 @@ export default function GuestManager() {
                   Total ({filteredGuests.length} tamu)
                 </span>
                 <span className="font-bold text-[#B76E79]">
-                  {formatCurrency(
-                    filteredGuests.reduce((sum, g) => sum + g.estimatedGift, 0),
-                    settings.currency
-                  )}
+                  {filteredGuests.filter(g => g.circle).length} circle
                 </span>
               </div>
             </div>
