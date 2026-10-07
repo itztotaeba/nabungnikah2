@@ -336,162 +336,7 @@ export default function VendorManager() {
         ))}
       </div>
 
-      {/* Vendor Cards Grid */}
-      {filteredVendors.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Building2 size={28} className="text-gray-400" />
-          </div>
-          <p className="text-gray-500 font-medium">Belum ada vendor</p>
-          <p className="text-sm text-gray-400 mt-1">Mulai tambahkan vendor untuk pernikahan Anda</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredVendors.map((vendor) => {
-            const progress = vendor.dealPrice > 0 ? (vendor.dpAmount / vendor.dealPrice) * 100 : 0;
-            return (
-              <div key={vendor.id} className="bg-white rounded-xl border border-[#E8E0D4] p-5 hover:shadow-md transition-shadow">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800 truncate">{vendor.name}</h3>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${typeBadge(vendor.type)}`}>
-                        {vendor.type}
-                      </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
-                        {vendor.category}
-                      </span>
-                    </div>
-                  </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusBadge(vendor.contractStatus)}`}>
-                    {vendor.contractStatus}
-                  </span>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progress Pembayaran</span>
-                    <span>{progress.toFixed(0)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Info */}
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Harga Deal:</span>
-                    <span className="font-semibold text-gray-800">{formatCurrency(vendor.dealPrice, settings.currency)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">DP:</span>
-                    <span className="font-medium text-gray-700">{formatCurrency(vendor.dpAmount, settings.currency)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Sisa:</span>
-                    <span className="font-medium text-[#B76E79]">{formatCurrency(vendor.remainingBalance, settings.currency)}</span>
-                  </div>
-                  {vendor.dueDateFinal && (
-                    <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t border-gray-100">
-                      <Calendar size={12} />
-                      <span>Jatuh tempo: {new Date(vendor.dueDateFinal).toLocaleDateString('id-ID')}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Checklist Summary */}
-                {vendor.checklist && countCheckedItems(vendor.checklist) > 0 && (
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <ListChecks size={14} className="text-[#87A878]" />
-                      <span className="font-medium">
-                        {countCheckedItems(vendor.checklist)} item termasuk
-                        {vendor.customChecklist && vendor.customChecklist.length > 0 && (
-                          <span className="text-[#D4A843] ml-1">
-                            ({vendor.customChecklist.filter(item => vendor.checklist?.[item.id]?.checked).length} custom)
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {/* Template checklist items */}
-                      {getChecklistForCategory(vendor.category)
-                        .filter(item => vendor.checklist?.[item.id]?.checked)
-                        .slice(0, 5)
-                        .map(item => (
-                          <span
-                            key={item.id}
-                            className="text-xs px-2 py-0.5 bg-[#87A878]/10 text-[#6B8A5E] rounded-full border border-[#87A878]/20"
-                            title={vendor.checklist?.[item.id]?.notes || undefined}
-                          >
-                            {item.question}
-                            {vendor.checklist?.[item.id]?.notes && (
-                              <span className="ml-1 text-[10px] opacity-75">•</span>
-                            )}
-                          </span>
-                        ))}
-                      {/* Custom checklist items */}
-                      {vendor.customChecklist
-                        ?.filter(item => vendor.checklist?.[item.id]?.checked)
-                        .slice(0, 5 - getChecklistForCategory(vendor.category).filter(item => vendor.checklist?.[item.id]?.checked).length)
-                        .map(item => (
-                          <span
-                            key={item.id}
-                            className="text-xs px-2 py-0.5 bg-[#D4A843]/10 text-[#B8922F] rounded-full border border-[#D4A843]/20"
-                            title={vendor.checklist?.[item.id]?.notes || undefined}
-                          >
-                            {item.question}
-                            {vendor.checklist?.[item.id]?.notes && (
-                              <span className="ml-1 text-[10px] opacity-75">•</span>
-                            )}
-                          </span>
-                        ))}
-                      {countCheckedItems(vendor.checklist) > 5 && (
-                        <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
-                          +{countCheckedItems(vendor.checklist) - 5} lainnya
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Audit Info */}
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 text-right">
-                    {formatAuditInfo(vendor.updatedBy, vendor.updatedAt)}
-                  </p>
-                </div>
-
-                {/* Actions */}
-                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-                  <button
-                    onClick={() => handleEdit(vendor)}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
-                  >
-                    <Pencil size={12} />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(vendor.id, vendor.name)}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
-                  >
-                    <Trash2 size={12} />
-                    Hapus
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Inline Form */}
+      {/* Inline Form - DIPINDAH KE ATAS */}
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
           <div className="flex items-center justify-between mb-2">
@@ -919,6 +764,161 @@ export default function VendorManager() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* Vendor Cards Grid */}
+      {filteredVendors.length === 0 ? (
+        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Building2 size={28} className="text-gray-400" />
+          </div>
+          <p className="text-gray-500 font-medium">Belum ada vendor</p>
+          <p className="text-sm text-gray-400 mt-1">Mulai tambahkan vendor untuk pernikahan Anda</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredVendors.map((vendor) => {
+            const progress = vendor.dealPrice > 0 ? (vendor.dpAmount / vendor.dealPrice) * 100 : 0;
+            return (
+              <div key={vendor.id} className="bg-white rounded-xl border border-[#E8E0D4] p-5 hover:shadow-md transition-shadow">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-800 truncate">{vendor.name}</h3>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${typeBadge(vendor.type)}`}>
+                        {vendor.type}
+                      </span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                        {vendor.category}
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusBadge(vendor.contractStatus)}`}>
+                    {vendor.contractStatus}
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-3">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Progress Pembayaran</span>
+                    <span>{progress.toFixed(0)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Info */}
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Harga Deal:</span>
+                    <span className="font-semibold text-gray-800">{formatCurrency(vendor.dealPrice, settings.currency)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">DP:</span>
+                    <span className="font-medium text-gray-700">{formatCurrency(vendor.dpAmount, settings.currency)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Sisa:</span>
+                    <span className="font-medium text-[#B76E79]">{formatCurrency(vendor.remainingBalance, settings.currency)}</span>
+                  </div>
+                  {vendor.dueDateFinal && (
+                    <div className="flex items-center gap-2 text-xs text-gray-500 pt-2 border-t border-gray-100">
+                      <Calendar size={12} />
+                      <span>Jatuh tempo: {new Date(vendor.dueDateFinal).toLocaleDateString('id-ID')}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Checklist Summary */}
+                {vendor.checklist && countCheckedItems(vendor.checklist) > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <ListChecks size={14} className="text-[#87A878]" />
+                      <span className="font-medium">
+                        {countCheckedItems(vendor.checklist)} item termasuk
+                        {vendor.customChecklist && vendor.customChecklist.length > 0 && (
+                          <span className="text-[#D4A843] ml-1">
+                            ({vendor.customChecklist.filter(item => vendor.checklist?.[item.id]?.checked).length} custom)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {/* Template checklist items */}
+                      {getChecklistForCategory(vendor.category)
+                        .filter(item => vendor.checklist?.[item.id]?.checked)
+                        .slice(0, 5)
+                        .map(item => (
+                          <span
+                            key={item.id}
+                            className="text-xs px-2 py-0.5 bg-[#87A878]/10 text-[#6B8A5E] rounded-full border border-[#87A878]/20"
+                            title={vendor.checklist?.[item.id]?.notes || undefined}
+                          >
+                            {item.question}
+                            {vendor.checklist?.[item.id]?.notes && (
+                              <span className="ml-1 text-[10px] opacity-75">•</span>
+                            )}
+                          </span>
+                        ))}
+                      {/* Custom checklist items */}
+                      {vendor.customChecklist
+                        ?.filter(item => vendor.checklist?.[item.id]?.checked)
+                        .slice(0, 5 - getChecklistForCategory(vendor.category).filter(item => vendor.checklist?.[item.id]?.checked).length)
+                        .map(item => (
+                          <span
+                            key={item.id}
+                            className="text-xs px-2 py-0.5 bg-[#D4A843]/10 text-[#B8922F] rounded-full border border-[#D4A843]/20"
+                            title={vendor.checklist?.[item.id]?.notes || undefined}
+                          >
+                            {item.question}
+                            {vendor.checklist?.[item.id]?.notes && (
+                              <span className="ml-1 text-[10px] opacity-75">•</span>
+                            )}
+                          </span>
+                        ))}
+                      {countCheckedItems(vendor.checklist) > 5 && (
+                        <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                          +{countCheckedItems(vendor.checklist) - 5} lainnya
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Audit Info */}
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs text-gray-500 text-right">
+                    {formatAuditInfo(vendor.updatedBy, vendor.updatedAt)}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+                  <button
+                    onClick={() => handleEdit(vendor)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                  >
+                    <Pencil size={12} />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(vendor.id, vendor.name)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
+                  >
+                    <Trash2 size={12} />
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
