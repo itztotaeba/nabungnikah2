@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus } from '../store';
+import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus, CustomChecklistItem } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
 import { getChecklistForCategory, getDefaultChecklistValues, countCheckedItems, migrateChecklistFormat, ChecklistValue } from '../helpers/vendorChecklist';
@@ -52,6 +52,10 @@ export default function VendorManager() {
   const [rating, setRating] = useState('');
   const [review, setReview] = useState('');
   const [checklist, setChecklist] = useState<Record<string, ChecklistValue>>({});
+  const [customChecklist, setCustomChecklist] = useState<CustomChecklistItem[]>([]);
+  const [showCustomChecklistForm, setShowCustomChecklistForm] = useState(false);
+  const [customChecklistQuestion, setCustomChecklistQuestion] = useState('');
+  const [customChecklistDescription, setCustomChecklistDescription] = useState('');
 
   const resetForm = () => {
     setName('');
@@ -69,6 +73,10 @@ export default function VendorManager() {
     setRating('');
     setReview('');
     setChecklist({});
+    setCustomChecklist([]);
+    setShowCustomChecklistForm(false);
+    setCustomChecklistQuestion('');
+    setCustomChecklistDescription('');
     setEditingId(null);
     setShowForm(false);
   };
@@ -106,6 +114,7 @@ export default function VendorManager() {
       rating: rating ? parseInt(rating) : undefined,
       review: review.trim() || undefined,
       checklist: Object.keys(checklist).length > 0 ? checklist : undefined,
+      customChecklist: customChecklist.length > 0 ? customChecklist : undefined,
     };
 
     if (editingId) {
@@ -136,6 +145,8 @@ export default function VendorManager() {
     setReview(vendor.review || '');
     // Migrate checklist format jika data lama
     setChecklist(migrateChecklistFormat(vendor.checklist, vendor.category));
+    // Load custom checklist
+    setCustomChecklist(vendor.customChecklist || []);
     setEditingId(vendor.id);
     setShowForm(true);
 
@@ -174,6 +185,36 @@ export default function VendorManager() {
     setCategory(newCategory);
     // Reset checklist dengan kategori baru
     setChecklist(getDefaultChecklistValues(newCategory));
+  };
+
+  const handleAddCustomChecklist = () => {
+    if (!customChecklistQuestion.trim()) {
+      addToast('Pertanyaan checklist wajib diisi', 'error');
+      return;
+    }
+
+    const newItem: CustomChecklistItem = {
+      id: `custom_${Date.now()}`,
+      question: customChecklistQuestion.trim(),
+      description: customChecklistDescription.trim() || undefined,
+    };
+
+    setCustomChecklist([...customChecklist, newItem]);
+    setCustomChecklistQuestion('');
+    setCustomChecklistDescription('');
+    setShowCustomChecklistForm(false);
+    addToast('Checklist custom berhasil ditambahkan', 'success');
+  };
+
+  const handleRemoveCustomChecklist = (itemId: string) => {
+    setCustomChecklist(customChecklist.filter(item => item.id !== itemId));
+    // Hapus juga dari checklist state jika ada
+    setChecklist(prev => {
+      const newChecklist = { ...prev };
+      delete newChecklist[itemId];
+      return newChecklist;
+    });
+    addToast('Checklist custom berhasil dihapus', 'success');
   };
 
   // Filter vendors
@@ -371,9 +412,15 @@ export default function VendorManager() {
                       <ListChecks size={14} className="text-[#87A878]" />
                       <span className="font-medium">
                         {countCheckedItems(vendor.checklist)} item termasuk
+                        {vendor.customChecklist && vendor.customChecklist.length > 0 && (
+                          <span className="text-[#D4A843] ml-1">
+                            ({vendor.customChecklist.filter(item => vendor.checklist?.[item.id]?.checked).length} custom)
+                          </span>
+                        )}
                       </span>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
+                      {/* Template checklist items */}
                       {getChecklistForCategory(vendor.category)
                         .filter(item => vendor.checklist?.[item.id]?.checked)
                         .slice(0, 5)
@@ -381,6 +428,22 @@ export default function VendorManager() {
                           <span
                             key={item.id}
                             className="text-xs px-2 py-0.5 bg-[#87A878]/10 text-[#6B8A5E] rounded-full border border-[#87A878]/20"
+                            title={vendor.checklist?.[item.id]?.notes || undefined}
+                          >
+                            {item.question}
+                            {vendor.checklist?.[item.id]?.notes && (
+                              <span className="ml-1 text-[10px] opacity-75">•</span>
+                            )}
+                          </span>
+                        ))}
+                      {/* Custom checklist items */}
+                      {vendor.customChecklist
+                        ?.filter(item => vendor.checklist?.[item.id]?.checked)
+                        .slice(0, 5 - getChecklistForCategory(vendor.category).filter(item => vendor.checklist?.[item.id]?.checked).length)
+                        .map(item => (
+                          <span
+                            key={item.id}
+                            className="text-xs px-2 py-0.5 bg-[#D4A843]/10 text-[#B8922F] rounded-full border border-[#D4A843]/20"
                             title={vendor.checklist?.[item.id]?.notes || undefined}
                           >
                             {item.question}
@@ -508,7 +571,8 @@ export default function VendorManager() {
                 Checklist Detail Paket
               </label>
               <span className="text-xs text-gray-500">
-                {countCheckedItems(checklist)} dari {getChecklistForCategory(category).length} item
+                {countCheckedItems(checklist)} dari {getChecklistForCategory(category).length + customChecklist.length} item
+                {customChecklist.length > 0 && ` (${customChecklist.length} custom)`}
               </span>
             </div>
             <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2 max-h-96 overflow-y-auto">
@@ -554,6 +618,138 @@ export default function VendorManager() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Custom Checklist Section */}
+            {customChecklist.length > 0 && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    <ListChecks size={16} className="inline mr-2 text-[#D4A843]" />
+                    Checklist Custom
+                  </label>
+                  <span className="text-xs text-gray-500">
+                    {customChecklist.filter(item => checklist[item.id]?.checked).length} dari {customChecklist.length} item
+                  </span>
+                </div>
+                <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#D4A843]/30 space-y-2">
+                  {customChecklist.map((item) => {
+                    const isChecked = checklist[item.id]?.checked || false;
+                    const notes = checklist[item.id]?.notes || '';
+                    
+                    return (
+                      <div key={item.id} className="p-2 hover:bg-white rounded-lg transition-colors">
+                        <div className="flex items-start gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleChecklist(item.id)}
+                            className="flex-shrink-0 mt-0.5"
+                          >
+                            {isChecked ? (
+                              <CheckSquare size={20} className="text-[#D4A843]" />
+                            ) : (
+                              <Square size={20} className="text-gray-400" />
+                            )}
+                          </button>
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1">
+                                <p className={`text-sm ${isChecked ? 'text-gray-800 font-medium' : 'text-gray-600'}`}>
+                                  {item.question}
+                                </p>
+                                {item.description && (
+                                  <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveCustomChecklist(item.id)}
+                                className="flex-shrink-0 p-1 hover:bg-red-50 rounded transition-colors"
+                                title="Hapus checklist custom"
+                              >
+                                <Trash2 size={14} className="text-red-500" />
+                              </button>
+                            </div>
+                            {/* Input notes selalu muncul dengan styling berbeda */}
+                            <input
+                              type="text"
+                              value={notes}
+                              onChange={(e) => handleChangeChecklistNote(item.id, e.target.value)}
+                              placeholder={isChecked ? "Tambahkan catatan (opsional)..." : "Catatan (misal: biaya upgrade...)"}
+                              className={`w-full mt-2 text-xs px-3 py-1.5 border-l-2 rounded-r-lg focus:ring-2 outline-none transition-all ${
+                                isChecked 
+                                  ? 'border-[#D4A843] bg-white focus:ring-[#D4A843]/30 focus:border-[#D4A843]' 
+                                  : 'border-gray-300 bg-gray-50 focus:ring-gray-300/30 focus:border-gray-400'
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Add Custom Checklist Button/Form */}
+            <div className="mt-4">
+              {!showCustomChecklistForm ? (
+                <button
+                  type="button"
+                  onClick={() => setShowCustomChecklistForm(true)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-[#D4A843]/50 text-[#D4A843] rounded-xl hover:bg-[#FFF9E6] hover:border-[#D4A843] transition-all text-sm font-medium"
+                >
+                  <Plus size={16} />
+                  Tambah Checklist Custom
+                </button>
+              ) : (
+                <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#D4A843]/30 space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Pertanyaan <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={customChecklistQuestion}
+                      onChange={(e) => setCustomChecklistQuestion(e.target.value)}
+                      placeholder="Contoh: Apakah termasuk biaya transportasi?"
+                      className="w-full px-4 py-2.5 border border-[#D4A843]/30 rounded-xl focus:ring-2 focus:ring-[#D4A843]/30 focus:border-[#D4A843] outline-none bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      Deskripsi (opsional)
+                    </label>
+                    <input
+                      type="text"
+                      value={customChecklistDescription}
+                      onChange={(e) => setCustomChecklistDescription(e.target.value)}
+                      placeholder="Penjelasan detail pertanyaan..."
+                      className="w-full px-4 py-2.5 border border-[#D4A843]/30 rounded-xl focus:ring-2 focus:ring-[#D4A843]/30 focus:border-[#D4A843] outline-none bg-white"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCustomChecklistForm(false);
+                        setCustomChecklistQuestion('');
+                        setCustomChecklistDescription('');
+                      }}
+                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium"
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleAddCustomChecklist}
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+                    >
+                      Tambah
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
