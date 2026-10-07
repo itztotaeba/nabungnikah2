@@ -49,6 +49,12 @@ export type VendorType = 'All-in' | 'Satuan';
 export type VendorCategory = 'WO' | 'Katering' | 'Venue' | 'MUA' | 'Fotografi' | 'Dekorasi' | 'Entertainment' | 'Busana' | 'MC' | 'Undangan & Souvenir' | 'Lainnya';
 export type ContractStatus = 'Belum Kontrak' | 'Sudah DP' | 'Lunas';
 
+export interface CustomChecklistItem {
+  id: string;
+  question: string;
+  description?: string;
+}
+
 export interface Vendor {
   id: string;
   name: string;
@@ -67,6 +73,7 @@ export interface Vendor {
   rating?: number; // 1-5
   review?: string;
   checklist?: Record<string, { checked: boolean; notes: string }>; // Checklist detail per kategori dengan notes
+  customChecklist?: CustomChecklistItem[]; // Checklist custom yang ditambahkan user
   createdAt: string;
   updatedBy?: string; // Email user yang terakhir mengubah
   updatedAt?: string; // ISO timestamp
