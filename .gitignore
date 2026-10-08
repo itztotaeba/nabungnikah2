@@ -1,1 +1,271 @@
-(empty)
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.log
+
+# Production
+dist/
+build/
+.vite/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Vite
+*.tsbuildinfo
+.vite/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Supabase (jika ada local development)
+.supabase/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Documentation build (jika ada)
+docs-build/
+api-docs/
+
+# Screenshots dan assets temporary
+screenshots/
+temp-assets/
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Storybook
+storybook-static/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn
+.yarn-integrity
+.yarn/
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Parcel
+.cache/
+.parcel-cache/
+
+# Next.js
+.next/
+out/
+
+# Nuxt.js
+.nuxt/
+.output/
+
+# Gatsby
+.public/
+
+# Vuepress
+.temp/
+
+# Vercel
+.vercel
+
+# Turborepo
+.turbo/
+
+# AWS
+.aws/
+
+# Firebase
+.firebase/
+
+# Heroku
+.heroku/
+
+# Netlify
+.netlify/
+
+# Docker
+.docker/
+
+# Kubernetes
+.kube/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Ansible
+*.retry
+
+# Vagrant
+.vagrant/
+Vagrantfile
+
+# Packer
+packer_cache/
+
+# Vault
+.vault/
+
+# Consul
+.consul/
+
+# Etcd
+.etcd/
+
+# Zookeeper
+.zookeeper/
+
+# Kafka
+.kafka/
+
+# RabbitMQ
+.rabbitmq/
+
+# Redis
+.redis/
+
+# MongoDB
+.mongodb/
+
+# PostgreSQL
+.postgresql/
+
+# MySQL
+.mysql/
+
+# SQLite
+*.sqlite
+*.db
+
+# Elasticsearch
+.elasticsearch/
+
+# Kibana
+.kibana/
+
+# Grafana
+.grafana/
+
+# Prometheus
+.prometheus/
+
+# Jaeger
+.jaeger/
+
+# Zipkin
+.zipkin/
+
+# OpenTelemetry
+.opentelemetry/
+
+# Sentry
+.sentry/
+
+# Datadog
+.datadog/
+
+# New Relic
+.newrelic/
+
+# AppDynamics
+.appdynamics/
+
+# Dynatrace
+.dynatrace/
+
+# Splunk
+.splunk/
+
+# Logstash
+.logstash/
+
+# Kibana
+.kibana/
+
+# Elasticsearch
+.elasticsearch/
+
+# MongoDB
+.mongodb/
+
+# Redis
+.redis/
+
+# PostgreSQL
+.postgresql/
+
+# MySQL
+.mysql/
+
+# SQLite
+*.sqlite
+*.db
