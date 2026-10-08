@@ -402,10 +402,13 @@ nabung-nikah/
 │   ├── collaborationStore.ts # Collaboration store
 │   ├── types.ts             # TypeScript types
 │   └── main.tsx             # Entry point
+├── public/                  # Static assets (PWA icons, manifest)
 ├── .env.example             # Environment template
 ├── .gitignore               # Git ignore rules
+├── cleanup-repo.sh          # Script perapian repo (opsional)
 ├── package.json             # Dependencies
 ├── tsconfig.json            # TypeScript config
+├── vercel.json              # Vercel deployment config
 ├── vite.config.js           # Vite config
 └── README.md                # This file
 ```
