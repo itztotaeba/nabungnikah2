@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus, CustomChecklistItem } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
 import { getChecklistForCategory, getDefaultChecklistValues, countCheckedItems, migrateChecklistFormat, ChecklistValue } from '../helpers/vendorChecklist';
+import { MAX_VENDOR_PHOTOS, validatePhotoFile, uploadVendorPhoto, deleteVendorPhoto } from '../helpers/vendorPhotos';
 import { useToastStore } from '../toastStore';
 import ComparisonAnalysis from './ComparisonAnalysis';
+import VendorDetailModal from './VendorDetailModal';
+import VendorPhotoCarousel from './VendorPhotoCarousel';
 import {
   Plus,
   Pencil,
@@ -22,6 +25,9 @@ import {
   CheckSquare,
   Square,
   ListChecks,
+  Image as ImageIcon,
+  Eye,
+  UploadCloud,
 } from 'lucide-react';
 
 const VENDOR_CATEGORIES: VendorCategory[] = ['WO', 'Katering', 'Venue', 'MUA', 'Fotografi', 'Dekorasi', 'Entertainment', 'Busana', 'MC', 'Undangan & Souvenir', 'Lainnya'];
@@ -57,6 +63,15 @@ export default function VendorManager() {
   const [customChecklistQuestion, setCustomChecklistQuestion] = useState('');
   const [customChecklistDescription, setCustomChecklistDescription] = useState('');
 
+  // Foto contoh vendor (maksimal 5)
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Detail modal
+  const [detailVendorId, setDetailVendorId] = useState<string | null>(null);
+  const detailVendor = vendors.find((v) => v.id === detailVendorId) || null;
+
   const resetForm = () => {
     setName('');
     setType('Satuan');
@@ -77,6 +92,8 @@ export default function VendorManager() {
     setShowCustomChecklistForm(false);
     setCustomChecklistQuestion('');
     setCustomChecklistDescription('');
+    setPhotos([]);
+    setIsUploadingPhotos(false);
     setEditingId(null);
     setShowForm(false);
   };
@@ -115,6 +132,7 @@ export default function VendorManager() {
       review: review.trim() || undefined,
       checklist: Object.keys(checklist).length > 0 ? checklist : undefined,
       customChecklist: customChecklist.length > 0 ? customChecklist : undefined,
+      photos: photos.length > 0 ? photos : undefined,
     };
 
     if (editingId) {
@@ -147,6 +165,8 @@ export default function VendorManager() {
     setChecklist(migrateChecklistFormat(vendor.checklist, vendor.category));
     // Load custom checklist
     setCustomChecklist(vendor.customChecklist || []);
+    // Load foto contoh vendor
+    setPhotos(vendor.photos || []);
     setEditingId(vendor.id);
     setShowForm(true);
 
@@ -156,9 +176,63 @@ export default function VendorManager() {
 
   const handleDelete = (id: string, vendorName: string) => {
     if (window.confirm(`Hapus vendor "${vendorName}"?`)) {
+      const vendor = vendors.find((v) => v.id === id);
+      // Bersihkan foto dari storage jika ada
+      if (vendor?.photos && vendor.photos.length > 0) {
+        vendor.photos.forEach((url) => deleteVendorPhoto(url));
+      }
       deleteVendor(id);
+      if (detailVendorId === id) setDetailVendorId(null);
       addToast('Vendor berhasil dihapus', 'success');
     }
+  };
+
+  // ---- Foto contoh vendor ----
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const remainingSlots = MAX_VENDOR_PHOTOS - photos.length;
+    if (remainingSlots <= 0) {
+      addToast(`Maksimal ${MAX_VENDOR_PHOTOS} foto vendor`, 'error');
+      if (photoInputRef.current) photoInputRef.current.value = '';
+      return;
+    }
+
+    const selected = files.slice(0, remainingSlots);
+    if (files.length > remainingSlots) {
+      addToast(`Hanya ${remainingSlots} foto pertama yang diambil (maksimal ${MAX_VENDOR_PHOTOS} foto)`, 'info');
+    }
+
+    setIsUploadingPhotos(true);
+    const uploaded: string[] = [];
+    for (const file of selected) {
+      const error = validatePhotoFile(file);
+      if (error) {
+        addToast(`${file.name}: ${error}`, 'error');
+        continue;
+      }
+      try {
+        const url = await uploadVendorPhoto(file);
+        uploaded.push(url);
+      } catch {
+        addToast(`Gagal upload ${file.name}`, 'error');
+      }
+    }
+    if (uploaded.length > 0) {
+      setPhotos((prev) => [...prev, ...uploaded].slice(0, MAX_VENDOR_PHOTOS));
+      addToast(`${uploaded.length} foto berhasil ditambahkan`, 'success');
+    }
+    setIsUploadingPhotos(false);
+
+    // Reset input agar file yang sama bisa dipilih ulang
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    const removed = photos[index];
+    if (removed) deleteVendorPhoto(removed);
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleToggleChecklist = (itemId: string) => {
@@ -747,6 +821,63 @@ export default function VendorManager() {
             </div>
           </div>
 
+          {/* Foto Contoh Vendor (maksimal 5) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <ImageIcon size={16} className="inline mr-1.5 text-[#B76E79]" />
+              Foto Contoh Vendor ({photos.length}/{MAX_VENDOR_PHOTOS})
+            </label>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+              {photos.map((url, i) => (
+                <div key={`${url.slice(-24)}-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-[#E8E0D4] group/photo">
+                  <img src={url} alt={`Contoh ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePhoto(i)}
+                    aria-label="Hapus foto"
+                    className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover/photo:opacity-100 hover:bg-red-500 transition-all"
+                  >
+                    <X size={12} />
+                  </button>
+                  <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-md bg-black/50 text-white text-[10px] font-medium">
+                    {i + 1}
+                  </span>
+                </div>
+              ))}
+              {photos.length < MAX_VENDOR_PHOTOS && (
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  disabled={isUploadingPhotos}
+                  className="aspect-square rounded-xl border-2 border-dashed border-[#B76E79]/40 text-[#B76E79] flex flex-col items-center justify-center gap-1 hover:bg-[#B76E79]/5 hover:border-[#B76E79] transition-all disabled:opacity-50 disabled:cursor-wait"
+                >
+                  {isUploadingPhotos ? (
+                    <>
+                      <UploadCloud size={18} className="animate-pulse" />
+                      <span className="text-[10px] font-medium">Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={18} />
+                      <span className="text-[10px] font-medium">Tambah</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
+              multiple
+              onChange={handlePhotoSelect}
+              className="hidden"
+            />
+            <p className="text-xs text-gray-500 mt-1.5">
+              Upload contoh hasil kerja vendor (makanan, dekorasi, venue, dll). Maksimal {MAX_VENDOR_PHOTOS} foto, format PNG/JPG/WEBP.
+            </p>
+          </div>
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
@@ -781,10 +912,13 @@ export default function VendorManager() {
             const progress = vendor.dealPrice > 0 ? (vendor.dpAmount / vendor.dealPrice) * 100 : 0;
             return (
               <div key={vendor.id} className="bg-white rounded-xl border border-[#E8E0D4] p-5 hover:shadow-md transition-shadow">
-                {/* Header */}
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800 truncate">{vendor.name}</h3>
+                  <button
+                    onClick={() => setDetailVendorId(vendor.id)}
+                    className="flex-1 min-w-0 text-left group/name"
+                    title="Lihat detail vendor"
+                  >
+                    <h3 className="font-semibold text-gray-800 truncate group-hover/name:text-[#6B8A5E] group-hover/name:underline transition-colors">{vendor.name}</h3>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${typeBadge(vendor.type)}`}>
                         {vendor.type}
@@ -793,11 +927,18 @@ export default function VendorManager() {
                         {vendor.category}
                       </span>
                     </div>
-                  </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusBadge(vendor.contractStatus)}`}>
+                  </button>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ml-2 ${statusBadge(vendor.contractStatus)}`}>
                     {vendor.contractStatus}
                   </span>
                 </div>
+
+                {/* Preview foto (carousel ala Instagram, tidak tampil semua) */}
+                {vendor.photos && vendor.photos.length > 0 && (
+                  <div className="mb-3">
+                    <VendorPhotoCarousel photos={vendor.photos} vendorName={vendor.name} />
+                  </div>
+                )}
 
                 {/* Progress Bar */}
                 <div className="mb-3">
@@ -901,6 +1042,13 @@ export default function VendorManager() {
                 {/* Actions */}
                 <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
                   <button
+                    onClick={() => setDetailVendorId(vendor.id)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-[#87A878]/10 text-[#6B8A5E] rounded-lg hover:bg-[#87A878]/20 transition-colors font-medium"
+                  >
+                    <Eye size={12} />
+                    Detail
+                  </button>
+                  <button
                     onClick={() => handleEdit(vendor)}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
                   >
@@ -919,6 +1067,18 @@ export default function VendorManager() {
             );
           })}
         </div>
+      )}
+
+      {/* Detail Vendor Modal */}
+      {detailVendor && (
+        <VendorDetailModal
+          vendor={detailVendor}
+          onClose={() => setDetailVendorId(null)}
+          onEdit={(v) => {
+            setDetailVendorId(null);
+            handleEdit(v);
+          }}
+        />
       )}
     </div>
   );
