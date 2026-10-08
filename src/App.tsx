@@ -13,6 +13,7 @@ import LoadingOverlay from './components/LoadingOverlay';
 import SupabaseSyncProvider from './components/SupabaseSyncProvider';
 import AuthModal from './components/AuthModal';
 import MobileBottomNav from './components/MobileBottomNav';
+import FooterWatermark from './components/FooterWatermark';
 import InstallPWAButton from './components/InstallPWAButton';
 import PWAUpdateToast from './components/PWAUpdateToast';
 import ExitConfirmModal from './components/ExitConfirmModal';
@@ -278,6 +279,9 @@ export default function App() {
             {renderContent()}
           </div>
         </main>
+
+        {/* Footer Watermark "Made With Love" */}
+        <FooterWatermark />
       </div>
 
       {/* Mobile Bottom Navigation - 4 menu utama + tombol Lainnya */}

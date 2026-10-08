@@ -13,3 +13,26 @@
 .animate-slide-up {
   animation: slideUp 0.3s ease-out forwards;
 }
+
+/* Animasi detak jantung untuk watermark "Made With Love" */
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.25);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.25);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
