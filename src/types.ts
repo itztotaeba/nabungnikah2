@@ -74,6 +74,7 @@ export interface Vendor {
   review?: string;
   checklist?: Record<string, { checked: boolean; notes: string }>; // Checklist detail per kategori dengan notes
   customChecklist?: CustomChecklistItem[]; // Checklist custom yang ditambahkan user
+  photos?: string[]; // URL foto contoh vendor (maksimal 5)
   createdAt: string;
   updatedBy?: string; // Email user yang terakhir mengubah
   updatedAt?: string; // ISO timestamp

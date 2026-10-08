@@ -18,7 +18,7 @@ export default function FooterWatermark() {
         </span>
       </div>
       <p className="text-center text-[10px] text-gray-300 mt-1">
-        © {new Date().getFullYear()} Nabung Nikah
+        © {new Date().getFullYear()} Mahes&amp;Aira Budget and Wedding Plan
       </p>
     </footer>
   );
