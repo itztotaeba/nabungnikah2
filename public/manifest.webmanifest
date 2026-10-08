@@ -1,0 +1,27 @@
+{
+  "name": "M&A Wedding Plan",
+  "short_name": "M&A",
+  "description": "Aplikasi Wedding Planner modern dengan fitur kolaborasi multi-user, realtime sync, dan manajemen anggaran",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F4",
+  "theme_color": "#2F6A43",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "https://is3.cloudhost.id/totaeba/mahesaira.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://is3.cloudhost.id/totaeba/mahesaira.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["lifestyle", "productivity"],
+  "lang": "id",
+  "dir": "ltr"
+}
