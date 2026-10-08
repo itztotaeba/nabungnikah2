@@ -50,6 +50,31 @@ export const calculateFundingGap = (totalBudget: number, totalSavings: number): 
   return Math.max(0, totalBudget - totalSavings);
 };
 
+export const checkEmergencyBufferStatus = (totalBudget: number, totalActual: number, bufferPercentage: number = 15): {
+  bufferAmount: number;
+  totalWithBuffer: number;
+  remainingSafe: number;
+  remainingBuffer: number;
+  isBufferTouched: boolean;
+  bufferUsagePercentage: number;
+} => {
+  const bufferAmount = totalBudget * (bufferPercentage / 100);
+  const totalWithBuffer = totalBudget + bufferAmount;
+  const remainingSafe = Math.max(0, totalBudget - totalActual);
+  const remainingBuffer = Math.max(0, totalWithBuffer - totalActual);
+  const isBufferTouched = totalActual > totalBudget;
+  const bufferUsagePercentage = isBufferTouched ? Math.min(100, ((totalActual - totalBudget) / bufferAmount) * 100) : 0;
+
+  return {
+    bufferAmount,
+    totalWithBuffer,
+    remainingSafe,
+    remainingBuffer,
+    isBufferTouched,
+    bufferUsagePercentage,
+  };
+};
+
 export const calculateMonthlyTarget = (fundingGap: number, remainingMonths: number): number => {
   if (remainingMonths <= 0) return fundingGap;
   return Math.ceil(fundingGap / remainingMonths);

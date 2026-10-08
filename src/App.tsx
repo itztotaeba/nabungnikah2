@@ -134,11 +134,20 @@ export default function App() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 sm:px-6 py-6">
+        <main className="flex-1 px-4 sm:px-6 py-6 pb-24 lg:pb-6">
           <div className="max-w-5xl mx-auto">
             {renderContent()}
           </div>
         </main>
+
+        {/* Footer */}
+        <footer className="border-t border-gray-200 bg-white py-6 px-4 sm:px-6">
+          <div className="max-w-5xl mx-auto text-center">
+            <p className="text-sm text-gray-600">
+              Made with <span className="text-pink-500">❤️</span> by Mahes & Aira
+            </p>
+          </div>
+        </footer>
       </div>
 
       {/* Mobile Bottom Navigation */}

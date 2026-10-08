@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { WeddingData, BudgetItem, SavingsEntry, Guest, Vendor, Task, WeddingSettings } from './types';
 
+export type { Vendor } from './types';
+
 interface WeddingStore extends WeddingData {
   // Settings actions
   updateSettings: (settings: Partial<WeddingSettings>) => void;
@@ -30,6 +32,9 @@ interface WeddingStore extends WeddingData {
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   toggleTask: (id: string) => void;
+  
+  // Import/Export
+  importData: (data: WeddingData) => void;
   
   // Reset
   resetData: () => void;
@@ -169,6 +174,17 @@ export const useWeddingStore = create<WeddingStore>()(
               : task
           ),
         })),
+      
+      // Import data
+      importData: (data) =>
+        set({
+          settings: data.settings,
+          budgetItems: data.budgetItems,
+          savings: data.savings,
+          guests: data.guests,
+          vendors: data.vendors,
+          tasks: data.tasks,
+        }),
       
       // Reset
       resetData: () =>
