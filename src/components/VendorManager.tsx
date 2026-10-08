@@ -1,10 +1,12 @@
-import { useState } from 'react';
-import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus, CustomChecklistItem } from '../store';
+import { useState, useRef, useEffect } from 'react';
+import { useWeddingStore, Vendor, VendorType, VendorCategory, ContractStatus, CustomChecklistItem, VendorPhoto } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
 import { getChecklistForCategory, getDefaultChecklistValues, countCheckedItems, migrateChecklistFormat, ChecklistValue } from '../helpers/vendorChecklist';
+import { processVendorPhotoFile, deleteVendorPhotoFromStorage, validateVendorPhotoFile, MAX_VENDOR_PHOTOS } from '../helpers/vendorPhotos';
 import { useToastStore } from '../toastStore';
 import ComparisonAnalysis from './ComparisonAnalysis';
+import VendorPhotoCarousel from './VendorPhotoCarousel';
 import {
   Plus,
   Pencil,
@@ -22,6 +24,9 @@ import {
   CheckSquare,
   Square,
   ListChecks,
+  Image as ImageIcon,
+  Eye,
+  Loader2,
 } from 'lucide-react';
 
 const VENDOR_CATEGORIES: VendorCategory[] = ['WO', 'Katering', 'Venue', 'MUA', 'Fotografi', 'Dekorasi', 'Entertainment', 'Busana', 'MC', 'Undangan & Souvenir', 'Lainnya'];
@@ -57,6 +62,57 @@ export default function VendorManager() {
   const [customChecklistQuestion, setCustomChecklistQuestion] = useState('');
   const [customChecklistDescription, setCustomChecklistDescription] = useState('');
 
+  // Foto contoh vendor (maks 5)
+  const [photos, setPhotos] = useState<VendorPhoto[]>([]);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  // Detail vendor modal
+  const [detailVendor, setDetailVendor] = useState<Vendor | null>(null);
+
+  // Proses file foto -> VendorPhoto (kompres + upload storage/base64 fallback)
+  const handlePhotoFiles = async (files: FileList | File[]) => {
+    const fileList = Array.from(files);
+    if (fileList.length === 0) return;
+
+    const remainingSlots = MAX_VENDOR_PHOTOS - photos.length;
+    if (remainingSlots <= 0) {
+      addToast(`Maksimal ${MAX_VENDOR_PHOTOS} foto per vendor`, 'error');
+      return;
+    }
+
+    const toProcess = fileList.slice(0, remainingSlots);
+    if (fileList.length > remainingSlots) {
+      addToast(`Hanya ${remainingSlots} foto pertama yang diambil (maksimal ${MAX_VENDOR_PHOTOS} foto)`, 'info');
+    }
+
+    setIsUploadingPhotos(true);
+    const newPhotos: VendorPhoto[] = [];
+    for (const file of toProcess) {
+      try {
+        const photo = await processVendorPhotoFile(file);
+        newPhotos.push(photo);
+      } catch (err: any) {
+        addToast(err?.message || `Gagal memproses foto "${file.name}"`, 'error');
+      }
+    }
+    if (newPhotos.length > 0) {
+      setPhotos((prev) => [...prev, ...newPhotos].slice(0, MAX_VENDOR_PHOTOS));
+      addToast(`${newPhotos.length} foto berhasil ditambahkan`, 'success');
+    }
+    setIsUploadingPhotos(false);
+
+    // Reset input agar file yang sama bisa dipilih lagi
+    if (photoInputRef.current) photoInputRef.current.value = '';
+  };
+
+  const handleRemovePhoto = (photoId: string) => {
+    const photo = photos.find((p) => p.id === photoId);
+    setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+    // Bersihkan file di cloud storage (best-effort, tidak blocking)
+    if (photo) void deleteVendorPhotoFromStorage(photo);
+  };
+
   const resetForm = () => {
     setName('');
     setType('Satuan');
@@ -77,6 +133,9 @@ export default function VendorManager() {
     setShowCustomChecklistForm(false);
     setCustomChecklistQuestion('');
     setCustomChecklistDescription('');
+    setPhotos([]);
+    setIsUploadingPhotos(false);
+    if (photoInputRef.current) photoInputRef.current.value = '';
     setEditingId(null);
     setShowForm(false);
   };
@@ -115,6 +174,7 @@ export default function VendorManager() {
       review: review.trim() || undefined,
       checklist: Object.keys(checklist).length > 0 ? checklist : undefined,
       customChecklist: customChecklist.length > 0 ? customChecklist : undefined,
+      photos: photos.length > 0 ? photos : undefined,
     };
 
     if (editingId) {
@@ -147,6 +207,8 @@ export default function VendorManager() {
     setChecklist(migrateChecklistFormat(vendor.checklist, vendor.category));
     // Load custom checklist
     setCustomChecklist(vendor.customChecklist || []);
+    // Load foto contoh vendor (aman untuk data lama tanpa photos)
+    setPhotos(Array.isArray(vendor.photos) ? [...vendor.photos] : []);
     setEditingId(vendor.id);
     setShowForm(true);
 
@@ -216,6 +278,16 @@ export default function VendorManager() {
     });
     addToast('Checklist custom berhasil dihapus', 'success');
   };
+
+  // Tutup modal detail dengan tombol Escape (kompatibel PWA/mobile)
+  useEffect(() => {
+    if (!detailVendor) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDetailVendor(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [detailVendor]);
 
   // Filter vendors
   const filteredVendors = filterType === 'Semua'
@@ -747,6 +819,71 @@ export default function VendorManager() {
             </div>
           </div>
 
+          {/* Foto Contoh Vendor (maks 5) */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-sm font-medium text-gray-700">
+                <ImageIcon size={16} className="inline mr-2" />
+                Foto Contoh Vendor
+              </label>
+              <span className={`text-xs ${photos.length >= MAX_VENDOR_PHOTOS ? 'text-[#B76E79] font-medium' : 'text-gray-500'}`}>
+                {photos.length}/{MAX_VENDOR_PHOTOS} foto
+              </span>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">
+              Upload contoh hasil kerja vendor (JPG/PNG/WebP, otomatis dikompres). Nanti tampil sebagai carousel di detail vendor.
+            </p>
+
+            {photos.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-3">
+                {photos.map((photo) => (
+                  <div key={photo.id} className="relative group aspect-square rounded-lg overflow-hidden border border-[#E8E0D4] bg-[#FDFBF7]">
+                    <img src={photo.url} alt={photo.fileName || 'Foto vendor'} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemovePhoto(photo.id)}
+                      className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                      title="Hapus foto"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {photos.length < MAX_VENDOR_PHOTOS && (
+              <button
+                type="button"
+                disabled={isUploadingPhotos}
+                onClick={() => photoInputRef.current?.click()}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-[#87A878]/50 text-[#6B8A5E] rounded-xl hover:bg-[#87A878]/10 hover:border-[#87A878] transition-all text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isUploadingPhotos ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Memproses foto...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} />
+                    Tambah Foto {photos.length > 0 ? `(${MAX_VENDOR_PHOTOS - photos.length} sisa)` : ''}
+                  </>
+                )}
+              </button>
+            )}
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (e.target.files?.length) void handlePhotoFiles(e.target.files);
+              }}
+            />
+          </div>
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
@@ -901,6 +1038,13 @@ export default function VendorManager() {
                 {/* Actions */}
                 <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
                   <button
+                    onClick={() => setDetailVendor(vendor)}
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-[#87A878]/10 text-[#6B8A5E] rounded-lg hover:bg-[#87A878]/20 transition-colors font-medium"
+                  >
+                    <Eye size={12} />
+                    Detail
+                  </button>
+                  <button
                     onClick={() => handleEdit(vendor)}
                     className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
                   >
@@ -920,6 +1064,187 @@ export default function VendorManager() {
           })}
         </div>
       )}
+
+      {/* ===== Modal Detail Vendor (dengan carousel foto ala Instagram) ===== */}
+      {detailVendor && (() => {
+        const v = detailVendor;
+        const checkedItems = [
+          ...getChecklistForCategory(v.category),
+          ...(v.customChecklist || []),
+        ].filter((item) => v.checklist?.[item.id]?.checked);
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+            onClick={() => setDetailVendor(null)}
+          >
+            <div
+              className="bg-white w-full sm:max-w-2xl max-h-[92vh] sm:rounded-2xl rounded-t-2xl overflow-y-auto shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header modal */}
+              <div className="sticky top-0 bg-white/95 backdrop-blur border-b border-[#E8E0D4] px-5 py-4 flex items-start justify-between z-10">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-heading text-lg font-bold text-gray-800 truncate">{v.name}</h3>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${typeBadge(v.type)}`}>{v.type}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">{v.category}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusBadge(v.contractStatus)}`}>{v.contractStatus}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setDetailVendor(null)}
+                  className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors flex-shrink-0"
+                  aria-label="Tutup detail"
+                >
+                  <X size={20} className="text-gray-500" />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-5">
+                {/* Carousel Foto Contoh (Instagram style) */}
+                {Array.isArray(v.photos) && v.photos.length > 0 ? (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                      <ImageIcon size={14} className="inline mr-1.5 text-[#B76E79]" />
+                      Foto Contoh ({v.photos.length})
+                    </h4>
+                    <VendorPhotoCarousel photos={v.photos} />
+                  </div>
+                ) : (
+                  <div className="rounded-xl border-2 border-dashed border-[#E8E0D4] bg-[#FDFBF7] py-6 text-center">
+                    <ImageIcon size={20} className="mx-auto text-gray-300 mb-1" />
+                    <p className="text-xs text-gray-400">Belum ada foto contoh untuk vendor ini</p>
+                  </div>
+                )}
+
+                {/* Informasi Keuangan */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-[#FDFBF7] rounded-xl p-3 border border-[#E8E0D4] text-center">
+                    <p className="text-xs text-gray-500 mb-1">Harga Deal</p>
+                    <p className="text-sm font-bold text-gray-800">{formatCurrency(v.dealPrice, settings.currency)}</p>
+                  </div>
+                  <div className="bg-[#FDFBF7] rounded-xl p-3 border border-[#E8E0D4] text-center">
+                    <p className="text-xs text-gray-500 mb-1">DP</p>
+                    <p className="text-sm font-bold text-gray-800">{formatCurrency(v.dpAmount, settings.currency)}</p>
+                  </div>
+                  <div className="bg-[#FDFBF7] rounded-xl p-3 border border-[#E8E0D4] text-center">
+                    <p className="text-xs text-gray-500 mb-1">Sisa</p>
+                    <p className="text-sm font-bold text-[#B76E79]">{formatCurrency(v.remainingBalance, settings.currency)}</p>
+                  </div>
+                </div>
+
+                {/* Kontak & Alamat */}
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Phone size={14} className="text-[#87A878]" />
+                    <a href={`https://wa.me/${v.contactWA.replace(/[^0-9]/g, '').replace(/^0/, '62')}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#6B8A5E] font-medium">
+                      {v.contactWA}
+                    </a>
+                  </div>
+                  {v.email && (
+                    <div className="flex items-center gap-2 text-gray-700">
+                      <Mail size={14} className="text-[#87A878]" />
+                      <span>{v.email}</span>
+                    </div>
+                  )}
+                  {v.address && (
+                    <div className="flex items-start gap-2 text-gray-700">
+                      <MapPin size={14} className="text-[#87A878] mt-0.5 flex-shrink-0" />
+                      <span>{v.address}</span>
+                    </div>
+                  )}
+                  {(v.dueDateDP || v.dueDateFinal) && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 pt-1">
+                      {v.dueDateDP && (
+                        <span className="flex items-center gap-1">
+                          <Calendar size={12} /> Jatuh tempo DP: {new Date(v.dueDateDP).toLocaleDateString('id-ID')}
+                        </span>
+                      )}
+                      {v.dueDateFinal && (
+                        <span className="flex items-center gap-1">
+                          <Calendar size={12} /> Pelunasan: {new Date(v.dueDateFinal).toLocaleDateString('id-ID')}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Rating & Review */}
+                {(v.rating || v.review) && (
+                  <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#D4A843]/30">
+                    {v.rating ? (
+                      <div className="flex items-center gap-1 mb-1">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} size={14} className={s <= (v.rating || 0) ? 'text-[#D4A843] fill-[#D4A843]' : 'text-gray-300'} />
+                        ))}
+                        <span className="text-xs text-gray-600 ml-1">{v.rating}/5</span>
+                      </div>
+                    ) : null}
+                    {v.review && <p className="text-sm text-gray-700 italic">"{v.review}"</p>}
+                  </div>
+                )}
+
+                {/* Checklist yang dicentang */}
+                {checkedItems.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                      <ListChecks size={14} className="inline mr-1.5 text-[#87A878]" />
+                      Detail Paket ({checkedItems.length} item)
+                    </h4>
+                    <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                      {checkedItems.map((item) => {
+                        const note = v.checklist?.[item.id]?.notes;
+                        return (
+                          <div key={item.id} className="flex items-start gap-2 text-sm bg-[#FDFBF7] rounded-lg px-3 py-2 border border-[#E8E0D4]">
+                            <CheckSquare size={14} className="text-[#87A878] mt-0.5 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-gray-700">{item.question}</p>
+                              {note && <p className="text-xs text-gray-500 mt-0.5">📝 {note}</p>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Catatan */}
+                {v.notes && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-700 mb-1">
+                      <FileText size={14} className="inline mr-1.5 text-[#B76E79]" />
+                      Catatan
+                    </h4>
+                    <p className="text-sm text-gray-600 bg-[#FDFBF7] rounded-lg px-3 py-2 border border-[#E8E0D4] whitespace-pre-wrap">{v.notes}</p>
+                  </div>
+                )}
+
+                {/* Footer: audit + aksi */}
+                <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <p className="text-xs text-gray-500">
+                    {formatAuditInfo(v.updatedBy, v.updatedAt)} · Ditambahkan {new Date(v.createdAt).toLocaleDateString('id-ID')}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { const id = v.id; setDetailVendor(null); handleEdit(vendors.find((x) => x.id === id) || v); }}
+                      className="flex items-center gap-1.5 px-4 py-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                    >
+                      <Pencil size={12} />
+                      Edit Vendor
+                    </button>
+                    <button
+                      onClick={() => setDetailVendor(null)}
+                      className="px-4 py-2 text-xs bg-[#F5F0E8] text-gray-600 rounded-lg hover:bg-[#E8E0D4] transition-colors font-medium"
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

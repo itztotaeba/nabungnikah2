@@ -24,6 +24,7 @@ export type {
   VendorCategory,
   ContractStatus,
   CustomChecklistItem,
+  VendorPhoto,
   Task,
   TaskCategory,
   TaskAssignee,

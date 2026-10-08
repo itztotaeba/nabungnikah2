@@ -55,6 +55,15 @@ export interface CustomChecklistItem {
   description?: string;
 }
 
+// Foto contoh hasil kerja vendor (max 5 per vendor) - disimpan di Supabase Storage,
+// fallback ke base64 data URL jika cloud sync tidak dikonfigurasi
+export interface VendorPhoto {
+  id: string;
+  url: string; // public URL Supabase Storage atau data:image/...;base64,...
+  fileName?: string;
+  createdAt?: string;
+}
+
 export interface Vendor {
   id: string;
   name: string;
@@ -74,6 +83,7 @@ export interface Vendor {
   review?: string;
   checklist?: Record<string, { checked: boolean; notes: string }>; // Checklist detail per kategori dengan notes
   customChecklist?: CustomChecklistItem[]; // Checklist custom yang ditambahkan user
+  photos?: VendorPhoto[]; // Foto contoh hasil kerja vendor (maksimal 5)
   createdAt: string;
   updatedBy?: string; // Email user yang terakhir mengubah
   updatedAt?: string; // ISO timestamp
