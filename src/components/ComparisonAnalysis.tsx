@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useWeddingStore, Vendor } from '../store';
 import { formatCurrency } from '../helpers';
-import { TrendingUp, Check, X, Star, ChevronDown, ArrowRight } from 'lucide-react';
+import { TrendingUp, Check, X, Star, ChevronDown, ArrowRight, ArrowDown } from 'lucide-react';
 import { getChecklistForCategory, countCheckedItems } from '../helpers/vendorChecklist';
 
 interface ComparisonAnalysisProps {
@@ -446,17 +446,21 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                 Detail Perbandingan
               </h4>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {renderVendorCard(selectedVendor1, 'Vendor 1')}
-                
-                <div className="flex items-center justify-center sm:hidden">
-                  <ArrowRight size={24} className="text-gray-400 rotate-90" />
+              {/* Kartu bertumpuk vertikal di layar sempit, berdampingan di layar lebar (lg+) */}
+              <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  {renderVendorCard(selectedVendor1, 'Vendor 1')}
                 </div>
-                <div className="hidden sm:flex items-center justify-center">
-                  <ArrowRight size={24} className="text-gray-400" />
+
+                <div className="flex items-center justify-center shrink-0 py-1" aria-label="Dibandingkan dengan">
+                  {/* Arah panah mengikuti tata letak kartu: ke bawah saat bertumpuk, ke kanan saat berjajar */}
+                  <ArrowDown size={24} className="text-gray-400 lg:hidden" />
+                  <ArrowRight size={24} className="text-gray-400 hidden lg:block" />
                 </div>
-                
-                {renderVendorCard(selectedVendor2, 'Vendor 2')}
+
+                <div className="flex-1 min-w-0">
+                  {renderVendorCard(selectedVendor2, 'Vendor 2')}
+                </div>
               </div>
 
               {/* Checklist Comparison */}
