@@ -8,12 +8,12 @@ export default function FooterWatermark() {
   return (
     <footer className="w-full py-6 pb-24 lg:pb-8 select-none">
       <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400">
-        <span className="font-medium tracking-wide">Made With</span>
+        <span className="font-medium">Made With</span>
         <Heart
           size={13}
           className="fill-rose-400 text-rose-400 animate-heartbeat inline-block"
         />
-        <span className="font-heading italic font-semibold text-[#2F6A43]/70 tracking-wide">
+        <span className="font-heading italic font-semibold text-[#2F6A43]/70">
           Love
         </span>
       </div>

@@ -291,10 +291,12 @@ export default function VendorManager() {
     addToast('Checklist custom berhasil dihapus', 'success');
   };
 
-  // Filter vendors
-  const filteredVendors = filterType === 'Semua'
+  // Filter vendors, lalu urutkan berdasarkan data terbaru (last update di atas)
+  const lastUpdated = (v: Vendor) => new Date(v.updatedAt || v.createdAt || 0).getTime();
+  const filteredVendors = (filterType === 'Semua'
     ? vendors
-    : vendors.filter(v => v.type === filterType);
+    : vendors.filter(v => v.type === filterType)
+  ).slice().sort((a, b) => lastUpdated(b) - lastUpdated(a));
 
   // Calculate stats
   const totalAllIn = vendors.filter(v => v.type === 'All-in').reduce((sum, v) => sum + v.dealPrice, 0);
@@ -326,7 +328,7 @@ export default function VendorManager() {
           {!showComparison && (
             <button
               onClick={() => setShowComparison(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors text-sm font-medium"
             >
               <TrendingUp size={16} />
               Analisis
@@ -339,7 +341,7 @@ export default function VendorManager() {
                 setChecklist(getDefaultChecklistValues('Katering')); // Initialize dengan kategori default
                 setShowForm(true); 
               }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#B76E79] hover:bg-[#9A5560] text-white rounded-md transition-colors text-sm font-medium"
             >
               <Plus size={16} />
               Tambah Vendor
@@ -350,35 +352,35 @@ export default function VendorManager() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
               <Building2 size={20} className="text-purple-500" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total All-in</p>
+              <p className="text-[13px] text-gray-500">Total All-in</p>
               <p className="text-xl font-bold text-gray-800">{formatCurrency(totalAllIn, settings.currency)}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
               <Building2 size={20} className="text-blue-500" />
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Satuan</p>
+              <p className="text-[13px] text-gray-500">Total Satuan</p>
               <p className="text-xl font-bold text-gray-800">{formatCurrency(totalSatuan, settings.currency)}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#87A878]/10 rounded-md flex items-center justify-center">
               <span className="text-lg">📊</span>
             </div>
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider">Total Vendor</p>
+              <p className="text-[13px] text-gray-500">Total Vendor</p>
               <p className="text-xl font-bold text-gray-800">{vendors.length}</p>
             </div>
           </div>
@@ -394,7 +396,7 @@ export default function VendorManager() {
           <button
             key={t}
             onClick={() => setFilterType(t)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium border transition-all ${
+            className={`px-4 py-2 rounded-md text-sm font-medium border transition-colors ${
               filterType === t
                 ? 'border-[#87A878] bg-[#87A878]/10 text-[#6B8A5E]'
                 : 'border-[#E8E0D4] bg-white text-gray-600 hover:border-[#87A878]/50'
@@ -412,7 +414,7 @@ export default function VendorManager() {
 
       {/* Inline Form - DIPINDAH KE ATAS */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               {editingId ? '✏️ Edit Vendor' : '✨ Tambah Vendor Baru'}
@@ -435,7 +437,7 @@ export default function VendorManager() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nama vendor..."
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               required
             />
           </div>
@@ -452,7 +454,7 @@ export default function VendorManager() {
                     setType(t);
                     if (t === 'All-in') setCategory('WO');
                   }}
-                  className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
+                  className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium border-2 transition-colors ${
                     type === t
                       ? typeBadge(t) + ' border-current'
                       : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
@@ -471,7 +473,7 @@ export default function VendorManager() {
               value={category}
               onChange={(e) => handleCategoryChange(e.target.value as VendorCategory)}
               disabled={type === 'All-in'}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
               {VENDOR_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -494,7 +496,7 @@ export default function VendorManager() {
                 {customChecklist.length > 0 && ` (${customChecklist.length} custom)`}
               </span>
             </div>
-            <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2 max-h-96 overflow-y-auto">
+            <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4] space-y-2 max-h-96 overflow-y-auto">
               {getChecklistForCategory(category).map((item) => {
                 const isChecked = checklist[item.id]?.checked || false;
                 const notes = checklist[item.id]?.notes || '';
@@ -526,7 +528,7 @@ export default function VendorManager() {
                           value={notes}
                           onChange={(e) => handleChangeChecklistNote(item.id, e.target.value)}
                           placeholder={isChecked ? "Tambahkan catatan (opsional)..." : "Catatan (misal: biaya upgrade...)"}
-                          className={`w-full mt-2 text-xs px-3 py-1.5 border-l-2 rounded-r-lg focus:ring-2 outline-none transition-all ${
+                          className={`w-full mt-2 text-xs px-3 py-1.5 border-l-2 rounded-r-lg focus:ring-2 outline-none transition-colors ${
                             isChecked 
                               ? 'border-[#B76E79] bg-white focus:ring-[#B76E79]/30 focus:border-[#B76E79]' 
                               : 'border-gray-300 bg-gray-50 focus:ring-gray-300/30 focus:border-gray-400'
@@ -551,7 +553,7 @@ export default function VendorManager() {
                     {customChecklist.filter(item => checklist[item.id]?.checked).length} dari {customChecklist.length} item
                   </span>
                 </div>
-                <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#D4A843]/30 space-y-2">
+                <div className="bg-[#FFF9E6] rounded-md p-4 border border-[#D4A843]/30 space-y-2">
                   {customChecklist.map((item) => {
                     const isChecked = checklist[item.id]?.checked || false;
                     const notes = checklist[item.id]?.notes || '';
@@ -595,7 +597,7 @@ export default function VendorManager() {
                               value={notes}
                               onChange={(e) => handleChangeChecklistNote(item.id, e.target.value)}
                               placeholder={isChecked ? "Tambahkan catatan (opsional)..." : "Catatan (misal: biaya upgrade...)"}
-                              className={`w-full mt-2 text-xs px-3 py-1.5 border-l-2 rounded-r-lg focus:ring-2 outline-none transition-all ${
+                              className={`w-full mt-2 text-xs px-3 py-1.5 border-l-2 rounded-r-lg focus:ring-2 outline-none transition-colors ${
                                 isChecked 
                                   ? 'border-[#D4A843] bg-white focus:ring-[#D4A843]/30 focus:border-[#D4A843]' 
                                   : 'border-gray-300 bg-gray-50 focus:ring-gray-300/30 focus:border-gray-400'
@@ -616,13 +618,13 @@ export default function VendorManager() {
                 <button
                   type="button"
                   onClick={() => setShowCustomChecklistForm(true)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-[#D4A843]/50 text-[#D4A843] rounded-xl hover:bg-[#FFF9E6] hover:border-[#D4A843] transition-all text-sm font-medium"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-[#D4A843]/50 text-[#D4A843] rounded-md hover:bg-[#FFF9E6] hover:border-[#D4A843] transition-colors text-sm font-medium"
                 >
                   <Plus size={16} />
                   Tambah Checklist Custom
                 </button>
               ) : (
-                <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#D4A843]/30 space-y-3">
+                <div className="bg-[#FFF9E6] rounded-md p-4 border border-[#D4A843]/30 space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                       Pertanyaan <span className="text-red-500">*</span>
@@ -632,7 +634,7 @@ export default function VendorManager() {
                       value={customChecklistQuestion}
                       onChange={(e) => setCustomChecklistQuestion(e.target.value)}
                       placeholder="Contoh: Apakah termasuk biaya transportasi?"
-                      className="w-full px-4 py-2.5 border border-[#D4A843]/30 rounded-xl focus:ring-2 focus:ring-[#D4A843]/30 focus:border-[#D4A843] outline-none bg-white"
+                      className="w-full px-4 py-2.5 border border-[#D4A843]/30 rounded-md focus:ring-2 focus:ring-[#D4A843]/30 focus:border-[#D4A843] outline-none bg-white"
                     />
                   </div>
                   <div>
@@ -644,7 +646,7 @@ export default function VendorManager() {
                       value={customChecklistDescription}
                       onChange={(e) => setCustomChecklistDescription(e.target.value)}
                       placeholder="Penjelasan detail pertanyaan..."
-                      className="w-full px-4 py-2.5 border border-[#D4A843]/30 rounded-xl focus:ring-2 focus:ring-[#D4A843]/30 focus:border-[#D4A843] outline-none bg-white"
+                      className="w-full px-4 py-2.5 border border-[#D4A843]/30 rounded-md focus:ring-2 focus:ring-[#D4A843]/30 focus:border-[#D4A843] outline-none bg-white"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -655,14 +657,14 @@ export default function VendorManager() {
                         setCustomChecklistQuestion('');
                         setCustomChecklistDescription('');
                       }}
-                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium"
+                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium"
                     >
                       Batal
                     </button>
                     <button
                       type="button"
                       onClick={handleAddCustomChecklist}
-                      className="flex-1 px-4 py-2 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+                      className="flex-1 px-4 py-2 bg-[#D4A843] hover:bg-[#B8922F] text-white rounded-md transition-colors text-sm font-medium"
                     >
                       Tambah
                     </button>
@@ -683,7 +685,7 @@ export default function VendorManager() {
                 value={contactWA}
                 onChange={(e) => setContactWA(e.target.value)}
                 placeholder="08xxxxxxxxxx"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -694,7 +696,7 @@ export default function VendorManager() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@vendor.com"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -707,7 +709,7 @@ export default function VendorManager() {
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Alamat vendor..."
               rows={2}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
             />
           </div>
 
@@ -723,7 +725,7 @@ export default function VendorManager() {
                 onChange={(e) => setDealPrice(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -735,7 +737,7 @@ export default function VendorManager() {
                 onChange={(e) => setDpAmount(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -748,7 +750,7 @@ export default function VendorManager() {
                 type="date"
                 value={dueDateDP}
                 onChange={(e) => setDueDateDP(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
             <div>
@@ -757,7 +759,7 @@ export default function VendorManager() {
                 type="date"
                 value={dueDateFinal}
                 onChange={(e) => setDueDateFinal(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -771,7 +773,7 @@ export default function VendorManager() {
                   key={status}
                   type="button"
                   onClick={() => setContractStatus(status)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
+                  className={`px-4 py-2 rounded-md text-sm font-medium border-2 transition-colors ${
                     contractStatus === status
                       ? statusBadge(status) + ' border-current'
                       : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
@@ -791,7 +793,7 @@ export default function VendorManager() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Catatan tambahan..."
               rows={2}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
             />
           </div>
 
@@ -806,7 +808,7 @@ export default function VendorManager() {
                 placeholder="1-5"
                 min="1"
                 max="5"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
             <div>
@@ -816,7 +818,7 @@ export default function VendorManager() {
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
                 placeholder="Review singkat..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -829,13 +831,13 @@ export default function VendorManager() {
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
               {photos.map((url, i) => (
-                <div key={`${url.slice(-24)}-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-[#E8E0D4] group/photo">
+                <div key={`${url.slice(-24)}-${i}`} className="relative aspect-square rounded-md overflow-hidden border border-[#E8E0D4] group/photo">
                   <img src={url} alt={`Contoh ${i + 1}`} className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => handleRemovePhoto(i)}
                     aria-label="Hapus foto"
-                    className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover/photo:opacity-100 hover:bg-red-500 transition-all"
+                    className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover/photo:opacity-100 hover:bg-red-500 transition-colors"
                   >
                     <X size={12} />
                   </button>
@@ -849,7 +851,7 @@ export default function VendorManager() {
                   type="button"
                   onClick={() => photoInputRef.current?.click()}
                   disabled={isUploadingPhotos}
-                  className="aspect-square rounded-xl border-2 border-dashed border-[#B76E79]/40 text-[#B76E79] flex flex-col items-center justify-center gap-1 hover:bg-[#B76E79]/5 hover:border-[#B76E79] transition-all disabled:opacity-50 disabled:cursor-wait"
+                  className="aspect-square rounded-md border-2 border-dashed border-[#B76E79]/40 text-[#B76E79] flex flex-col items-center justify-center gap-1 hover:bg-[#B76E79]/5 hover:border-[#B76E79] transition-colors disabled:opacity-50 disabled:cursor-wait"
                 >
                   {isUploadingPhotos ? (
                     <>
@@ -883,13 +885,13 @@ export default function VendorManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-md hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white rounded-md transition-colors text-sm font-medium"
             >
               {editingId ? 'Update' : 'Simpan'}
             </button>
@@ -899,8 +901,8 @@ export default function VendorManager() {
 
       {/* Vendor Cards Grid */}
       {filteredVendors.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
             <Building2 size={28} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Belum ada vendor</p>
@@ -911,7 +913,7 @@ export default function VendorManager() {
           {filteredVendors.map((vendor) => {
             const progress = vendor.dealPrice > 0 ? (vendor.dpAmount / vendor.dealPrice) * 100 : 0;
             return (
-              <div key={vendor.id} className="bg-white rounded-xl border border-[#E8E0D4] p-5 hover:shadow-md transition-shadow">
+              <div key={vendor.id} className="bg-white rounded-md border border-[#E8E0D4] p-5 transition-shadow">
                 <div className="flex items-start justify-between mb-3">
                   <button
                     onClick={() => setDetailVendorId(vendor.id)}
@@ -948,7 +950,7 @@ export default function VendorManager() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+                      className="h-full bg-[#87A878]transition-[width]"
                       style={{ width: `${progress}%` }}
                     />
                   </div>

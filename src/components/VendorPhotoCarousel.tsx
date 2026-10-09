@@ -48,7 +48,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
           type="button"
           onClick={() => setIndex(i)}
           aria-label={`Foto ${i + 1}`}
-          className={`h-1.5 rounded-full transition-all ${
+          className={`h-1.5 rounded-full transition-colors ${
             i === safeIndex ? 'w-5 bg-[#B76E79]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'
           }`}
         />
@@ -60,7 +60,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
     <>
       <div className="select-none">
         <div
-          className="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden group cursor-zoom-in"
+          className="relative w-full aspect-square bg-gray-100 rounded-md overflow-hidden group cursor-zoom-in"
           onClick={() => setFullscreen(true)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -89,7 +89,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
                   prev();
                 }}
                 aria-label="Foto sebelumnya"
-                className="absolute left-1.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 active:opacity-100 hover:bg-black/60 transition-all"
+                className="absolute left-1.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 active:opacity-100 hover:bg-black/60 transition-colors"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -100,7 +100,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
                   next();
                 }}
                 aria-label="Foto berikutnya"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 active:opacity-100 hover:bg-black/60 transition-all"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 active:opacity-100 hover:bg-black/60 transition-colors"
               >
                 <ChevronRight size={18} />
               </button>
@@ -113,7 +113,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
       {/* Fullscreen viewer */}
       {fullscreen && (
         <div
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center animate-fade-in"
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
           onClick={() => setFullscreen(false)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -149,7 +149,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
                     key={i}
                     type="button"
                     onClick={() => setIndex(i)}
-                    className={`h-1.5 rounded-full transition-all ${
+                    className={`h-1.5 rounded-full transition-colors ${
                       i === safeIndex ? 'w-5 bg-white' : 'w-1.5 bg-white/40 hover:bg-white/70'
                     }`}
                   />

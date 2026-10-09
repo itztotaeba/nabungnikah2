@@ -105,24 +105,23 @@ export default function App() {
     <SupabaseSyncProvider>
     <div className="min-h-screen bg-[#FAF8F4] flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-[#D6E5DC] z-40">
-        <div className="px-6 py-6 border-b border-[#D6E5DC]">
-          <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 flex-shrink-0">
-              <img 
-                src={LOGO_URL} 
-                alt="Logo Mahes & Aira" 
-                className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
-              />
-            </div>
-            <div>
-              <h1 className="font-heading text-xl font-bold text-gray-800">Mahes & Aira</h1>
-              <p className="text-xs text-gray-400">Wedding Plan</p>
+      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 bg-[#FBFAF7] border-r border-[#E8E0D4] z-40">
+        <div className="px-4 py-4">
+          <div className="flex items-center gap-2.5">
+            <img
+              src={LOGO_URL}
+              alt="Logo Mahes & Aira"
+              className="w-8 h-8 rounded-md object-cover border border-[#E8E0D4]"
+            />
+            <div className="min-w-0">
+              <h1 className="font-heading text-sm font-semibold text-gray-800 truncate">Mahes & Aira</h1>
+              <p className="text-xs text-gray-400 truncate">Wedding Plan</p>
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 py-6 space-y-1">
+        <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
+          <p className="px-2 pt-2 pb-1 text-[11px] font-medium text-gray-400">Ruang Kerja</p>
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -130,21 +129,22 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm transition-colors ${
                   isActive
-                    ? 'bg-[#2F6A43]/10 text-[#1E4A2E] shadow-sm'
+                    ? 'bg-[#2F6A43]/10 text-[#1E4A2E] font-medium'
                     : 'text-gray-600 hover:bg-[#F3EFE6] hover:text-gray-800'
                 }`}
               >
-                <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-gray-400'} />
+                <Icon size={16} className={isActive ? 'text-[#2F6A43]' : 'text-gray-400'} />
                 <span>{item.label}</span>
-                {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#2F6A43]" />
-                )}
               </button>
             );
           })}
         </nav>
+
+        <div className="px-4 py-3 border-t border-[#E8E0D4]">
+          <p className="text-[11px] text-gray-400">Pribadi — jangan dibagikan</p>
+        </div>
       </aside>
 
       {/* Mobile Sidebar Overlay */}
@@ -154,27 +154,25 @@ export default function App() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">
-            <div className="px-6 py-5 border-b border-[#D6E5DC] flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 flex-shrink-0">
-                  <img 
-                    src={LOGO_URL} 
-                    alt="Logo Mahes & Aira" 
-                    className="w-full h-full rounded-full object-cover border-2 border-[#2F6A43] shadow-sm"
-                  />
-                </div>
-                <h1 className="font-heading text-lg font-bold text-gray-800">Mahes&Aira</h1>
+          <aside className="absolute left-0 top-0 h-full w-64 bg-[#FBFAF7] border-r border-[#E8E0D4] flex flex-col">
+            <div className="px-4 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={LOGO_URL}
+                  alt="Logo Mahes & Aira"
+                  className="w-8 h-8 rounded-md object-cover border border-[#E8E0D4]"
+                />
+                <h1 className="font-heading text-sm font-semibold text-gray-800">Mahes & Aira</h1>
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-1.5 hover:bg-[#F3EFE6] rounded-md text-gray-500"
               >
-                <X size={20} className="text-gray-500" />
+                <X size={18} />
               </button>
             </div>
 
-            <nav className="px-4 py-4 space-y-1">
+            <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -185,13 +183,13 @@ export default function App() {
                       setActiveTab(item.id);
                       setSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm transition-colors ${
                       isActive
-                        ? 'bg-[#2F6A43]/10 text-[#1E4A2E]'
+                        ? 'bg-[#2F6A43]/10 text-[#1E4A2E] font-medium'
                         : 'text-gray-600 hover:bg-[#F3EFE6]'
                     }`}
                   >
-                    <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-gray-400'} />
+                    <Icon size={16} className={isActive ? 'text-[#2F6A43]' : 'text-gray-400'} />
                     <span>{item.label}</span>
                   </button>
                 );
@@ -203,7 +201,7 @@ export default function App() {
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#D6E5DC]">
+        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-sm border-b border-[#E8E0D4]">
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             <div className="flex items-center gap-3">
               <button
@@ -222,7 +220,7 @@ export default function App() {
                 </div>
                 <h1 className="font-heading text-lg font-bold text-gray-800">Mahes&Aira</h1>
               </div>
-              <h2 className="hidden lg:block font-heading text-lg font-semibold text-gray-700">
+              <h2 className="hidden lg:block font-heading text-base font-semibold text-gray-800">
                 {NAV_ITEMS.find(n => n.id === activeTab)?.label}
               </h2>
             </div>
@@ -234,7 +232,7 @@ export default function App() {
               {!user ? (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-sm text-sm"
+                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-3.5 py-1.5 rounded-md text-sm font-medium transition-colors"
                 >
                   <LogIn size={16} />
                   <span className="hidden sm:inline">Login / Daftar</span>
@@ -251,7 +249,7 @@ export default function App() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-xs font-bold">
+                        <div className="w-full h-full flex items-center justify-center bg-[#2F6A43] text-white text-xs font-bold">
                           {user.email?.charAt(0).toUpperCase() || '?'}
                         </div>
                       )}
@@ -262,7 +260,7 @@ export default function App() {
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-medium transition-all text-sm"
+                    className="flex items-center gap-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 px-2.5 py-1.5 rounded-md text-sm font-medium transition-colors"
                     title="Logout"
                   >
                     <LogOut size={16} />
@@ -274,8 +272,8 @@ export default function App() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 sm:px-6 py-6 pb-24 lg:pb-6">
-          <div className="max-w-5xl mx-auto animate-fade-in">
+        <main className="flex-1 px-4 sm:px-8 py-6 pb-24 lg:pb-8">
+          <div className="max-w-5xl mx-auto">
             {renderContent()}
           </div>
         </main>
