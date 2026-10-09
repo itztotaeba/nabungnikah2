@@ -291,10 +291,12 @@ export default function VendorManager() {
     addToast('Checklist custom berhasil dihapus', 'success');
   };
 
-  // Filter vendors
-  const filteredVendors = filterType === 'Semua'
+  // Filter vendors, lalu urutkan berdasarkan data terbaru (last update di atas)
+  const lastUpdated = (v: Vendor) => new Date(v.updatedAt || v.createdAt || 0).getTime();
+  const filteredVendors = (filterType === 'Semua'
     ? vendors
-    : vendors.filter(v => v.type === filterType);
+    : vendors.filter(v => v.type === filterType)
+  ).slice().sort((a, b) => lastUpdated(b) - lastUpdated(a));
 
   // Calculate stats
   const totalAllIn = vendors.filter(v => v.type === 'All-in').reduce((sum, v) => sum + v.dealPrice, 0);
