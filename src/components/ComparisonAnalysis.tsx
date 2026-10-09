@@ -223,7 +223,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
     return (
       <div className={`bg-white rounded-lg p-4 border ${accentBorder}`}>
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{title}</p>
+        <p className="text-[13px] text-gray-500 mb-1">{title}</p>
         {list.length === 0 ? (
           <p className="text-sm text-gray-400 italic py-2">Belum ada vendor dipilih.</p>
         ) : (
@@ -286,7 +286,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       : 'bg-blue-100 text-blue-800 hover:bg-blue-200';
 
     return (
-      <div className="bg-white rounded-xl p-4 border border-gray-200">
+      <div className="bg-white rounded-md p-4 border border-gray-200">
         <div className="flex items-center justify-between mb-3">
           <h5 className="text-sm font-semibold text-gray-800">{title}</h5>
           <span className="text-xs text-gray-500">{list.length} dipilih</span>
@@ -318,7 +318,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
             <select
               value={pickValue}
               onChange={(e) => setPickValue(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-xl focus:ring-2 outline-none bg-white appearance-none pr-9 text-sm ${ringClass}`}
+              className={`w-full px-3 py-2 border rounded-md focus:ring-2 outline-none bg-white appearance-none pr-9 text-sm ${ringClass}`}
             >
               <option value="">Pilih vendor...</option>
               {available.map(vendor => (
@@ -335,7 +335,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
               setPickValue('');
             }}
             disabled={!pickValue}
-            className="shrink-0 inline-flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium bg-gray-800 text-white hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <Plus size={16} />
             Tambah
@@ -349,7 +349,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-6 animate-fade-in">
+    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-6">
       {/* Header dengan judul & tombol close */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-heading text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -368,7 +368,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       <div className="flex gap-2">
         <button
           onClick={() => setMode('overview')}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
             mode === 'overview'
               ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
               : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
@@ -378,7 +378,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
         </button>
         <button
           onClick={() => setMode('specific')}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-colors ${
             mode === 'specific'
               ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
               : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
@@ -392,19 +392,19 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       {mode === 'overview' && (
         <>
           {/* Kalkulator Selisih */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-5 border border-purple-100">
+          <div className="bg-[#FBFAF7] rounded-md p-5 border border-purple-100">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Kalkulator Selisih (Total)
             </h4>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="bg-white rounded-lg p-4 border border-purple-100">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total All-in</p>
+                <p className="text-[13px] text-gray-500 mb-1">Total All-in</p>
                 <p className="text-xl font-bold text-purple-700">{formatCurrency(totalAllIn, settings.currency)}</p>
                 <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'All-in').length} vendor</p>
               </div>
               <div className="bg-white rounded-lg p-4 border border-blue-100">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Satuan</p>
+                <p className="text-[13px] text-gray-500 mb-1">Total Satuan</p>
                 <p className="text-xl font-bold text-blue-700">{formatCurrency(totalSatuan, settings.currency)}</p>
                 <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'Satuan').length} vendor</p>
               </div>
@@ -426,7 +426,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Matriks Perbandingan */}
-          <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Matriks Perbandingan
             </h4>
@@ -468,7 +468,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Rekomendasi */}
-          <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+          <div className="bg-[#FBFAF7] rounded-md p-5 border border-[#87A878]/20">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
               💡 Rekomendasi
             </h4>
@@ -483,7 +483,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       {mode === 'specific' && (
         <>
           {/* Group Selection */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+          <div className="bg-[#FBFAF7] rounded-md p-5 border border-blue-100">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-1">
               Pilih Vendor untuk Dibandingkan
             </h4>
@@ -581,7 +581,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
           {/* Group Details Comparison */}
           {canCompare && (
-            <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+            <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
               <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
                 Detail Perbandingan
               </h4>
@@ -645,7 +645,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           )}
 
           {/* Rekomendasi */}
-          <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+          <div className="bg-[#FBFAF7] rounded-md p-5 border border-[#87A878]/20">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
               💡 Rekomendasi
             </h4>

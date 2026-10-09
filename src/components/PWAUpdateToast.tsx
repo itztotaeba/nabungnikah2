@@ -24,11 +24,11 @@ export default function PWAUpdateToast() {
   };
 
   return (
-    <div className="fixed bottom-24 right-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl border border-[#D6E5DC] p-4 max-w-xs">
+    <div className="fixed bottom-24 right-4 z-50">
+      <div className="bg-white rounded-lg shadow-sm border border-[#D6E5DC] p-4 max-w-xs">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2F6A43] to-[#D4A843] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#2F6A43] rounded-md flex items-center justify-center">
               <RefreshCw size={20} className="text-white animate-spin" />
             </div>
             <div>
@@ -45,7 +45,7 @@ export default function PWAUpdateToast() {
         <div className="flex gap-2">
           <button
             onClick={handleUpdate}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white rounded-md transition-colors text-sm font-medium"
           >
             <RefreshCw size={14} />
             <span>Update Sekarang</span>

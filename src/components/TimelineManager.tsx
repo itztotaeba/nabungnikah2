@@ -180,7 +180,7 @@ export default function TimelineManager() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4]">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <CheckCircle2 size={20} className="text-[#87A878]" />
@@ -192,7 +192,7 @@ export default function TimelineManager() {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+            className="h-full bg-[#87A878]transition-[width]"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -208,7 +208,7 @@ export default function TimelineManager() {
           const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
           
           return (
-            <div key={assigneeType} className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+            <div key={assigneeType} className="bg-white rounded-md p-4 border border-[#E8E0D4]">
               <div className="flex items-center gap-2 mb-2">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   assigneeType === 'Pria' ? 'bg-blue-100' :
@@ -234,7 +234,7 @@ export default function TimelineManager() {
               </p>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 ${
+                  className={`h-fulltransition-[width] ${
                     assigneeType === 'Pria' ? 'bg-blue-500' :
                     assigneeType === 'Wanita' ? 'bg-pink-500' : 'bg-purple-500'
                   }`}
@@ -249,7 +249,7 @@ export default function TimelineManager() {
 
       {/* Current Month Indicator */}
       {currentMonth !== null && (
-        <div className="bg-gradient-to-r from-[#B76E79]/10 to-[#87A878]/10 rounded-xl p-4 border border-[#B76E79]/20">
+        <div className="bg-[#F5F0E8] rounded-md p-4 border border-[#B76E79]/20">
           <div className="flex items-center gap-2">
             <Clock size={18} className="text-[#B76E79]" />
             <span className="text-sm font-medium text-gray-700">
@@ -261,8 +261,8 @@ export default function TimelineManager() {
 
       {/* Timeline Groups */}
       {groupedTasks.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Belum ada tugas</p>
@@ -275,9 +275,9 @@ export default function TimelineManager() {
             const completedInMonth = monthTasks.filter(t => t.isCompleted).length;
             
             return (
-              <div key={month} className="bg-white rounded-xl border border-[#E8E0D4] overflow-hidden">
+              <div key={month} className="bg-white rounded-md border border-[#E8E0D4] overflow-hidden">
                 {/* Month Header */}
-                <div className={`px-5 py-3 border-b border-[#E8E0D4] ${isCurrentMonth ? 'bg-gradient-to-r from-[#B76E79]/10 to-[#87A878]/10' : 'bg-[#F5F0E8]/50'}`}>
+                <div className={`px-5 py-3 border-b border-[#E8E0D4] ${isCurrentMonth ? 'bg-[#F5F0E8]' : 'bg-[#F5F0E8]/50'}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Calendar size={18} className={isCurrentMonth ? 'text-[#B76E79]' : 'text-gray-500'} />
@@ -321,9 +321,9 @@ export default function TimelineManager() {
                           className="flex-shrink-0 mt-0.5"
                         >
                           {taskIsCompleted ? (
-                            <CheckCircle2 size={22} className="text-[#87A878] transition-all" />
+                            <CheckCircle2 size={22} className="text-[#87A878] transition-colors" />
                           ) : (
-                            <Circle size={22} className="text-gray-300 hover:text-[#87A878] transition-all" />
+                            <Circle size={22} className="text-gray-300 hover:text-[#87A878] transition-colors" />
                           )}
                         </button>
 
@@ -331,7 +331,7 @@ export default function TimelineManager() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1">
-                              <p className={`font-medium ${taskIsCompleted ? 'line-through text-gray-500' : 'text-gray-800'} transition-all`}>
+                              <p className={`font-medium ${taskIsCompleted ? 'line-through text-gray-500' : 'text-gray-800'} transition-colors`}>
                                 {taskTitle}
                               </p>
                               {taskDescription && (
@@ -380,7 +380,7 @@ export default function TimelineManager() {
       {!showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#B76E79] hover:bg-[#9A5560] text-white rounded-md transition-colors text-sm font-medium"
         >
           <Plus size={16} />
           Tambah Tugas Custom
@@ -389,7 +389,7 @@ export default function TimelineManager() {
 
       {/* Inline Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               ✨ Tambah Tugas Baru
@@ -413,7 +413,7 @@ export default function TimelineManager() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Contoh: Booking fotografer"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -423,7 +423,7 @@ export default function TimelineManager() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as TaskCategory)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 {TASK_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -436,7 +436,7 @@ export default function TimelineManager() {
               <select
                 value={monthsBefore}
                 onChange={(e) => setMonthsBefore(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 <option value="12">12 Bulan</option>
                 <option value="9">9 Bulan</option>
@@ -455,7 +455,7 @@ export default function TimelineManager() {
                     key={assigneeType}
                     type="button"
                     onClick={() => setAssignee(assigneeType)}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border-2 transition-all ${
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-sm font-medium border-2 transition-colors ${
                       assignee === assigneeType
                         ? assigneeBadge(assigneeType) + ' border-current'
                         : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
@@ -475,7 +475,7 @@ export default function TimelineManager() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Deskripsi tugas..."
                 rows={2}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
               />
             </div>
           </div>
@@ -484,13 +484,13 @@ export default function TimelineManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-md hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white rounded-md transition-colors text-sm font-medium"
             >
               Tambah Tugas
             </button>

@@ -52,7 +52,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col animate-fade-in overflow-hidden">
+      <div className="relative w-full sm:max-w-lg max-h-[92vh] bg-white rounded-t-lg sm:rounded-lg shadow-sm flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E8E0D4] bg-[#FDFBF7]">
           <button
@@ -112,13 +112,13 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
             <>
               {/* Carousel Foto ala Instagram */}
               <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                <p className="text-xs font-semibold text-gray-500 mb-2">
                   Contoh Foto Vendor {photos.length > 0 && `(${photos.length}/5)`}
                 </p>
                 {photos.length > 0 ? (
                   <VendorPhotoCarousel photos={photos} vendorName={vendor.name} />
                 ) : (
-                  <div className="w-full aspect-video bg-[#F5F0E8] rounded-xl flex flex-col items-center justify-center gap-2 border border-dashed border-[#E8E0D4]">
+                  <div className="w-full aspect-video bg-[#F5F0E8] rounded-md flex flex-col items-center justify-center gap-2 border border-dashed border-[#E8E0D4]">
                     <ImageOff size={24} className="text-gray-400" />
                     <p className="text-xs text-gray-400">Belum ada foto contoh vendor</p>
                   </div>
@@ -126,9 +126,9 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
               </div>
 
               {/* Status & Pembayaran */}
-              <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-3">
+              <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4] space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 uppercase tracking-wider">Status Kontrak</span>
+                  <span className="text-[13px] text-gray-500">Status Kontrak</span>
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(vendor.contractStatus)}`}>
                     {vendor.contractStatus}
                   </span>
@@ -140,7 +140,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+                      className="h-full bg-[#87A878]transition-[width]"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -184,8 +184,8 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
               </div>
 
               {/* Kontak */}
-              <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2.5">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Kontak</p>
+              <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4] space-y-2.5">
+                <p className="text-xs font-semibold text-gray-500 uppercase">Kontak</p>
                 <a
                   href={`https://wa.me/${vendor.contactWA.replace(/[^0-9]/g, '').replace(/^0/, '62')}`}
                   target="_blank"
@@ -214,8 +214,8 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
 
               {/* Rating & Review */}
               {(vendor.rating || vendor.review) && (
-                <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4]">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Penilaian</p>
+                <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4]">
+                  <p className="text-xs font-semibold text-gray-500 mb-2">Penilaian</p>
                   {vendor.rating && (
                     <div className="flex items-center gap-1 mb-1.5">
                       {[1, 2, 3, 4, 5].map((s) => (
@@ -234,8 +234,8 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
 
               {/* Catatan */}
               {vendor.notes && (
-                <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4]">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Catatan</p>
+                <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4]">
+                  <p className="text-xs font-semibold text-gray-500 mb-1.5">Catatan</p>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">{vendor.notes}</p>
                 </div>
               )}
@@ -254,7 +254,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                 <>
                   {checkedTemplate.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-[#6B8A5E] uppercase tracking-wider mb-2">
+                      <p className="text-xs font-semibold text-[#6B8A5E] mb-2">
                         Termasuk dalam Paket ({checkedTemplate.length})
                       </p>
                       <div className="space-y-2">
@@ -274,7 +274,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
 
                   {checkedCustom.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-[#B8922F] uppercase tracking-wider mb-2">
+                      <p className="text-xs font-semibold text-[#B8922F] mb-2">
                         Checklist Custom Termasuk ({checkedCustom.length})
                       </p>
                       <div className="space-y-2">
@@ -295,7 +295,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
 
                   {uncheckedItems.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      <p className="text-xs font-semibold text-gray-400 mb-2">
                         Tidak Termasuk ({uncheckedItems.length})
                       </p>
                       <div className="space-y-1.5">

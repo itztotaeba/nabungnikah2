@@ -223,7 +223,7 @@ export default function GuestManager() {
           <div className="flex gap-2">
             <button
               onClick={handleExportPDF}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white rounded-md transition-colors text-sm font-medium"
             >
               <FileText size={16} />
               Export PDF
@@ -233,7 +233,7 @@ export default function GuestManager() {
                 resetForm();
                 setShowForm(true);
               }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#B76E79] hover:bg-[#9A5560] text-white rounded-md transition-colors text-sm font-medium"
             >
               <Plus size={16} />
               Tambah Tamu
@@ -247,61 +247,61 @@ export default function GuestManager() {
           ============================================ */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {/* Total Tamu */}
-        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
               <Users size={16} className="text-purple-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Total Tamu</p>
+          <p className="text-[13px] text-gray-500">Total Tamu</p>
           <p className="text-xl font-bold text-gray-800 mt-0.5">{stats.totalPax}</p>
           <p className="text-xs text-gray-400">{stats.totalGuests} orang</p>
         </div>
 
         {/* Konfirmasi Hadir */}
-        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
               <UserCheck size={16} className="text-emerald-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Hadir</p>
+          <p className="text-[13px] text-gray-500">Hadir</p>
           <p className="text-xl font-bold text-emerald-600 mt-0.5">{stats.confirmedPax}</p>
           <p className="text-xs text-gray-400">pax konfirmasi</p>
         </div>
 
         {/* Tidak Hadir */}
-        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
               <UserX size={16} className="text-red-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Tidak Hadir</p>
+          <p className="text-[13px] text-gray-500">Tidak Hadir</p>
           <p className="text-xl font-bold text-red-600 mt-0.5">{stats.declinedPax}</p>
           <p className="text-xs text-gray-400">pax menolak</p>
         </div>
 
         {/* Belum Respon */}
-        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
               <Clock size={16} className="text-amber-500" />
             </div>
           </div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Belum Respon</p>
+          <p className="text-[13px] text-gray-500">Belum Respon</p>
           <p className="text-xl font-bold text-amber-600 mt-0.5">{stats.pendingPax}</p>
           <p className="text-xs text-gray-400">pax menunggu</p>
         </div>
 
         {/* Total Circle */}
-        <div className="bg-white rounded-xl p-4 border border-[#E8E0D4] col-span-2 sm:col-span-1">
+        <div className="bg-white rounded-md p-4 border border-[#E8E0D4] col-span-2 sm:col-span-1">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 bg-[#B76E79]/10 rounded-lg flex items-center justify-center">
               <Users size={16} className="text-[#B76E79]" />
             </div>
           </div>
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Total Circle</p>
+          <p className="text-[13px] text-gray-500">Total Circle</p>
           <p className="text-lg font-bold text-[#B76E79] mt-0.5">
             {guests.filter(g => g.circle).length}
           </p>
@@ -313,7 +313,7 @@ export default function GuestManager() {
           INLINE FORM
           ============================================ */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               {editingId ? '✏️ Edit Tamu' : '✨ Tambah Tamu Baru'}
@@ -338,7 +338,7 @@ export default function GuestManager() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Masukkan nama lengkap..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -349,7 +349,7 @@ export default function GuestManager() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Guest['category'])}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 {GUEST_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -366,7 +366,7 @@ export default function GuestManager() {
                 <button
                   type="button"
                   onClick={() => setPax((prev) => String(Math.max(1, parseInt(prev) - 1)))}
-                  className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+                  className="w-10 h-10 rounded-md border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
                 >
                   −
                 </button>
@@ -376,12 +376,12 @@ export default function GuestManager() {
                   onChange={(e) => setPax(e.target.value)}
                   min="1"
                   max="10"
-                  className="w-20 text-center px-3 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
+                  className="w-20 text-center px-3 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
                 />
                 <button
                   type="button"
                   onClick={() => setPax((prev) => String(Math.min(10, parseInt(prev) + 1)))}
-                  className="w-10 h-10 rounded-xl border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+                  className="w-10 h-10 rounded-md border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
                 >
                   +
                 </button>
@@ -397,7 +397,7 @@ export default function GuestManager() {
                 value={circle}
                 onChange={(e) => setCircle(e.target.value)}
                 placeholder="Contoh: Kantor A, SMA 5, dll"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Kelompok/komunitas tamu (opsional)
@@ -413,7 +413,7 @@ export default function GuestManager() {
                     key={opt}
                     type="button"
                     onClick={() => setRsvpStatus(opt)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${
+                    className={`px-4 py-2 rounded-md text-sm font-medium border-2 transition-colors ${
                       rsvpStatus === opt
                         ? rsvpBadge(opt) + ' border-current'
                         : 'border-[#E8E0D4] bg-white text-gray-500 hover:border-gray-300'
@@ -434,13 +434,13 @@ export default function GuestManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+              className="px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-md hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white rounded-md transition-colors text-sm font-medium"
             >
               {editingId ? 'Update Tamu' : 'Simpan Tamu'}
             </button>
@@ -451,7 +451,7 @@ export default function GuestManager() {
       {/* ============================================
           FILTER & SEARCH BAR
           ============================================ */}
-      <div className="bg-white rounded-xl p-4 border border-[#E8E0D4] space-y-3">
+      <div className="bg-white rounded-md p-4 border border-[#E8E0D4] space-y-3">
         <div className="flex items-center gap-2 mb-1">
           <Filter size={16} className="text-gray-400" />
           <span className="text-sm font-medium text-gray-600">Filter & Cari</span>
@@ -474,7 +474,7 @@ export default function GuestManager() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama tamu..."
-              className="w-full pl-9 pr-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+              className="w-full pl-9 pr-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
             />
           </div>
 
@@ -482,7 +482,7 @@ export default function GuestManager() {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
           >
             <option value="Semua">Semua Kategori</option>
             {GUEST_CATEGORIES.map((cat) => (
@@ -496,7 +496,7 @@ export default function GuestManager() {
           <select
             value={filterRsvp}
             onChange={(e) => setFilterRsvp(e.target.value)}
-            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
           >
             <option value="Semua">Semua Status RSVP</option>
             {RSVP_OPTIONS.map((opt) => (
@@ -521,8 +521,8 @@ export default function GuestManager() {
           ============================================ */}
       {guests.length === 0 ? (
         /* Empty State - belum ada tamu sama sekali */
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
             <UserPlus size={28} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Belum ada daftar tamu</p>
@@ -532,15 +532,15 @@ export default function GuestManager() {
               resetForm();
               setShowForm(true);
             }}
-            className="mt-4 px-4 py-2 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl text-sm font-medium hover:shadow-lg transition-all"
+            className="mt-4 px-4 py-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white rounded-md text-sm font-medium transition-colors"
           >
             + Tambah Tamu Pertama
           </button>
         </div>
       ) : filteredGuests.length === 0 ? (
         /* Empty State - filter tidak cocok */
-        <div className="text-center py-12 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-14 h-14 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-3">
+        <div className="text-center py-12 bg-white rounded-lg border border-[#E8E0D4]">
+          <div className="w-14 h-14 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-3">
             <Search size={24} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Tidak ada tamu yang cocok</p>
@@ -553,28 +553,28 @@ export default function GuestManager() {
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
+        <div className="bg-white rounded-lg border border-[#E8E0D4] overflow-hidden shadow-sm">
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-[#F5F0E8]/50 border-b border-[#E8E0D4]">
                 <tr>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                     Nama Tamu
                   </th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                     Kategori
                   </th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase">
                     Pax
                   </th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                     Circle
                   </th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase">
                     Status RSVP
                   </th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-center text-xs font-semibold text-gray-600 uppercase">
                     Aksi
                   </th>
                 </tr>
