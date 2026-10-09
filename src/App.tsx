@@ -130,7 +130,7 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all ${
                   isActive
                     ? 'bg-[#2F6A43]/10 text-[#1E4A2E] shadow-sm'
                     : 'text-gray-600 hover:bg-[#F3EFE6] hover:text-gray-800'
@@ -154,7 +154,7 @@ export default function App() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">
+          <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-sm">
             <div className="px-6 py-5 border-b border-[#D6E5DC] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 flex-shrink-0">
@@ -185,7 +185,7 @@ export default function App() {
                       setActiveTab(item.id);
                       setSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-[#2F6A43]/10 text-[#1E4A2E]'
                         : 'text-gray-600 hover:bg-[#F3EFE6]'
@@ -251,7 +251,7 @@ export default function App() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-xs font-bold">
+                        <div className="w-full h-full flex items-center justify-center bg-[#2F6A43] text-white text-xs font-bold">
                           {user.email?.charAt(0).toUpperCase() || '?'}
                         </div>
                       )}

@@ -19,11 +19,11 @@ export default function ExitConfirmModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-scale-in">
+      <div className="bg-white rounded-lg shadow-2xl w-full max-w-sm p-6 animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-amber-100 rounded-md flex items-center justify-center">
               <LogOut size={20} className="text-amber-600" />
             </div>
             <h3 className="font-heading text-lg font-semibold text-gray-800">
@@ -47,13 +47,13 @@ export default function ExitConfirmModal({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors text-sm font-medium"
+            className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors text-sm font-medium"
           >
             Batal
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            className="flex-1 px-4 py-2.5 bg-[#2F6A43] from-red-500 to-red-600 text-white rounded-md hover:shadow-sm transition-all text-sm font-medium"
           >
             Keluar
           </button>

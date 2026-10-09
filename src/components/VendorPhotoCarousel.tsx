@@ -60,7 +60,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
     <>
       <div className="select-none">
         <div
-          className="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden group cursor-zoom-in"
+          className="relative w-full aspect-square bg-gray-100 rounded-md overflow-hidden group cursor-zoom-in"
           onClick={() => setFullscreen(true)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}

@@ -87,7 +87,7 @@ export default function SavingsTracker() {
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#87A878] text-white rounded-md hover:shadow-sm hover:shadow-[#87A878]/20 transition-all text-sm font-medium"
           >
             <Plus size={16} />
             Tambah Tabungan
@@ -98,9 +98,9 @@ export default function SavingsTracker() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Total Savings */}
-        <div className="bg-gradient-to-br from-[#87A878] to-[#6B8A5E] rounded-xl p-5 text-white shadow-lg">
+        <div className="bg-[#87A878] rounded-md p-5 text-white shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-white/20 rounded-md flex items-center justify-center">
               <PiggyBank size={20} />
             </div>
             <div>
@@ -111,9 +111,9 @@ export default function SavingsTracker() {
         </div>
 
         {/* Monthly Target */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
               <Target size={20} className="text-purple-500" />
             </div>
             <div>
@@ -124,9 +124,9 @@ export default function SavingsTracker() {
         </div>
 
         {/* Progress */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#B76E79]/10 rounded-md flex items-center justify-center">
               <TrendingUp size={20} className="text-[#B76E79]" />
             </div>
             <div>
@@ -138,7 +138,7 @@ export default function SavingsTracker() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4]">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-heading text-lg font-semibold text-gray-800">Progress Menuju Target</h3>
           <span className="text-sm text-gray-500">
@@ -149,7 +149,7 @@ export default function SavingsTracker() {
         <div className="relative">
           <div className="w-full bg-[#F5F0E8] rounded-full h-4 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-700 ease-out"
+              className="h-full rounded-full bg-[#87A878] transition-all duration-700 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -166,7 +166,7 @@ export default function SavingsTracker() {
 
       {/* Inline Form - DIPINDAH KE ATAS */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               💰 Tambah Tabungan Baru
@@ -187,7 +187,7 @@ export default function SavingsTracker() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -197,7 +197,7 @@ export default function SavingsTracker() {
               <select
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               >
                 {SAVINGS_SOURCES.map((src) => (
@@ -214,7 +214,7 @@ export default function SavingsTracker() {
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
                 min="1"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
               {amount && (
@@ -231,7 +231,7 @@ export default function SavingsTracker() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Tambahkan catatan..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -240,13 +240,13 @@ export default function SavingsTracker() {
             <button
               type="button"
               onClick={resetForm}
-              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-xl hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#F5F0E8] text-gray-600 rounded-md hover:bg-[#E8E0D4] transition-colors text-sm font-medium"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 bg-[#87A878] text-white rounded-md hover:shadow-sm transition-all text-sm font-medium"
             >
               Simpan
             </button>
@@ -256,15 +256,15 @@ export default function SavingsTracker() {
 
       {/* Table */}
       {sortedSavings.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">💵</span>
           </div>
           <p className="text-gray-500 font-medium">Belum ada tabungan</p>
           <p className="text-sm text-gray-400 mt-1">Mulai catat setoran pertamamu!</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
+        <div className="bg-white rounded-lg border border-[#E8E0D4] overflow-hidden shadow-sm">
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">

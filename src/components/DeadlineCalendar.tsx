@@ -74,7 +74,7 @@ export default function DeadlineCalendar() {
   const weekDays = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-full">
+    <div className="bg-white rounded-md shadow-sm border border-gray-100 p-6 h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-heading text-lg font-semibold text-gray-800">
           Jatuh Tempo Pembayaran
@@ -148,7 +148,7 @@ export default function DeadlineCalendar() {
 
               {/* Tooltip */}
               {isHovered && events.length > 0 && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 bg-white p-2 rounded-lg shadow-lg border border-gray-200 min-w-[150px]">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 bg-white p-2 rounded-lg shadow-sm border border-gray-200 min-w-[150px]">
                   {events.map((event, i) => (
                     <div key={i} className="text-xs">
                       <p className="font-semibold text-gray-800">{event.vendorName}</p>

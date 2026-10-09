@@ -111,9 +111,9 @@ export default function AvatarUpload() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+        <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
           <Camera size={20} className="text-purple-500" />
         </div>
         <div>
@@ -125,7 +125,7 @@ export default function AvatarUpload() {
       <div className="flex items-center gap-6">
         {/* Avatar Preview */}
         <div className="relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#2F6A43] shadow-lg bg-gray-100">
+          <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#2F6A43] shadow-sm bg-gray-100">
             {avatarUrl ? (
               <img 
                 src={avatarUrl} 
@@ -133,7 +133,7 @@ export default function AvatarUpload() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-3xl font-bold">
+              <div className="w-full h-full flex items-center justify-center bg-[#2F6A43] text-white text-3xl font-bold">
                 {getInitialAvatar()}
               </div>
             )}
@@ -144,7 +144,7 @@ export default function AvatarUpload() {
             <button
               onClick={handleRemoveAvatar}
               disabled={isUploading}
-              className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-lg transition-colors disabled:opacity-50"
+              className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow-sm transition-colors disabled:opacity-50"
               title="Hapus foto"
             >
               <X size={14} />
@@ -166,7 +166,7 @@ export default function AvatarUpload() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#2F6A43] text-white rounded-md hover:shadow-sm transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isUploading ? (
               <>

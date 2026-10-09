@@ -1,38 +1,81 @@
 @import "tailwindcss";
 
-/* Animation for bottom sheet */
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+/* ============================================================
+   Fondasi desain "Mahes & Aira" — versi rapih ala buatan tangan.
+   Palet warna tetap sama (sage green, dusty rose, gold, krem),
+   yang diubah: karakter bentuk, bayangan, dan tipografi agar
+   tidak terasa seperti template AI generik.
+   ============================================================ */
+
+:root {
+  /* palet asli aplikasi (tidak diubah) */
+  --krem: #FAF8F4;
+  --garis: #E8E0D4;
+  --sage: #2F6A43;
+  --sage-muda: #87A878;
+  --rose: #B76E79;
+  --gold: #D4A843;
+  --tinta: #1A2E23;
+
+  --font-ui: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
-.animate-slide-up {
-  animation: slideUp 0.3s ease-out forwards;
+html, body {
+  font-family: var(--font-ui);
+  color: var(--tinta);
+  background-color: var(--krem);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* Bayangan bawaan diturunkan levelnya — lembut, tidak "mengambang" */
+.shadow-md, .shadow-lg, .shadow-xl {
+  box-shadow: 0 1px 2px rgba(26, 46, 35, 0.05), 0 1px 6px rgba(26, 46, 35, 0.04);
+}
+
+/* Judul section: kesan editorial, bukan dashboard SaaS */
+h1, h2, h3 { letter-spacing: -0.01em; }
+
+/* Label uppercase: tracking lebih kalem */
+.uppercase { letter-spacing: 0.04em; }
+
+/* Tombol & input: transisi halus sederhana */
+button, input, select, textarea {
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: none;
+  border-color: var(--sage-muda);
+  box-shadow: 0 0 0 3px rgba(135, 168, 120, 0.18);
+}
+
+/* Scrollbar tipis senada tema */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #d8d0c2; border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+::selection { background: rgba(135, 168, 120, 0.35); }
+
+/* Animation for bottom sheet */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
 
 /* Animasi detak jantung untuk watermark "Made With Love" */
 @keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  14% {
-    transform: scale(1.25);
-  }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.25);
-  }
-  70% {
-    transform: scale(1);
-  }
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.25); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.25); }
+  70% { transform: scale(1); }
 }
+.animate-heartbeat { animation: heartbeat 1.6s ease-in-out infinite; }
 
-.animate-heartbeat {
-  animation: heartbeat 1.6s ease-in-out infinite;
+/* Fade-in yang dirujuk beberapa komponen tapi belum pernah didefinisikan */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+.animate-fade-in { animation: fadeIn 0.25s ease-out both; }

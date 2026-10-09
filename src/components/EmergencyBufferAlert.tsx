@@ -37,7 +37,7 @@ export default function EmergencyBufferAlert() {
         borderColor: 'border-emerald-200',
         textColor: 'text-emerald-700',
         iconColor: 'text-emerald-600',
-        progressColor: 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+        progressColor: 'bg-[#2F6A43] from-emerald-500 to-emerald-600'
       };
     } else if (bufferStatus.bufferUsagePercentage < 50) {
       return {
@@ -48,7 +48,7 @@ export default function EmergencyBufferAlert() {
         borderColor: 'border-amber-200',
         textColor: 'text-amber-700',
         iconColor: 'text-amber-600',
-        progressColor: 'bg-gradient-to-r from-amber-500 to-amber-600'
+        progressColor: 'bg-[#2F6A43] from-amber-500 to-amber-600'
       };
     } else {
       return {
@@ -59,7 +59,7 @@ export default function EmergencyBufferAlert() {
         borderColor: 'border-red-200',
         textColor: 'text-red-700',
         iconColor: 'text-red-600',
-        progressColor: 'bg-gradient-to-r from-red-500 to-red-600'
+        progressColor: 'bg-[#2F6A43] from-red-500 to-red-600'
       };
     }
   };
@@ -68,11 +68,11 @@ export default function EmergencyBufferAlert() {
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className={`rounded-2xl p-6 border ${statusInfo.bgColor} ${statusInfo.borderColor} shadow-sm`}>
+    <div className={`rounded-lg p-6 border ${statusInfo.bgColor} ${statusInfo.borderColor} shadow-sm`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${statusInfo.bgColor}`}>
+          <div className={`w-10 h-10 rounded-md flex items-center justify-center ${statusInfo.bgColor}`}>
             <Shield size={20} className={statusInfo.iconColor} />
           </div>
           <div>
@@ -95,7 +95,7 @@ export default function EmergencyBufferAlert() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {/* Total Anggaran + Buffer */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="bg-white rounded-md p-4 border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={16} className="text-gray-600" />
             <span className="text-xs text-gray-600 font-medium">Total + Buffer</span>
@@ -109,7 +109,7 @@ export default function EmergencyBufferAlert() {
         </div>
 
         {/* Buffer Amount */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="bg-white rounded-md p-4 border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <Shield size={16} className="text-gray-600" />
             <span className="text-xs text-gray-600 font-medium">Dana Darurat</span>
@@ -123,7 +123,7 @@ export default function EmergencyBufferAlert() {
         </div>
 
         {/* Remaining Buffer */}
-        <div className={`rounded-xl p-4 border ${
+        <div className={`rounded-md p-4 border ${
           bufferStatus.isBufferTouched 
             ? 'bg-red-50 border-red-200' 
             : 'bg-white border-gray-200'
@@ -150,7 +150,7 @@ export default function EmergencyBufferAlert() {
 
       {/* Buffer Usage Progress */}
       {bufferStatus.isBufferTouched && (
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="bg-white rounded-md p-4 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-700">
               Penggunaan Dana Darurat
@@ -177,7 +177,7 @@ export default function EmergencyBufferAlert() {
 
       {/* Warning Message */}
       {bufferStatus.isBufferTouched && (
-        <div className={`mt-4 p-4 rounded-xl border ${statusInfo.bgColor} ${statusInfo.borderColor}`}>
+        <div className={`mt-4 p-4 rounded-md border ${statusInfo.bgColor} ${statusInfo.borderColor}`}>
           <div className="flex items-start gap-3">
             <AlertTriangle size={20} className={statusInfo.iconColor} />
             <div className="flex-1">
@@ -200,7 +200,7 @@ export default function EmergencyBufferAlert() {
 
       {/* Info Box */}
       {!bufferStatus.isBufferTouched && (
-        <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <div className="mt-4 p-4 bg-blue-50 rounded-md border border-blue-200">
           <div className="flex items-start gap-3">
             <Shield size={20} className="text-blue-600" />
             <div className="flex-1">

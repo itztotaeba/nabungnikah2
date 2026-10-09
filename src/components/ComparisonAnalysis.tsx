@@ -218,7 +218,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
   );
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-6 animate-fade-in">
+    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-6 animate-fade-in">
       {/* Header dengan judul & tombol close */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-heading text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -237,7 +237,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       <div className="flex gap-2">
         <button
           onClick={() => setMode('overview')}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
             mode === 'overview'
               ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
               : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
@@ -247,7 +247,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
         </button>
         <button
           onClick={() => setMode('specific')}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
             mode === 'specific'
               ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
               : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
@@ -261,7 +261,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       {mode === 'overview' && (
         <>
           {/* Kalkulator Selisih */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-5 border border-purple-100">
+          <div className="bg-[#2F6A43] from-purple-50 to-blue-50 rounded-md p-5 border border-purple-100">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Kalkulator Selisih (Total)
             </h4>
@@ -295,7 +295,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Matriks Perbandingan */}
-          <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Matriks Perbandingan
             </h4>
@@ -337,7 +337,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Rekomendasi */}
-          <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+          <div className="bg-[#87A878]/10 to-[#B76E79]/10 rounded-md p-5 border border-[#87A878]/20">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
               💡 Rekomendasi
             </h4>
@@ -352,7 +352,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       {mode === 'specific' && (
         <>
           {/* Vendor Selection */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+          <div className="bg-[#2F6A43] from-blue-50 to-indigo-50 rounded-md p-5 border border-blue-100">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Pilih Vendor untuk Dibandingkan
             </h4>
@@ -370,7 +370,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                       const vendor = vendors.find(v => v.id === e.target.value);
                       setSelectedVendor1(vendor || null);
                     }}
-                    className="w-full px-4 py-2.5 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
+                    className="w-full px-4 py-2.5 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
                   >
                     <option value="">Pilih vendor...</option>
                     {vendors.map(vendor => (
@@ -395,7 +395,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                       const vendor = vendors.find(v => v.id === e.target.value);
                       setSelectedVendor2(vendor || null);
                     }}
-                    className="w-full px-4 py-2.5 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
+                    className="w-full px-4 py-2.5 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
                   >
                     <option value="">Pilih vendor...</option>
                     {vendors.map(vendor => (
@@ -441,7 +441,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
           {/* Vendor Details Comparison */}
           {selectedVendor1 && selectedVendor2 && (
-            <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+            <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
               <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
                 Detail Perbandingan
               </h4>
@@ -515,7 +515,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           )}
 
           {/* Rekomendasi */}
-          <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+          <div className="bg-[#87A878]/10 to-[#B76E79]/10 rounded-md p-5 border border-[#87A878]/20">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
               💡 Rekomendasi
             </h4>
