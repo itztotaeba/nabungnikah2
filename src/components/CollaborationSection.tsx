@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useCollaborationStore } from '../collaborationStore';
 import { useAuthStore } from '../authStore';
 import { useToastStore } from '../toastStore';
-import { Users, Mail, Trash2, Crown, UserPlus, Loader2 } from 'lucide-react';
+import { Users, Mail, Trash2, Crown, UserPlus, Loader2, Lightbulb } from 'lucide-react';
 
 export default function CollaborationSection() {
   const { currentWeddingId, userRole, members, isLoading, createWedding, inviteMember, removeMember, fetchMembers } = useCollaborationStore();
@@ -65,7 +65,7 @@ export default function CollaborationSection() {
   // Loading state
   if (isLoading || isCreating) {
     return (
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
         <div className="flex items-center justify-center py-8">
           <Loader2 size={24} className="animate-spin text-[#87A878]" />
           <span className="ml-3 text-gray-600">Membuat wedding...</span>
@@ -77,9 +77,9 @@ export default function CollaborationSection() {
   // Belum ada wedding
   if (!currentWeddingId) {
     return (
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
             <Users size={20} className="text-purple-500" />
           </div>
           <div>
@@ -97,7 +97,7 @@ export default function CollaborationSection() {
           <button
             onClick={handleCreateWedding}
             disabled={isCreating}
-            className="px-5 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-5 py-2.5 bg-[#2F6A43] text-white rounded-md border-[#E5DED0] shadow-sm transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isCreating ? 'Membuat...' : 'Buat Wedding Baru'}
           </button>
@@ -107,9 +107,9 @@ export default function CollaborationSection() {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+        <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
           <Users size={20} className="text-purple-500" />
         </div>
         <div>
@@ -134,14 +134,14 @@ export default function CollaborationSection() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="email@pasangan.com"
-                className="w-full pl-10 pr-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full pl-10 pr-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={isInviting}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2.5 bg-purple-purple text-white rounded-md border-[#E5DED0] shadow-sm hover:shadow-purple-500/20 transition-all text-sm font-medium disabled:opacity-50"
             >
               {isInviting ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -171,7 +171,7 @@ export default function CollaborationSection() {
 
         {/* Empty state */}
         {!isLoading && members.length === 0 && (
-          <div className="text-center py-6 bg-[#FDFBF7] rounded-xl border border-[#E8E0D4]">
+          <div className="text-center py-6 bg-[#FDFBF7] rounded-md border border-[#E8E0D4]">
             <Users size={32} className="mx-auto text-gray-400 mb-2" />
             <p className="text-sm text-gray-600">
               Anda adalah satu-satunya anggota di event ini.
@@ -192,7 +192,7 @@ export default function CollaborationSection() {
               return (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-3 bg-[#FDFBF7] rounded-xl border border-[#E8E0D4]"
+                  className="flex items-center justify-between p-3 bg-[#FDFBF7] rounded-md border border-[#E8E0D4]"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -223,7 +223,7 @@ export default function CollaborationSection() {
                   {userRole === 'owner' && !isCurrentUser && (
                     <button
                       onClick={() => handleRemove(member.user_id, member.profiles?.email || '')}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 hover:bg-red-50 rounded-md transition-colors"
                       title="Hapus akses"
                     >
                       <Trash2 size={16} className="text-red-600" />
@@ -237,9 +237,9 @@ export default function CollaborationSection() {
       </div>
 
       {/* Info Box */}
-      <div className="mt-4 p-3 bg-purple-50 rounded-xl border border-purple-100">
+      <div className="mt-4 p-3 bg-purple-50 rounded-md border border-purple-100">
         <p className="text-xs text-purple-700">
-          💡 <strong>Tips:</strong> Semua anggota tim dapat melihat dan mengedit data wedding secara real-time. Perubahan akan otomatis tersinkron ke semua perangkat.
+          <strong>Tips:</strong> Semua anggota tim dapat melihat dan mengedit data wedding secara real-time. Perubahan akan otomatis tersinkron ke semua perangkat.
         </p>
       </div>
     </div>

@@ -47,7 +47,7 @@ export default function SyncIndicator() {
   const statusInfo = getStatusInfo();
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusInfo.bgColor}`}>
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${statusInfo.bgColor}`}>
       <div className={statusInfo.color}>
         {statusInfo.icon}
       </div>

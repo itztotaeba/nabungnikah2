@@ -40,7 +40,7 @@ export default function ToastContainer() {
         return (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-lg ${config.bg} ${config.border} animate-fade-in`}
+            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-md border border border-[#E5DED0] shadow-sm ${config.bg} ${config.border} animate-fade-in`}
           >
             <div className={`shrink-0 ${config.text}`}>
               {config.icon}
@@ -50,7 +50,7 @@ export default function ToastContainer() {
             </p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="shrink-0 p-1 hover:bg-black/5 rounded-lg transition-colors"
+              className="shrink-0 p-1 hover:bg-black/5 rounded-md transition-colors"
             >
               <X size={14} className="text-gray-400" />
             </button>

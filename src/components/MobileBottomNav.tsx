@@ -36,7 +36,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
   return (
     <>
       {/* Bottom Nav Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#D6E5DC] shadow-lg md:hidden z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#D6E5DC] border border-[#E5DED0] shadow-sm md:hidden z-50">
         <div className="flex items-center justify-around px-2 py-2">
           {mainMenus.map((menu) => {
             const isActive = activeTab === menu.id;
@@ -45,7 +45,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
               <button
                 key={menu.id}
                 onClick={() => handleMainClick(menu.id)}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all ${
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-md transition-all ${
                   isActive 
                     ? 'text-[#2F6A43] bg-[#2F6A43]/10' 
                     : 'text-gray-500 hover:text-[#2F6A43]'
@@ -60,7 +60,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
           {/* Tombol Lainnya */}
           <button
             onClick={() => setIsMoreOpen(true)}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-gray-500 hover:text-[#2F6A43] transition-all"
+            className="flex flex-col items-center gap-1 px-3 py-2 rounded-md text-gray-500 hover:text-[#2F6A43] transition-all"
           >
             <MoreHorizontal size={22} />
             <span className="text-[10px] font-medium">Lainnya</span>
@@ -73,7 +73,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
         <div className="fixed inset-0 z-[60] md:hidden">
           {/* Backdrop */}
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50"
             onClick={() => setIsMoreOpen(false)}
           />
           
@@ -93,13 +93,13 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
                     <button
                       key={menu.id}
                       onClick={() => handleMoreClick(menu.id)}
-                      className={`w-full flex items-center gap-4 p-4 rounded-xl transition-colors text-left ${
+                      className={`w-full flex items-center gap-4 p-4 rounded-md transition-colors text-left ${
                         isActive 
                           ? 'bg-[#2F6A43]/10 text-[#2F6A43]' 
                           : 'hover:bg-[#F3EFE6] text-gray-700'
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10 rounded-md flex items-center justify-center ${
                         isActive ? 'bg-[#2F6A43]/20' : 'bg-[#2F6A43]/10'
                       }`}>
                         <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-[#2F6A43]'} />
@@ -112,7 +112,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
               
               <button
                 onClick={() => setIsMoreOpen(false)}
-                className="w-full mt-4 py-3 text-gray-500 font-medium hover:bg-[#F3EFE6] rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="w-full mt-4 py-3 text-gray-500 font-medium hover:bg-[#F3EFE6] rounded-md transition-colors flex items-center justify-center gap-2"
               >
                 <X size={18} />
                 <span>Tutup</span>

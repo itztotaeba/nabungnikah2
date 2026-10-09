@@ -3,7 +3,7 @@ import { useAuthStore } from '../authStore';
 import { useSyncStore } from '../syncStore';
 import { useToastStore } from '../toastStore';
 import AuthModal from './AuthModal';
-import { Cloud, Download, LogIn, LogOut } from 'lucide-react';
+import { Cloud, Download, LogIn, LogOut, Lightbulb } from 'lucide-react';
 
 export default function CloudSyncSection() {
   const { user, signOut } = useAuthStore();
@@ -41,9 +41,9 @@ export default function CloudSyncSection() {
   if (!user) {
     return (
       <>
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+        <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
               <Cloud size={20} className="text-blue-500" />
             </div>
             <div>
@@ -54,15 +54,15 @@ export default function CloudSyncSection() {
 
           <button
             onClick={() => setIsAuthModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium"
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-blue-blue text-white rounded-md border-[#E5DED0] shadow-sm hover:shadow-blue-500/20 transition-all font-medium"
           >
             <LogIn size={18} />
             <span>Login untuk Cloud Sync</span>
           </button>
 
-          <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+          <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
             <p className="text-xs text-blue-700">
-              💡 <strong>Fitur Cloud Sync:</strong> Login untuk menyimpan data Anda di cloud dan akses dari perangkat lain. Data lokal tetap tersimpan di browser.
+              <strong>Fitur Cloud Sync:</strong> Login untuk menyimpan data Anda di cloud dan akses dari perangkat lain. Data lokal tetap tersimpan di browser.
             </p>
           </div>
         </div>
@@ -78,10 +78,10 @@ export default function CloudSyncSection() {
 
   // If logged in, show sync buttons
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
             <Cloud size={20} className="text-blue-500" />
           </div>
           <div>
@@ -91,7 +91,7 @@ export default function CloudSyncSection() {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors"
         >
           <LogOut size={16} />
           <span>Logout</span>
@@ -102,7 +102,7 @@ export default function CloudSyncSection() {
         <button
           onClick={handleSyncToCloud}
           disabled={isSyncing}
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-blue-blue text-white rounded-md border-[#E5DED0] shadow-sm hover:shadow-blue-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSyncing ? (
             <span className="animate-spin">⏳</span>
@@ -115,16 +115,16 @@ export default function CloudSyncSection() {
         <button
           onClick={handleSyncFromCloud}
           disabled={isSyncing}
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-purple-purple text-white rounded-md border-[#E5DED0] shadow-sm hover:shadow-purple-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download size={18} />
           <span>Muat dari Cloud</span>
         </button>
       </div>
 
-      <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+      <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
         <p className="text-xs text-blue-700">
-          💡 <strong>Auto-sync aktif:</strong> Data akan otomatis tersinkron setiap kali ada perubahan. Gunakan tombol di atas untuk sync manual.
+          <strong>Auto-sync aktif:</strong> Data akan otomatis tersinkron setiap kali ada perubahan. Gunakan tombol di atas untuk sync manual.
         </p>
       </div>
     </div>

@@ -130,7 +130,7 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all ${
                   isActive
                     ? 'bg-[#2F6A43]/10 text-[#1E4A2E] shadow-sm'
                     : 'text-gray-600 hover:bg-[#F3EFE6] hover:text-gray-800'
@@ -151,10 +151,10 @@ export default function App() {
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">
+          <aside className="absolute left-0 top-0 h-full w-72 bg-white border border-[#E5DED0] shadow-sm">
             <div className="px-6 py-5 border-b border-[#D6E5DC] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 flex-shrink-0">
@@ -168,7 +168,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 hover:bg-gray-100 rounded-md"
               >
                 <X size={20} className="text-gray-500" />
               </button>
@@ -185,7 +185,7 @@ export default function App() {
                       setActiveTab(item.id);
                       setSidebarOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium transition-all ${
                       isActive
                         ? 'bg-[#2F6A43]/10 text-[#1E4A2E]'
                         : 'text-gray-600 hover:bg-[#F3EFE6]'
@@ -203,12 +203,12 @@ export default function App() {
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#D6E5DC]">
+        <header className="sticky top-0 z-30 bg-white/80 border-b border-[#D6E5DC]">
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-lg"
+                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-md"
               >
                 <Menu size={22} className="text-gray-600" />
               </button>
@@ -234,7 +234,7 @@ export default function App() {
               {!user ? (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-sm text-sm"
+                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-4 py-2 rounded-md font-semibold transition-all shadow-sm text-sm"
                 >
                   <LogIn size={16} />
                   <span className="hidden sm:inline">Login / Daftar</span>
@@ -242,7 +242,7 @@ export default function App() {
                 </button>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-lg">
+                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-md">
                     <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-[#2F6A43]">
                       {userAvatar ? (
                         <img 
@@ -251,7 +251,7 @@ export default function App() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-xs font-bold">
+                        <div className="w-full h-full flex items-center justify-center bg-[#2F6A43] text-white text-xs font-bold">
                           {user.email?.charAt(0).toUpperCase() || '?'}
                         </div>
                       )}
@@ -262,7 +262,7 @@ export default function App() {
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-medium transition-all text-sm"
+                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-md font-medium transition-all text-sm"
                     title="Logout"
                   >
                     <LogOut size={16} />

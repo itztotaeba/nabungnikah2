@@ -4,7 +4,7 @@ import { useWeddingStore } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
 import { getChecklistForCategory, countCheckedItems, migrateChecklistFormat } from '../helpers/vendorChecklist';
-import { Phone, Mail, MapPin, Calendar, Star, X, ChevronLeft, Pencil, ImageOff } from 'lucide-react';
+import { Phone, Mail, MapPin, Calendar, Star, X, ChevronLeft, Pencil, ImageOff, CheckCircle2, ClipboardList, FileText } from 'lucide-react';
 import VendorPhotoCarousel from './VendorPhotoCarousel';
 
 interface VendorDetailModalProps {
@@ -49,16 +49,16 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col animate-fade-in overflow-hidden">
+      <div className="relative w-full sm:max-w-lg max-h-[92vh] bg-white rounded-t-2xl sm:rounded-md shadow-2xl flex flex-col animate-fade-in overflow-hidden">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E8E0D4] bg-[#FDFBF7]">
           <button
             onClick={onClose}
             aria-label="Kembali"
-            className="p-2 -ml-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+            className="p-2 -ml-2 hover:bg-[#F5F0E8] rounded-md transition-colors"
           >
             <ChevronLeft size={20} className="text-gray-600" />
           </button>
@@ -75,7 +75,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
           </div>
           <button
             onClick={() => onEdit(vendor)}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+            className="flex items-center gap-1 px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors font-medium"
           >
             <Pencil size={12} />
             Edit
@@ -83,7 +83,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
           <button
             onClick={onClose}
             aria-label="Tutup"
-            className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+            className="p-2 hover:bg-[#F5F0E8] rounded-md transition-colors"
           >
             <X size={18} className="text-gray-500" />
           </button>
@@ -101,7 +101,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {t === 'info' ? '📋 Informasi & Foto' : `✅ Checklist (${countCheckedItems(checklist)})`}
+              {t === 'info' ? 'Informasi & Foto' : `Checklist (${countCheckedItems(checklist)})`}
             </button>
           ))}
         </div>
@@ -118,7 +118,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                 {photos.length > 0 ? (
                   <VendorPhotoCarousel photos={photos} vendorName={vendor.name} />
                 ) : (
-                  <div className="w-full aspect-video bg-[#F5F0E8] rounded-xl flex flex-col items-center justify-center gap-2 border border-dashed border-[#E8E0D4]">
+                  <div className="w-full aspect-video bg-[#F5F0E8] rounded-md flex flex-col items-center justify-center gap-2 border border-dashed border-[#E8E0D4]">
                     <ImageOff size={24} className="text-gray-400" />
                     <p className="text-xs text-gray-400">Belum ada foto contoh vendor</p>
                   </div>
@@ -126,7 +126,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
               </div>
 
               {/* Status & Pembayaran */}
-              <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-3">
+              <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4] space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500 uppercase tracking-wider">Status Kontrak</span>
                   <span className={`text-xs px-2.5 py-1 rounded-full font-medium border ${statusBadge(vendor.contractStatus)}`}>
@@ -140,25 +140,25 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+                      className="h-full bg-[#87A878] transition-[width] duration-300"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="bg-white rounded-lg p-2.5 border border-[#E8E0D4]">
+                  <div className="bg-white rounded-md p-2.5 border border-[#E8E0D4]">
                     <p className="text-[10px] text-gray-500 uppercase">Harga Deal</p>
                     <p className="text-xs font-bold text-gray-800 mt-0.5 break-all">
                       {formatCurrency(vendor.dealPrice, settings.currency)}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-2.5 border border-[#E8E0D4]">
+                  <div className="bg-white rounded-md p-2.5 border border-[#E8E0D4]">
                     <p className="text-[10px] text-gray-500 uppercase">DP</p>
                     <p className="text-xs font-bold text-gray-800 mt-0.5 break-all">
                       {formatCurrency(vendor.dpAmount, settings.currency)}
                     </p>
                   </div>
-                  <div className="bg-white rounded-lg p-2.5 border border-[#E8E0D4]">
+                  <div className="bg-white rounded-md p-2.5 border border-[#E8E0D4]">
                     <p className="text-[10px] text-gray-500 uppercase">Sisa</p>
                     <p className="text-xs font-bold text-[#B76E79] mt-0.5 break-all">
                       {formatCurrency(vendor.remainingBalance, settings.currency)}
@@ -184,7 +184,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
               </div>
 
               {/* Kontak */}
-              <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2.5">
+              <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4] space-y-2.5">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Kontak</p>
                 <a
                   href={`https://wa.me/${vendor.contactWA.replace(/[^0-9]/g, '').replace(/^0/, '62')}`}
@@ -214,7 +214,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
 
               {/* Rating & Review */}
               {(vendor.rating || vendor.review) && (
-                <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4]">
+                <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4]">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Penilaian</p>
                   {vendor.rating && (
                     <div className="flex items-center gap-1 mb-1.5">
@@ -234,7 +234,7 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
 
               {/* Catatan */}
               {vendor.notes && (
-                <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4]">
+                <div className="bg-[#FDFBF7] rounded-md p-4 border border-[#E8E0D4]">
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Catatan</p>
                   <p className="text-sm text-gray-700 whitespace-pre-wrap">{vendor.notes}</p>
                 </div>
@@ -259,11 +259,11 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                       </p>
                       <div className="space-y-2">
                         {checkedTemplate.map((item) => (
-                          <div key={item.id} className="bg-[#87A878]/5 border border-[#87A878]/20 rounded-lg px-3 py-2">
+                          <div key={item.id} className="bg-[#87A878]/5 border border-[#87A878]/20 rounded-md px-3 py-2">
                             <p className="text-sm text-gray-800 font-medium">✓ {item.question}</p>
                             {checklist[item.id]?.notes && (
                               <p className="text-xs text-gray-500 mt-0.5 pl-4 border-l-2 border-[#B76E79] ml-0.5">
-                                📝 {checklist[item.id].notes}
+                                {checklist[item.id].notes}
                               </p>
                             )}
                           </div>
@@ -279,12 +279,12 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                       </p>
                       <div className="space-y-2">
                         {checkedCustom.map((item) => (
-                          <div key={item.id} className="bg-[#FFF9E6] border border-[#D4A843]/30 rounded-lg px-3 py-2">
+                          <div key={item.id} className="bg-[#FFF9E6] border border-[#D4A843]/30 rounded-md px-3 py-2">
                             <p className="text-sm text-gray-800 font-medium">✓ {item.question}</p>
                             {item.description && <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>}
                             {checklist[item.id]?.notes && (
                               <p className="text-xs text-gray-500 mt-0.5 pl-4 border-l-2 border-[#D4A843] ml-0.5">
-                                📝 {checklist[item.id].notes}
+                                {checklist[item.id].notes}
                               </p>
                             )}
                           </div>
@@ -300,10 +300,10 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
                       </p>
                       <div className="space-y-1.5">
                         {uncheckedItems.map((item) => (
-                          <div key={item.id} className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 opacity-70">
+                          <div key={item.id} className="bg-gray-50 border border-gray-200 rounded-md px-3 py-2 opacity-70">
                             <p className="text-sm text-gray-500 line-through decoration-gray-300">✗ {item.question}</p>
                             {checklist[item.id]?.notes && (
-                              <p className="text-xs text-gray-400 mt-0.5 no-underline">📝 {checklist[item.id].notes}</p>
+                              <p className="text-xs text-gray-400 mt-0.5 no-underline">{checklist[item.id].notes}</p>
                             )}
                           </div>
                         ))}

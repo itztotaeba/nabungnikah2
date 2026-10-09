@@ -1,6 +1,6 @@
 import { useRealtimeSync } from '../hooks/useRealtimeSync';
 import { useCollaborationStore } from '../collaborationStore';
-import { Wifi, WifiOff } from 'lucide-react';
+import { Wifi, WifiOff, Circle } from 'lucide-react';
 
 export default function LiveSyncIndicator() {
   const { currentWeddingId } = useCollaborationStore();
@@ -12,7 +12,7 @@ export default function LiveSyncIndicator() {
   }
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${
       isConnected ? 'bg-emerald-50' : 'bg-gray-100'
     }`}>
       {isConnected ? (
@@ -22,7 +22,7 @@ export default function LiveSyncIndicator() {
             <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
           </div>
           <span className="text-xs font-medium text-emerald-700">
-            🟢 Live Sync
+            Live Sync
           </span>
         </>
       ) : (

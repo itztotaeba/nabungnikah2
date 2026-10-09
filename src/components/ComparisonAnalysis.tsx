@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useWeddingStore, Vendor } from '../store';
 import { formatCurrency } from '../helpers';
-import { TrendingUp, Check, X, Star, ChevronDown, ArrowRight, ArrowDown } from 'lucide-react';
+import { TrendingUp, Check, X, Star, ChevronDown, ArrowRight, ArrowDown, BarChart3, Lightbulb, PartyPopper, Target, Wallet } from 'lucide-react';
 import { getChecklistForCategory, countCheckedItems } from '../helpers/vendorChecklist';
 
 interface ComparisonAnalysisProps {
@@ -166,7 +166,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
   };
 
   const renderVendorCard = (vendor: Vendor, label: string) => (
-    <div className="bg-white rounded-lg p-4 border border-gray-200">
+    <div className="bg-white rounded-md p-4 border border-gray-200">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{label}</p>
@@ -218,7 +218,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
   );
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-6 animate-fade-in">
+    <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm space-y-6 animate-fade-in">
       {/* Header dengan judul & tombol close */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-heading text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -227,7 +227,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
         </h3>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+          className="p-2 hover:bg-[#F5F0E8] rounded-md transition-colors"
         >
           <X size={20} className="text-gray-500" />
         </button>
@@ -237,23 +237,23 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       <div className="flex gap-2">
         <button
           onClick={() => setMode('overview')}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
             mode === 'overview'
               ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
               : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
           }`}
         >
-          📊 Overview (Total)
+          Overview (Total)
         </button>
         <button
           onClick={() => setMode('specific')}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+          className={`flex-1 px-4 py-2.5 rounded-md text-sm font-medium transition-all ${
             mode === 'specific'
               ? 'bg-blue-100 text-blue-700 border-2 border-blue-300'
               : 'bg-gray-50 text-gray-600 border-2 border-gray-200 hover:bg-gray-100'
           }`}
         >
-          🎯 Perbandingan Spesifik
+          Perbandingan Spesifik
         </button>
       </div>
 
@@ -261,18 +261,18 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       {mode === 'overview' && (
         <>
           {/* Kalkulator Selisih */}
-          <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-5 border border-purple-100">
+          <div className="bg-purple-50 rounded-md p-5 border border-purple-100">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Kalkulator Selisih (Total)
             </h4>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="bg-white rounded-lg p-4 border border-purple-100">
+              <div className="bg-white rounded-md p-4 border border-purple-100">
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total All-in</p>
                 <p className="text-xl font-bold text-purple-700">{formatCurrency(totalAllIn, settings.currency)}</p>
                 <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'All-in').length} vendor</p>
               </div>
-              <div className="bg-white rounded-lg p-4 border border-blue-100">
+              <div className="bg-white rounded-md p-4 border border-blue-100">
                 <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Satuan</p>
                 <p className="text-xl font-bold text-blue-700">{formatCurrency(totalSatuan, settings.currency)}</p>
                 <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'Satuan').length} vendor</p>
@@ -280,9 +280,9 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
             </div>
 
             {totalAllIn > 0 && totalSatuan > 0 && (
-              <div className={`rounded-lg p-4 border-2 ${isAllInCheaper ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'}`}>
+              <div className={`rounded-md p-4 border-2 ${isAllInCheaper ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'}`}>
                 <p className="text-sm font-medium text-gray-700 mb-1">
-                  {isAllInCheaper ? '🎉 All-in Lebih Hemat!' : '🎉 Satuan Lebih Hemat!'}
+                  {isAllInCheaper ? 'All-in Lebih Hemat!' : 'Satuan Lebih Hemat!'}
                 </p>
                 <p className="text-2xl font-bold text-gray-800">
                   Selisih: {formatCurrency(difference, settings.currency)}
@@ -295,7 +295,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Matriks Perbandingan */}
-          <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+          <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Matriks Perbandingan
             </h4>
@@ -337,9 +337,9 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Rekomendasi */}
-          <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+          <div className="bg-[#87A878]/10/10 rounded-md p-5 border border-[#87A878]/20">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
-              💡 Rekomendasi
+              Rekomendasi
             </h4>
             <p className="text-sm text-gray-700 leading-relaxed">
               {getOverviewRecommendation()}
@@ -352,7 +352,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
       {mode === 'specific' && (
         <>
           {/* Vendor Selection */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+          <div className="bg-blue-50 rounded-md p-5 border border-blue-100">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Pilih Vendor untuk Dibandingkan
             </h4>
@@ -370,7 +370,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                       const vendor = vendors.find(v => v.id === e.target.value);
                       setSelectedVendor1(vendor || null);
                     }}
-                    className="w-full px-4 py-2.5 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
+                    className="w-full px-4 py-2.5 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
                   >
                     <option value="">Pilih vendor...</option>
                     {vendors.map(vendor => (
@@ -395,7 +395,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                       const vendor = vendors.find(v => v.id === e.target.value);
                       setSelectedVendor2(vendor || null);
                     }}
-                    className="w-full px-4 py-2.5 border border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
+                    className="w-full px-4 py-2.5 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-400 outline-none bg-white appearance-none pr-10"
                   >
                     <option value="">Pilih vendor...</option>
                     {vendors.map(vendor => (
@@ -411,7 +411,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
             {/* Comparison Result */}
             {selectedVendor1 && selectedVendor2 && (
-              <div className={`rounded-lg p-4 border-2 ${
+              <div className={`rounded-md p-4 border-2 ${
                 isVendor1Cheaper 
                   ? 'bg-blue-50 border-blue-200' 
                   : selectedVendor1.dealPrice === selectedVendor2.dealPrice
@@ -420,10 +420,10 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
               }`}>
                 <p className="text-sm font-medium text-gray-700 mb-1">
                   {selectedVendor1.dealPrice === selectedVendor2.dealPrice 
-                    ? '💰 Harga Sama!' 
+                    ? 'Harga Sama!' 
                     : isVendor1Cheaper 
-                    ? `🎉 ${selectedVendor1.name} Lebih Hemat!` 
-                    : `🎉 ${selectedVendor2.name} Lebih Hemat!`}
+                    ? `${selectedVendor1.name} Lebih Hemat!` 
+                    : `${selectedVendor2.name} Lebih Hemat!`}
                 </p>
                 <p className="text-2xl font-bold text-gray-800">
                   Selisih: {formatCurrency(specificDifference, settings.currency)}
@@ -441,7 +441,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
           {/* Vendor Details Comparison */}
           {selectedVendor1 && selectedVendor2 && (
-            <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+            <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
               <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
                 Detail Perbandingan
               </h4>
@@ -515,9 +515,9 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           )}
 
           {/* Rekomendasi */}
-          <div className="bg-gradient-to-br from-[#87A878]/10 to-[#B76E79]/10 rounded-xl p-5 border border-[#87A878]/20">
+          <div className="bg-[#87A878]/10/10 rounded-md p-5 border border-[#87A878]/20">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-3">
-              💡 Rekomendasi
+              Rekomendasi
             </h4>
             <p className="text-sm text-gray-700 leading-relaxed">
               {getSpecificRecommendation()}

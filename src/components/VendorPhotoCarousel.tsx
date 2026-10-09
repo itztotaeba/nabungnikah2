@@ -35,7 +35,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
   };
 
   const counterBadge = (
-    <span className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-full bg-black/50 text-white text-[10px] font-medium backdrop-blur-sm">
+    <span className="absolute top-2 right-2 z-10 px-2 py-0.5 rounded-full bg-black/50 text-white text-[10px] font-medium">
       {safeIndex + 1}/{photos.length}
     </span>
   );
@@ -60,7 +60,7 @@ export default function VendorPhotoCarousel({ photos, vendorName }: VendorPhotoC
     <>
       <div className="select-none">
         <div
-          className="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden group cursor-zoom-in"
+          className="relative w-full aspect-square bg-gray-100 rounded-md overflow-hidden group cursor-zoom-in"
           onClick={() => setFullscreen(true)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}

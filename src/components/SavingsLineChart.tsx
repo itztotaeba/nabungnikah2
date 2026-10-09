@@ -15,7 +15,7 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+      <div className="bg-white p-3 rounded-md border border-[#E5DED0] shadow-sm border border-gray-200">
         <p className="text-sm font-semibold text-gray-800">{label}</p>
         <p className="text-sm text-gray-600">{formatCurrency(payload[0].value)}</p>
       </div>
@@ -59,7 +59,7 @@ export default function SavingsLineChart() {
 
   if (chartData.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-md shadow-sm border border-gray-100 p-6">
         <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">
           Progress Tabungan
         </h3>
@@ -71,7 +71,7 @@ export default function SavingsLineChart() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+    <div className="bg-white rounded-md shadow-sm border border-gray-100 p-6">
       <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">
         Progress Tabungan
       </h3>

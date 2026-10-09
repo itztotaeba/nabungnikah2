@@ -75,10 +75,10 @@ export default function InstallPWAButton() {
 
   return (
     <div className="fixed bottom-24 right-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl border border-[#D6E5DC] p-4 max-w-xs">
+      <div className="bg-white rounded-md shadow-2xl border border-[#D6E5DC] p-4 max-w-xs">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#2F6A43] to-[#D4A843] rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[#2F6A43] rounded-md flex items-center justify-center">
               <Download size={20} className="text-white" />
             </div>
             <div>
@@ -88,7 +88,7 @@ export default function InstallPWAButton() {
           </div>
           <button
             onClick={handleClose}
-            className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 rounded-md transition-colors"
           >
             <X size={16} className="text-gray-400" />
           </button>
@@ -100,7 +100,7 @@ export default function InstallPWAButton() {
         
         <button
           onClick={handleInstallClick}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#2F6A43] text-white rounded-md border-[#E5DED0] shadow-sm transition-all text-sm font-medium"
         >
           <Download size={16} />
           <span>Install Sekarang</span>

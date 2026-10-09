@@ -4,7 +4,7 @@ import { useAuthStore } from '../authStore';
 import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculateTotalBudget, calculateTotalSavings } from '../helpers';
 import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
-import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet, Users } from 'lucide-react';
+import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet, Users, Lightbulb, Lock, Package } from 'lucide-react';
 import CloudSyncSection from './CloudSyncSection';
 import CollaborationSection from './CollaborationSection';
 import AvatarUpload from './AvatarUpload';
@@ -180,9 +180,9 @@ export default function SettingsPage() {
       {user && <AvatarUpload />}
 
       {/* Wedding Date Section */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-[#B76E79]/10 rounded-md flex items-center justify-center">
             <Calendar size={20} className="text-[#B76E79]" />
           </div>
           <div>
@@ -198,15 +198,15 @@ export default function SettingsPage() {
               type="date"
               value={weddingDate}
               onChange={(e) => setWeddingDate(e.target.value)}
-              className="w-full max-w-sm px-4 py-3 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-gray-800"
+              className="w-full max-w-sm px-4 py-3 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-gray-800"
             />
           </div>
 
           {/* Countdown Preview */}
           {weddingDate && (
-            <div className="bg-gradient-to-r from-[#B76E79]/5 to-[#87A878]/5 rounded-xl p-4 border border-[#E8E0D4]/50">
+            <div className="bg-[#B76E79]/5/5 rounded-md p-4 border border-[#E8E0D4]/50">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-md flex items-center justify-center shadow-sm">
                   <span className="text-xl">⏰</span>
                 </div>
                 <div>
@@ -224,7 +224,7 @@ export default function SettingsPage() {
       <div className="flex items-center gap-4">
         <button
           onClick={handleSave}
-          className="px-6 py-3 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all font-medium"
+          className="px-6 py-3 bg-[#87A878] text-white rounded-md border-[#E5DED0] shadow-sm transition-all font-medium"
         >
           Simpan Pengaturan
         </button>
@@ -237,31 +237,31 @@ export default function SettingsPage() {
       </div>
 
       {/* Data Info */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
             <HardDrive size={20} className="text-blue-500" />
           </div>
           <h3 className="font-heading text-lg font-semibold text-gray-800">Informasi Data</h3>
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-start gap-3 p-3 bg-[#F5F0E8] rounded-xl">
-            <span className="text-lg">📦</span>
+          <div className="flex items-start gap-3 p-3 bg-[#F5F0E8] rounded-md">
+            <span className="text-lg"></span>
             <div>
               <p className="text-sm font-medium text-gray-700">Data tersimpan di browser Anda (LocalStorage)</p>
               <p className="text-xs text-gray-500 mt-0.5">Data tetap ada meskipun browser ditutup</p>
             </div>
           </div>
-          <div className="flex items-start gap-3 p-3 bg-[#F5F0E8] rounded-xl">
-            <span className="text-lg">🔒</span>
+          <div className="flex items-start gap-3 p-3 bg-[#F5F0E8] rounded-md">
+            <span className="text-lg"></span>
             <div>
               <p className="text-sm font-medium text-gray-700">Perhitungan dikunci oleh sistem</p>
               <p className="text-xs text-gray-500 mt-0.5">Total, selisih, progress, dan sisa waktu tidak bisa dimanipulasi</p>
             </div>
           </div>
-          <div className="flex items-start gap-3 p-3 bg-[#F5F0E8] rounded-xl">
-            <span className="text-lg">💡</span>
+          <div className="flex items-start gap-3 p-3 bg-[#F5F0E8] rounded-md">
+            <span className="text-lg"></span>
             <div>
               <p className="text-sm font-medium text-gray-700">Kontrol penuh atas data input</p>
               <p className="text-xs text-gray-500 mt-0.5">Anda menentukan nama item, kategori, dan nominal</p>
@@ -273,15 +273,15 @@ export default function SettingsPage() {
         <div className="mt-4 pt-4 border-t border-[#E8E0D4]">
           <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Ringkasan Data Tersimpan</p>
           <div className="grid grid-cols-3 gap-3">
-            <div className="text-center p-2 bg-[#FDFBF7] rounded-lg">
+            <div className="text-center p-2 bg-[#FDFBF7] rounded-md">
               <p className="text-lg font-bold text-gray-800">{budgetItems.length}</p>
               <p className="text-xs text-gray-500">Item Anggaran</p>
             </div>
-            <div className="text-center p-2 bg-[#FDFBF7] rounded-lg">
+            <div className="text-center p-2 bg-[#FDFBF7] rounded-md">
               <p className="text-lg font-bold text-gray-800">{savings.length}</p>
               <p className="text-xs text-gray-500">Catatan Tabungan</p>
             </div>
-            <div className="text-center p-2 bg-[#FDFBF7] rounded-lg">
+            <div className="text-center p-2 bg-[#FDFBF7] rounded-md">
               <p className="text-lg font-bold text-gray-800">{guests.length}</p>
               <p className="text-xs text-gray-500">Daftar Tamu</p>
             </div>
@@ -296,9 +296,9 @@ export default function SettingsPage() {
       {user ? (
         <CollaborationSection />
       ) : (
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+        <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
               <Users size={20} className="text-purple-500" />
             </div>
             <div>
@@ -306,7 +306,7 @@ export default function SettingsPage() {
               <p className="text-xs text-gray-400">Undang pasangan untuk mengelola wedding bersama</p>
             </div>
           </div>
-          <div className="text-center py-6 bg-[#F5F0E8] rounded-xl">
+          <div className="text-center py-6 bg-[#F5F0E8] rounded-md">
             <Users size={48} className="mx-auto text-gray-400 mb-3" />
             <p className="text-sm text-gray-600 mb-2">
               Fitur kolaborasi tersedia setelah login
@@ -319,9 +319,9 @@ export default function SettingsPage() {
       )}
 
       {/* Backup & Restore Section */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-md p-6 border border-[#E8E0D4] shadow-sm">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-emerald-100 rounded-md flex items-center justify-center">
             <Download size={20} className="text-emerald-500" />
           </div>
           <div>
@@ -334,7 +334,7 @@ export default function SettingsPage() {
           {/* Export JSON Button */}
           <button
             onClick={handleExport}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-[#87A878] text-white rounded-md border-[#E5DED0] shadow-sm transition-all font-medium"
           >
             <Download size={18} />
             <span>Export Data (JSON)</span>
@@ -343,7 +343,7 @@ export default function SettingsPage() {
           {/* Export Excel Button */}
           <button
             onClick={handleExportExcel}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg hover:shadow-[#D4A843]/20 transition-all font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-[#D4A843] text-white rounded-md border-[#E5DED0] shadow-sm transition-all font-medium"
           >
             <FileSpreadsheet size={18} />
             <span>Export Excel (.xlsx)</span>
@@ -352,7 +352,7 @@ export default function SettingsPage() {
           {/* Import Button */}
           <button
             onClick={handleImportClick}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium"
+            className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-blue-blue text-white rounded-md border-[#E5DED0] shadow-sm hover:shadow-blue-500/20 transition-all font-medium"
           >
             <Upload size={18} />
             <span>Import Data (JSON)</span>
@@ -369,20 +369,20 @@ export default function SettingsPage() {
         </div>
 
         <div className="mt-3 text-xs text-gray-500">
-          💡 Download semua data dalam format Excel untuk backup dan editing offline
+          Download semua data dalam format Excel untuk backup dan editing offline
         </div>
 
-        <div className="mt-4 p-3 bg-blue-50 rounded-xl border border-blue-100">
+        <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100">
           <p className="text-xs text-blue-700">
-            💡 <strong>Tips:</strong> Export data Anda sebelum melakukan reset atau membersihkan cache browser. File backup dapat digunakan untuk restore data di perangkat lain.
+            <strong>Tips:</strong> Export data Anda sebelum melakukan reset atau membersihkan cache browser. File backup dapat digunakan untuk restore data di perangkat lain.
           </p>
         </div>
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white rounded-2xl p-6 border border-red-200 shadow-sm">
+      <div className="bg-white rounded-md p-6 border border-red-200 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-red-100 rounded-md flex items-center justify-center">
             <AlertTriangle size={20} className="text-red-500" />
           </div>
           <div>
@@ -394,14 +394,14 @@ export default function SettingsPage() {
         {!showConfirm ? (
           <button
             onClick={() => setShowConfirm(true)}
-            className="px-5 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors text-sm font-medium"
+            className="px-5 py-2.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-sm font-medium"
           >
             Reset Semua Data
           </button>
         ) : (
-          <div className="bg-red-50 rounded-xl p-5 border border-red-200 animate-fade-in">
+          <div className="bg-red-50 rounded-md p-5 border border-red-200 animate-fade-in">
             <p className="text-sm text-red-700 font-medium mb-1">
-              ⚠️ Konfirmasi Penghapusan
+              Konfirmasi Penghapusan
             </p>
             <p className="text-xs text-red-600 mb-4">
               Semua data akan dihapus permanen: {budgetItems.length} item anggaran ({formatCurrency(totalBudget, settings.currency)}), {savings.length} catatan tabungan ({formatCurrency(totalSavings, settings.currency)}), dan {guests.length} tamu.
@@ -409,13 +409,13 @@ export default function SettingsPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleReset}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-medium"
               >
                 Ya, Hapus Semua Data
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 border border-gray-200 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-white text-gray-600 rounded-md hover:bg-gray-50 border border-gray-200 transition-colors text-sm font-medium"
               >
                 Batal
               </button>

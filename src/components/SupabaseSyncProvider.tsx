@@ -1,3 +1,4 @@
+import { XCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { useAuthStore } from '../authStore';
 import { useSyncStore } from '../syncStore';
@@ -57,7 +58,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
             try {
               await initializeWeddingSession();
             } catch (initError: any) {
-              console.error('❌ Initialize wedding session failed:', initError);
+              console.error('Initialize wedding session failed:', initError);
               addToast('Gagal menginisialisasi wedding: ' + (initError.message || 'Unknown error'), 'error');
               setIsSyncing(false);
               return;
@@ -83,7 +84,7 @@ export default function SupabaseSyncProvider({ children }: { children: React.Rea
               addToast('Gagal memuat data dari cloud. Silakan coba sync manual.', 'warning');
             }
           } catch (error: any) {
-            console.error('❌ Gagal inisialisasi wedding:', error);
+            console.error('Gagal inisialisasi wedding:', error);
 
             
             // Tampilkan toast warning jika error
