@@ -37,7 +37,7 @@ export default function EmergencyBufferAlert() {
         borderColor: 'border-emerald-200',
         textColor: 'text-emerald-700',
         iconColor: 'text-emerald-600',
-        progressColor: 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+        progressColor: 'from-emerald-500 to-emerald-600'
       };
     } else if (bufferStatus.bufferUsagePercentage < 50) {
       return {
@@ -48,7 +48,7 @@ export default function EmergencyBufferAlert() {
         borderColor: 'border-amber-200',
         textColor: 'text-amber-700',
         iconColor: 'text-amber-600',
-        progressColor: 'bg-gradient-to-r from-amber-500 to-amber-600'
+        progressColor: 'from-amber-500 to-amber-600'
       };
     } else {
       return {
@@ -59,7 +59,7 @@ export default function EmergencyBufferAlert() {
         borderColor: 'border-red-200',
         textColor: 'text-red-700',
         iconColor: 'text-red-600',
-        progressColor: 'bg-gradient-to-r from-red-500 to-red-600'
+        progressColor: 'from-red-500 to-red-600'
       };
     }
   };
@@ -95,7 +95,7 @@ export default function EmergencyBufferAlert() {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         {/* Total Anggaran + Buffer */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="glass-card rounded-xl p-4 border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp size={16} className="text-gray-600" />
             <span className="text-xs text-gray-600 font-medium">Total + Buffer</span>
@@ -109,7 +109,7 @@ export default function EmergencyBufferAlert() {
         </div>
 
         {/* Buffer Amount */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="glass-card rounded-xl p-4 border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
             <Shield size={16} className="text-gray-600" />
             <span className="text-xs text-gray-600 font-medium">Dana Darurat</span>
@@ -150,7 +150,7 @@ export default function EmergencyBufferAlert() {
 
       {/* Buffer Usage Progress */}
       {bufferStatus.isBufferTouched && (
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
+        <div className="glass-card rounded-xl p-4 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-gray-700">
               Penggunaan Dana Darurat

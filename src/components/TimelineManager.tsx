@@ -180,7 +180,7 @@ export default function TimelineManager() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+      <div className="glass-card rounded-xl p-6 border border-white/60">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <CheckCircle2 size={20} className="text-[#87A878]" />
@@ -192,7 +192,7 @@ export default function TimelineManager() {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+            className="h-full glass-card bg-[#87A878]/15 transition-all duration-500"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -208,9 +208,9 @@ export default function TimelineManager() {
           const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
           
           return (
-            <div key={assigneeType} className="bg-white rounded-xl p-4 border border-[#E8E0D4]">
+            <div key={assigneeType} className="glass-card rounded-xl p-4 border border-white/60">
               <div className="flex items-center gap-2 mb-2">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                   assigneeType === 'Pria' ? 'bg-blue-100' :
                   assigneeType === 'Wanita' ? 'bg-pink-100' : 'bg-purple-100'
                 }`}>
@@ -249,7 +249,7 @@ export default function TimelineManager() {
 
       {/* Current Month Indicator */}
       {currentMonth !== null && (
-        <div className="bg-gradient-to-r from-[#B76E79]/10 to-[#87A878]/10 rounded-xl p-4 border border-[#B76E79]/20">
+        <div className="glass-card bg-[#B76E79]/15 rounded-xl p-4 border border-[#B76E79]/20">
           <div className="flex items-center gap-2">
             <Clock size={18} className="text-[#B76E79]" />
             <span className="text-sm font-medium text-gray-700">
@@ -261,7 +261,7 @@ export default function TimelineManager() {
 
       {/* Timeline Groups */}
       {groupedTasks.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+        <div className="text-center py-16 glass-card rounded-2xl border border-white/60">
           <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-gray-400" />
           </div>
@@ -275,9 +275,9 @@ export default function TimelineManager() {
             const completedInMonth = monthTasks.filter(t => t.isCompleted).length;
             
             return (
-              <div key={month} className="bg-white rounded-xl border border-[#E8E0D4] overflow-hidden">
+              <div key={month} className="glass-card rounded-xl border border-white/60 overflow-hidden">
                 {/* Month Header */}
-                <div className={`px-5 py-3 border-b border-[#E8E0D4] ${isCurrentMonth ? 'bg-gradient-to-r from-[#B76E79]/10 to-[#87A878]/10' : 'bg-[#F5F0E8]/50'}`}>
+                <div className={`px-5 py-3 border-b border-[#E8E0D4] ${isCurrentMonth ? 'glass-card bg-[#B76E79]/15' : 'bg-[#F5F0E8]/50'}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Calendar size={18} className={isCurrentMonth ? 'text-[#B76E79]' : 'text-gray-500'} />
@@ -358,7 +358,7 @@ export default function TimelineManager() {
                             {!taskIsDefault && (
                               <button
                                 onClick={() => handleDelete(taskId, taskTitle)}
-                                className="flex-shrink-0 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                className="flex-shrink-0 p-2 hover:bg-red-50 rounded-xl transition-colors"
                                 title="Hapus tugas"
                               >
                                 <Trash2 size={16} className="text-red-600" />
@@ -380,7 +380,7 @@ export default function TimelineManager() {
       {!showForm && (
         <button
           onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 glass-card bg-[#B76E79]/15 text-white rounded-xl hover: hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
         >
           <Plus size={16} />
           Tambah Tugas Custom
@@ -389,7 +389,7 @@ export default function TimelineManager() {
 
       {/* Inline Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 border border-white/60 shadow-sm space-y-5 animate-fade-in">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               ✨ Tambah Tugas Baru
@@ -397,7 +397,7 @@ export default function TimelineManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
             >
               <X size={20} className="text-gray-500" />
             </button>
@@ -413,7 +413,7 @@ export default function TimelineManager() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Contoh: Booking fotografer"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -423,7 +423,7 @@ export default function TimelineManager() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as TaskCategory)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 {TASK_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -436,7 +436,7 @@ export default function TimelineManager() {
               <select
                 value={monthsBefore}
                 onChange={(e) => setMonthsBefore(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 <option value="12">12 Bulan</option>
                 <option value="9">9 Bulan</option>
@@ -475,7 +475,7 @@ export default function TimelineManager() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Deskripsi tugas..."
                 rows={2}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
               />
             </div>
           </div>
@@ -490,7 +490,7 @@ export default function TimelineManager() {
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 glass-card bg-[#87A878]/15 text-white rounded-xl hover: transition-all text-sm font-medium"
             >
               Tambah Tugas
             </button>

@@ -19,7 +19,7 @@ export default function ExitConfirmModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-scale-in">
+      <div className="glass-card rounded-2xl  w-full max-w-sm p-6 animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -32,7 +32,7 @@ export default function ExitConfirmModal({
           </div>
           <button
             onClick={onCancel}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <X size={20} className="text-gray-500" />
           </button>
@@ -53,7 +53,7 @@ export default function ExitConfirmModal({
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            className="flex-1 px-4 py-2.5 glass-btn-primary bg-[#B76E79] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
           >
             Keluar
           </button>

@@ -111,7 +111,7 @@ export default function AvatarUpload() {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="glass-card rounded-2xl p-6 border border-white/60 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
           <Camera size={20} className="text-purple-500" />
@@ -133,7 +133,7 @@ export default function AvatarUpload() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-3xl font-bold">
+              <div className="w-full h-full flex items-center justify-center glass-card bg-[#2F6A43]/15 text-white text-3xl font-bold">
                 {getInitialAvatar()}
               </div>
             )}
@@ -166,7 +166,7 @@ export default function AvatarUpload() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2.5 glass-card bg-[#2F6A43]/15 text-white rounded-xl hover: transition-all text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isUploading ? (
               <>

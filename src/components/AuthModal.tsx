@@ -81,16 +81,16 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-scale-in">
+      <div className="glass-card rounded-2xl  w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-scale-in">
         {/* Header dengan tombol close */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl z-10">
+        <div className="sticky top-0 glass-card border-b border-white/40 px-6 py-4 rounded-t-2xl z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-heading font-semibold text-gray-900">
               {isLogin ? 'Masuk' : 'Daftar'}
             </h2>
             <button
               onClick={handleClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
               aria-label="Close modal"
             >
               <X size={20} className="text-gray-500" />
@@ -167,7 +167,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg hover:shadow-[#87A878]/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 glass-card bg-[#87A878]/15 text-white rounded-xl hover: hover:shadow-[#87A878]/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>

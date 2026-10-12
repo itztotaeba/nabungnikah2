@@ -146,14 +146,14 @@ export default function BudgetManager() {
           <div className="flex gap-2">
             <button
               onClick={handleExportPDF}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg hover:shadow-[#2F6A43]/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 glass-card bg-[#2F6A43]/15 text-white rounded-xl hover: hover:shadow-[#2F6A43]/20 transition-all text-sm font-medium"
             >
               <FileText size={16} />
               Export PDF
             </button>
             <button
               onClick={() => { resetForm(); setShowForm(true); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 glass-card bg-[#B76E79]/15 text-white rounded-xl hover: hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
             >
               <Plus size={16} />
               Tambah Item
@@ -164,7 +164,7 @@ export default function BudgetManager() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
               <Receipt size={20} className="text-[#87A878]" />
@@ -175,7 +175,7 @@ export default function BudgetManager() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
               <TrendingUp size={20} className="text-orange-500" />
@@ -186,7 +186,7 @@ export default function BudgetManager() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
               <Minus size={20} className="text-blue-500" />
@@ -203,7 +203,7 @@ export default function BudgetManager() {
 
       {/* Inline Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 border border-white/60 shadow-sm space-y-5 animate-fade-in">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               {editingId ? '✏️ Edit Item Anggaran' : '✨ Tambah Item Baru'}
@@ -211,7 +211,7 @@ export default function BudgetManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
             >
               <X size={20} className="text-gray-500" />
             </button>
@@ -223,7 +223,7 @@ export default function BudgetManager() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               >
                 {BUDGET_CATEGORIES.map((cat) => (
@@ -239,7 +239,7 @@ export default function BudgetManager() {
                 value={itemName}
                 onChange={(e) => setItemName(e.target.value)}
                 placeholder="Contoh: Gedung Serbaguna"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -252,7 +252,7 @@ export default function BudgetManager() {
                 onChange={(e) => setEstimatedCost(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
               {estimatedCost && (
@@ -270,7 +270,7 @@ export default function BudgetManager() {
                 onChange={(e) => setActualCost(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
               {actualCost && (
                 <p className="text-xs text-gray-500 mt-1">
@@ -302,7 +302,7 @@ export default function BudgetManager() {
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 glass-card bg-[#87A878]/15 text-white rounded-xl hover: transition-all text-sm font-medium"
             >
               {editingId ? 'Update Item' : 'Simpan Item'}
             </button>
@@ -312,7 +312,7 @@ export default function BudgetManager() {
 
       {/* Table */}
       {budgetItems.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+        <div className="text-center py-16 glass-card rounded-2xl border border-white/60">
           <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">📋</span>
           </div>
@@ -320,7 +320,7 @@ export default function BudgetManager() {
           <p className="text-sm text-gray-400 mt-1">Yuk mulai tambah item pertama!</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-[#E8E0D4] overflow-hidden shadow-sm">
+        <div className="glass-card rounded-2xl border border-white/60 overflow-hidden shadow-sm">
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
@@ -358,14 +358,14 @@ export default function BudgetManager() {
                         <div className="flex items-center justify-center gap-2">
                           <button
                             onClick={() => handleEdit(item.id)}
-                            className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 hover:bg-blue-50 rounded-xl transition-colors"
                             title="Edit"
                           >
                             <Pencil size={16} className="text-blue-600" />
                           </button>
                           <button
                             onClick={() => handleDelete(item.id, item.itemName)}
-                            className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                             title="Hapus"
                           >
                             <Trash2 size={16} className="text-red-600" />
@@ -414,13 +414,13 @@ export default function BudgetManager() {
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleEdit(item.id)}
-                        className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="p-2 hover:bg-blue-50 rounded-xl transition-colors"
                       >
                         <Pencil size={16} className="text-blue-600" />
                       </button>
                       <button
                         onClick={() => handleDelete(item.id, item.itemName)}
-                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                       >
                         <Trash2 size={16} className="text-red-600" />
                       </button>

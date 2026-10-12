@@ -103,9 +103,9 @@ export default function App() {
 
   return (
     <SupabaseSyncProvider>
-    <div className="min-h-screen bg-[#FAF8F4] flex">
+    <div className="min-h-screen app-glass-backdrop flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-white border-r border-[#D6E5DC] z-40">
+      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 glass-panel rounded-none border-r border-white/40 z-40">
         <div className="px-6 py-6 border-b border-[#D6E5DC]">
           <div className="flex items-center gap-3">
             <div className="relative w-12 h-12 flex-shrink-0">
@@ -154,7 +154,7 @@ export default function App() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-72 bg-white shadow-xl">
+          <aside className="absolute left-0 top-0 h-full w-72 glass-panel">
             <div className="px-6 py-5 border-b border-[#D6E5DC] flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative w-10 h-10 flex-shrink-0">
@@ -168,7 +168,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 hover:bg-gray-100 rounded-xl"
               >
                 <X size={20} className="text-gray-500" />
               </button>
@@ -203,12 +203,12 @@ export default function App() {
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#D6E5DC]">
+        <header className="sticky top-0 z-30 glass-bar">
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-lg"
+                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-xl"
               >
                 <Menu size={22} className="text-gray-600" />
               </button>
@@ -234,7 +234,7 @@ export default function App() {
               {!user ? (
                 <button
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-4 py-2 rounded-lg font-semibold transition-all shadow-sm text-sm"
+                  className="flex items-center gap-2 bg-[#2F6A43] hover:bg-[#1E4A2E] text-white px-4 py-2 rounded-xl font-semibold transition-all shadow-sm text-sm"
                 >
                   <LogIn size={16} />
                   <span className="hidden sm:inline">Login / Daftar</span>
@@ -242,7 +242,7 @@ export default function App() {
                 </button>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-lg">
+                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-xl">
                     <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-[#2F6A43]">
                       {userAvatar ? (
                         <img 
@@ -251,7 +251,7 @@ export default function App() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#2F6A43] to-[#1E4A2E] text-white text-xs font-bold">
+                        <div className="w-full h-full flex items-center justify-center glass-card bg-[#2F6A43]/15 text-white text-xs font-bold">
                           {user.email?.charAt(0).toUpperCase() || '?'}
                         </div>
                       )}
@@ -262,7 +262,7 @@ export default function App() {
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-medium transition-all text-sm"
+                    className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-xl font-medium transition-all text-sm"
                     title="Logout"
                   >
                     <LogOut size={16} />

@@ -41,7 +41,7 @@ export default function CloudSyncSection() {
   if (!user) {
     return (
       <>
-        <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+        <div className="glass-card rounded-2xl p-6 border border-white/60 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
               <Cloud size={20} className="text-blue-500" />
@@ -54,7 +54,7 @@ export default function CloudSyncSection() {
 
           <button
             onClick={() => setIsAuthModalOpen(true)}
-            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium"
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 glass-btn-primary bg-[#3B82F6] text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium"
           >
             <LogIn size={18} />
             <span>Login untuk Cloud Sync</span>
@@ -78,7 +78,7 @@ export default function CloudSyncSection() {
 
   // If logged in, show sync buttons
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="glass-card rounded-2xl p-6 border border-white/60 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -91,7 +91,7 @@ export default function CloudSyncSection() {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors"
         >
           <LogOut size={16} />
           <span>Logout</span>
@@ -102,7 +102,7 @@ export default function CloudSyncSection() {
         <button
           onClick={handleSyncToCloud}
           disabled={isSyncing}
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 glass-btn-primary bg-[#3B82F6] text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSyncing ? (
             <span className="animate-spin">⏳</span>
@@ -115,7 +115,7 @@ export default function CloudSyncSection() {
         <button
           onClick={handleSyncFromCloud}
           disabled={isSyncing}
-          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-5 py-3 glass-btn-primary bg-[#8B5CF6] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download size={18} />
           <span>Muat dari Cloud</span>

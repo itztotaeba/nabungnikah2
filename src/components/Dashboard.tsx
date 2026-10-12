@@ -117,14 +117,14 @@ export default function Dashboard() {
       <div className="flex justify-end gap-3">
         <button
           onClick={handleExportExcel}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg hover:shadow-[#D4A843]/20 transition-all text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 glass-card bg-[#D4A843]/15 text-white rounded-xl hover: hover:shadow-[#D4A843]/20 transition-all text-sm font-medium"
         >
           <FileSpreadsheet size={16} />
           Export Excel (.xlsx)
         </button>
         <button
           onClick={handleExportPDF}
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2F6A43] to-[#1E4A2E] text-white rounded-xl hover:shadow-lg hover:shadow-[#2F6A43]/20 transition-all text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 glass-card bg-[#2F6A43]/15 text-white rounded-xl hover: hover:shadow-[#2F6A43]/20 transition-all text-sm font-medium"
         >
           <FileText size={16} />
           Cetak Laporan Lengkap (PDF)
@@ -132,7 +132,7 @@ export default function Dashboard() {
       </div>
 
       {/* Welcome Message */}
-      <div className="bg-white rounded-2xl p-8 border border-[#D6E5DC] text-center">
+      <div className="glass-card rounded-2xl p-8 border border-[#D6E5DC] text-center">
         <div className="w-20 h-20 mx-auto mb-4">
           <img 
             src="https://is3.cloudhost.id/totaeba/mahesaira.jpg" 
@@ -147,7 +147,7 @@ export default function Dashboard() {
 
       {/* Countdown Section - Always show if weddingDate is set */}
       {safeSettings.weddingDate && (
-        <div className="bg-gradient-to-br from-[#D4A843] via-[#E0BC6A] to-[#2F6A43] rounded-2xl p-6 text-white shadow-lg">
+        <div className="glass-card bg-[#D4A843]/15 rounded-2xl p-6 text-white ">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock size={24} />
@@ -157,7 +157,7 @@ export default function Dashboard() {
               <p className="text-3xl font-bold">{formatRemainingTime(safeSettings.weddingDate)}</p>
             </div>
           </div>
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
+          <div className="glass-card/10 backdrop-blur-sm rounded-xl p-4">
             <p className="text-sm opacity-90 mb-1">Tanggal Pernikahan:</p>
             <p className="text-lg font-semibold">{formattedDate}</p>
           </div>
@@ -167,7 +167,7 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Anggaran */}
-        <div className="bg-white rounded-xl p-5 border border-[#D6E5DC] hover:shadow-md transition-shadow">
+        <div className="glass-card rounded-xl p-5 border border-[#D6E5DC] hover: transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Anggaran</p>
@@ -181,7 +181,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total Realisasi */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+        <div className="glass-card rounded-xl p-5 border border-white/60 hover: transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Realisasi</p>
@@ -197,7 +197,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total Tabungan */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+        <div className="glass-card rounded-xl p-5 border border-white/60 hover: transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Tabungan</p>
@@ -211,7 +211,7 @@ export default function Dashboard() {
         </div>
 
         {/* Kekurangan Dana */}
-        <div className="bg-white rounded-xl p-5 border border-[#D6E5DC] hover:shadow-md transition-shadow">
+        <div className="glass-card rounded-xl p-5 border border-[#D6E5DC] hover: transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Kekurangan Dana</p>
@@ -229,7 +229,7 @@ export default function Dashboard() {
         </div>
 
         {/* Target Bulanan */}
-        <div className="bg-white rounded-xl p-5 border border-[#D6E5DC] hover:shadow-md transition-shadow">
+        <div className="glass-card rounded-xl p-5 border border-[#D6E5DC] hover: transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Target/Bulan</p>
@@ -255,7 +255,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total Tamu */}
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4] hover:shadow-md transition-shadow">
+        <div className="glass-card rounded-xl p-5 border border-white/60 hover: transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Total Tamu</p>
@@ -270,7 +270,7 @@ export default function Dashboard() {
       </div>
 
       {/* Progress Section */}
-      <div className="bg-white rounded-xl p-6 border border-[#D6E5DC]">
+      <div className="glass-card rounded-xl p-6 border border-[#D6E5DC]">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-lg font-semibold text-gray-800">Progress Tabungan</h3>
           <span className="text-2xl font-bold text-[#2F6A43]">{progress}%</span>
@@ -280,7 +280,7 @@ export default function Dashboard() {
         <div className="relative">
           <div className="w-full bg-[#F3EFE6] rounded-full h-4 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#2F6A43] to-[#4A9B65] transition-all duration-700 ease-out"
+              className="h-full rounded-full glass-card bg-[#2F6A43]/15 transition-all duration-700 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -306,7 +306,7 @@ export default function Dashboard() {
 
       {/* Category Breakdown */}
       {safeBudgetItems.length > 0 && (
-        <div className="bg-white rounded-xl p-6 border border-[#D6E5DC]">
+        <div className="glass-card rounded-xl p-6 border border-[#D6E5DC]">
           <h3 className="font-heading text-lg font-semibold text-gray-800 mb-4">Ringkasan per Kategori</h3>
           <div className="space-y-3">
             {Object.entries(
@@ -335,7 +335,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-full bg-[#F3EFE6] rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#D4A843] to-[#E8CC8A] transition-all duration-500"
+                      className="h-full rounded-full glass-card bg-[#D4A843]/15 transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -351,7 +351,7 @@ export default function Dashboard() {
 
       {/* Task Assignment Summary */}
       {safeTasks.length > 0 && (
-        <div className="bg-white rounded-xl p-6 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-6 border border-white/60">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 size={20} className="text-[#87A878]" />
             <h3 className="font-heading text-lg font-semibold text-gray-800">Pembagian Tugas</h3>
@@ -362,9 +362,9 @@ export default function Dashboard() {
               const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
               
               return (
-                <div key={assigneeType} className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-4 border border-gray-100">
+                <div key={assigneeType} className="from-gray-50 to-white rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                       assigneeType === 'Pria' ? 'bg-blue-100' :
                       assigneeType === 'Wanita' ? 'bg-pink-100' : 'bg-purple-100'
                     }`}>

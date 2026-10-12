@@ -41,7 +41,7 @@ export default function ConflictModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scale-in">
+      <div className="glass-card rounded-2xl  w-full max-w-md animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ export default function ConflictModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <X size={20} className="text-gray-500" />
           </button>
@@ -107,7 +107,7 @@ export default function ConflictModal({
           </button>
           <button
             onClick={onOverride}
-            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+            className="flex-1 px-4 py-2.5 glass-btn-primary bg-[#D4A843] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
           >
             Timpa Data
           </button>

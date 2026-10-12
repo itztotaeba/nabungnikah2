@@ -36,7 +36,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
   return (
     <>
       {/* Bottom Nav Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#D6E5DC] shadow-lg md:hidden z-50">
+      <nav className="fixed bottom-2 left-2 right-2 glass-card rounded-2xl border border-white/50 md:hidden z-50">
         <div className="flex items-center justify-around px-2 py-2">
           {mainMenus.map((menu) => {
             const isActive = activeTab === menu.id;
@@ -45,7 +45,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
               <button
                 key={menu.id}
                 onClick={() => handleMainClick(menu.id)}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all ${
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all ${
                   isActive 
                     ? 'text-[#2F6A43] bg-[#2F6A43]/10' 
                     : 'text-gray-500 hover:text-[#2F6A43]'
@@ -60,7 +60,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
           {/* Tombol Lainnya */}
           <button
             onClick={() => setIsMoreOpen(true)}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-gray-500 hover:text-[#2F6A43] transition-all"
+            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-500 hover:text-[#2F6A43] transition-all"
           >
             <MoreHorizontal size={22} />
             <span className="text-[10px] font-medium">Lainnya</span>
@@ -99,7 +99,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
                           : 'hover:bg-[#F3EFE6] text-gray-700'
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                         isActive ? 'bg-[#2F6A43]/20' : 'bg-[#2F6A43]/10'
                       }`}>
                         <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-[#2F6A43]'} />

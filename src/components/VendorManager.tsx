@@ -326,7 +326,7 @@ export default function VendorManager() {
           {!showComparison && (
             <button
               onClick={() => setShowComparison(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 glass-btn-primary bg-[#8B5CF6] text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all text-sm font-medium"
             >
               <TrendingUp size={16} />
               Analisis
@@ -339,7 +339,7 @@ export default function VendorManager() {
                 setChecklist(getDefaultChecklistValues('Katering')); // Initialize dengan kategori default
                 setShowForm(true); 
               }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#B76E79] to-[#9A5560] text-white rounded-xl hover:shadow-lg hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 glass-card bg-[#B76E79]/15 text-white rounded-xl hover: hover:shadow-[#B76E79]/20 transition-all text-sm font-medium"
             >
               <Plus size={16} />
               Tambah Vendor
@@ -350,7 +350,7 @@ export default function VendorManager() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
               <Building2 size={20} className="text-purple-500" />
@@ -361,7 +361,7 @@ export default function VendorManager() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
               <Building2 size={20} className="text-blue-500" />
@@ -372,7 +372,7 @@ export default function VendorManager() {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-5 border border-[#E8E0D4]">
+        <div className="glass-card rounded-xl p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#87A878]/10 rounded-xl flex items-center justify-center">
               <span className="text-lg">📊</span>
@@ -412,7 +412,7 @@ export default function VendorManager() {
 
       {/* Inline Form - DIPINDAH KE ATAS */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 border border-[#E8E0D4] shadow-sm space-y-5 animate-fade-in">
+        <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 border border-white/60 shadow-sm space-y-5 animate-fade-in">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               {editingId ? '✏️ Edit Vendor' : '✨ Tambah Vendor Baru'}
@@ -420,7 +420,7 @@ export default function VendorManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
             >
               <X size={20} className="text-gray-500" />
             </button>
@@ -435,7 +435,7 @@ export default function VendorManager() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nama vendor..."
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+              className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               required
             />
           </div>
@@ -471,7 +471,7 @@ export default function VendorManager() {
               value={category}
               onChange={(e) => handleCategoryChange(e.target.value as VendorCategory)}
               disabled={type === 'All-in'}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
               {VENDOR_CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
@@ -494,13 +494,13 @@ export default function VendorManager() {
                 {customChecklist.length > 0 && ` (${customChecklist.length} custom)`}
               </span>
             </div>
-            <div className="bg-[#FDFBF7] rounded-xl p-4 border border-[#E8E0D4] space-y-2 max-h-96 overflow-y-auto">
+            <div className="bg-[#FDFBF7] rounded-xl p-4 border border-white/60 space-y-2 max-h-96 overflow-y-auto">
               {getChecklistForCategory(category).map((item) => {
                 const isChecked = checklist[item.id]?.checked || false;
                 const notes = checklist[item.id]?.notes || '';
                 
                 return (
-                  <div key={item.id} className="p-2 hover:bg-white rounded-lg transition-colors">
+                  <div key={item.id} className="p-2 hover:bg-white rounded-xl transition-colors">
                     <div className="flex items-start gap-3">
                       <button
                         type="button"
@@ -557,7 +557,7 @@ export default function VendorManager() {
                     const notes = checklist[item.id]?.notes || '';
                     
                     return (
-                      <div key={item.id} className="p-2 hover:bg-white rounded-lg transition-colors">
+                      <div key={item.id} className="p-2 hover:bg-white rounded-xl transition-colors">
                         <div className="flex items-start gap-3">
                           <button
                             type="button"
@@ -662,7 +662,7 @@ export default function VendorManager() {
                     <button
                       type="button"
                       onClick={handleAddCustomChecklist}
-                      className="flex-1 px-4 py-2 bg-gradient-to-r from-[#D4A843] to-[#B8922F] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+                      className="flex-1 px-4 py-2 glass-card bg-[#D4A843]/15 text-white rounded-xl hover: transition-all text-sm font-medium"
                     >
                       Tambah
                     </button>
@@ -683,7 +683,7 @@ export default function VendorManager() {
                 value={contactWA}
                 onChange={(e) => setContactWA(e.target.value)}
                 placeholder="08xxxxxxxxxx"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -694,7 +694,7 @@ export default function VendorManager() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@vendor.com"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -707,7 +707,7 @@ export default function VendorManager() {
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Alamat vendor..."
               rows={2}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+              className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
             />
           </div>
 
@@ -723,7 +723,7 @@ export default function VendorManager() {
                 onChange={(e) => setDealPrice(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -735,7 +735,7 @@ export default function VendorManager() {
                 onChange={(e) => setDpAmount(e.target.value)}
                 placeholder="0"
                 min="0"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -748,7 +748,7 @@ export default function VendorManager() {
                 type="date"
                 value={dueDateDP}
                 onChange={(e) => setDueDateDP(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
             <div>
@@ -757,7 +757,7 @@ export default function VendorManager() {
                 type="date"
                 value={dueDateFinal}
                 onChange={(e) => setDueDateFinal(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -791,7 +791,7 @@ export default function VendorManager() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Catatan tambahan..."
               rows={2}
-              className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+              className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
             />
           </div>
 
@@ -806,7 +806,7 @@ export default function VendorManager() {
                 placeholder="1-5"
                 min="1"
                 max="5"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
             <div>
@@ -816,7 +816,7 @@ export default function VendorManager() {
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
                 placeholder="Review singkat..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-xl focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -829,7 +829,7 @@ export default function VendorManager() {
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
               {photos.map((url, i) => (
-                <div key={`${url.slice(-24)}-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-[#E8E0D4] group/photo">
+                <div key={`${url.slice(-24)}-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-white/60 group/photo">
                   <img src={url} alt={`Contoh ${i + 1}`} className="w-full h-full object-cover" />
                   <button
                     type="button"
@@ -889,7 +889,7 @@ export default function VendorManager() {
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-2.5 bg-gradient-to-r from-[#87A878] to-[#6B8A5E] text-white rounded-xl hover:shadow-lg transition-all text-sm font-medium"
+              className="flex-1 px-5 py-2.5 glass-card bg-[#87A878]/15 text-white rounded-xl hover: transition-all text-sm font-medium"
             >
               {editingId ? 'Update' : 'Simpan'}
             </button>
@@ -899,7 +899,7 @@ export default function VendorManager() {
 
       {/* Vendor Cards Grid */}
       {filteredVendors.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-2xl border border-[#E8E0D4]">
+        <div className="text-center py-16 glass-card rounded-2xl border border-white/60">
           <div className="w-16 h-16 bg-[#F5F0E8] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Building2 size={28} className="text-gray-400" />
           </div>
@@ -911,7 +911,7 @@ export default function VendorManager() {
           {filteredVendors.map((vendor) => {
             const progress = vendor.dealPrice > 0 ? (vendor.dpAmount / vendor.dealPrice) * 100 : 0;
             return (
-              <div key={vendor.id} className="bg-white rounded-xl border border-[#E8E0D4] p-5 hover:shadow-md transition-shadow">
+              <div key={vendor.id} className="glass-card rounded-xl border border-white/60 p-5 hover: transition-shadow">
                 <div className="flex items-start justify-between mb-3">
                   <button
                     onClick={() => setDetailVendorId(vendor.id)}
@@ -948,7 +948,7 @@ export default function VendorManager() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-[#87A878] to-[#A8C49A] transition-all duration-500"
+                      className="h-full glass-card bg-[#87A878]/15 transition-all duration-500"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
@@ -1043,21 +1043,21 @@ export default function VendorManager() {
                 <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
                   <button
                     onClick={() => setDetailVendorId(vendor.id)}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-[#87A878]/10 text-[#6B8A5E] rounded-lg hover:bg-[#87A878]/20 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-[#87A878]/10 text-[#6B8A5E] rounded-xl hover:bg-[#87A878]/20 transition-colors font-medium"
                   >
                     <Eye size={12} />
                     Detail
                   </button>
                   <button
                     onClick={() => handleEdit(vendor)}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors font-medium"
                   >
                     <Pencil size={12} />
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(vendor.id, vendor.name)}
-                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
+                    className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors font-medium"
                   >
                     <Trash2 size={12} />
                     Hapus
