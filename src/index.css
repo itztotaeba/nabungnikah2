@@ -241,23 +241,35 @@ aside.lg-glass {
     12px 0 40px rgba(18, 18, 24, 0.06);
 }
 
-/* Mobile (drawer): sedikit lebih buram agar teks tetap terbaca,
-   tapi translucency liquid glass masih terasa */
+/* Mobile (drawer): panel kaca yang cukup solid agar teks selalu terbaca,
+   translucency tipis tetap terasa lewat blur + saturasi */
 @media (max-width: 1023px) {
   aside.lg-glass,
   aside.lg-drawer {
     background: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.82) 0%,
-      rgba(255, 255, 255, 0.74) 100%
+      rgba(252, 252, 254, 0.93) 0%,
+      rgba(250, 250, 253, 0.9) 100%
     );
-    backdrop-filter: blur(34px) saturate(160%);
-    -webkit-backdrop-filter: blur(34px) saturate(160%);
+    backdrop-filter: blur(26px) saturate(150%);
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
   }
 
   /* Kontras teks nav dinaikkan di mobile */
-  aside.lg-glass nav button:not([class*="text-[#2F6A43]"]) {
-    color: #2b2b33;
+  aside.lg-glass nav button:not([class*="text-[#2F6A43]"]),
+  aside.lg-drawer nav button:not([class*="text-[#2F6A43]"]) {
+    color: #1d1d26;
+    font-weight: 600;
+  }
+
+  aside.lg-glass nav button svg,
+  aside.lg-drawer nav button svg {
+    opacity: 0.9;
+  }
+
+  aside.lg-glass nav button[class*="bg-[#2F6A43]/10"],
+  aside.lg-drawer nav button[class*="bg-[#2F6A43]/10"] {
+    background: rgba(47, 106, 67, 0.16) !important;
   }
 }
 
@@ -293,7 +305,64 @@ div.fixed.inset-0[class*="bg-black"] {
   }
 }
 
-/* ---------- Bottom nav mobile: dock liquid glass ---------- */
+/* ---------- Bottom nav mobile: ikon melayang, tanpa panel kaca ----------
+   Bar sepenuhnya transparan (tanpa background & blur) — hanya ikon/label
+   yang berbentuk kapsul liquid glass murni. */
+@media (max-width: 767px) {
+  nav.fixed.bottom-0,
+  .lg-dock {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-top: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Kapsul liquid glass murni di belakang tiap ikon (efek refraksi iOS 26):
+     highlight specular tipis + saturasi warna latar yang dilewatkan */
+  .lg-dock-item {
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(18px) saturate(190%) brightness(1.06);
+    -webkit-backdrop-filter: blur(18px) saturate(190%) brightness(1.06);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.18),
+      0 2px 10px rgba(18, 18, 24, 0.10);
+    border-radius: 9999px;
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  /* Item aktif → kapsul lebih terang & terisi cahaya */
+  .lg-dock-item[class*="font-semibold"] {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.55) 0%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.3),
+      0 3px 14px rgba(47, 106, 67, 0.28);
+  }
+
+  /* Label nav non-aktif → warna tegas agar terbaca di atas kapsul bening */
+  .lg-dock-item[class*="text-gray-500"] {
+    color: #1d1d26;
+  }
+
+  /* Ikon & label diberi bayangan halus agar tetap terbaca di atas konten */
+  .lg-dock-item svg {
+    filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.55));
+  }
+
+  .lg-dock-item span {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+  }
+}
+
+/* Tablet/desktop (>768px): dock tetap panel glass standar */
 nav.fixed.bottom-0,
 .lg-dock {
   background: rgba(255, 255, 255, 0.55) !important;
@@ -330,17 +399,31 @@ nav.fixed.bottom-0,
     0 2px 10px rgba(47, 106, 67, 0.12);
 }
 
-/* Bottom sheet "Lainnya" */
+/* Bottom sheet "Lainnya": panel buram agar seluruh menu terbaca jelas,
+   nuansa glass tetap ada lewat blur + highlight specular di tepi atas */
 .animate-slide-up,
 .lg-sheet {
-  background: rgba(248, 248, 250, 0.72) !important;
-  backdrop-filter: blur(36px) saturate(190%);
-  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  background: linear-gradient(
+    180deg,
+    rgba(252, 252, 254, 0.94) 0%,
+    rgba(250, 250, 253, 0.92) 100%
+  ) !important;
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
   border-top: 1px solid rgba(255, 255, 255, 0.7);
   border-radius: 2rem 2rem 0 0;
   box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.7),
     0 -16px 48px rgba(18, 18, 24, 0.16);
+}
+
+/* Teks baris menu pada sheet → kontras tinggi */
+.lg-sheet button:not(.lg-chip-active) {
+  color: #1d1d26;
+}
+
+.lg-sheet button:not(.lg-chip-active) span {
+  font-weight: 600;
 }
 
 /* ---------- Modal & toast: radius besar ---------- */
