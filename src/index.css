@@ -230,7 +230,8 @@ button:active {
 
 /* ---------- Sidebar & drawer ---------- */
 aside.lg-glass {
-  background: rgba(255, 255, 255, 0.5);
+  /* Desktop: tetap ringan & translucent */
+  background: rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-color: rgba(255, 255, 255, 0.6);
@@ -238,6 +239,26 @@ aside.lg-glass {
     inset 0 1px 0 rgba(255, 255, 255, 0.85),
     1px 0 0 rgba(18, 18, 24, 0.04),
     12px 0 40px rgba(18, 18, 24, 0.06);
+}
+
+/* Mobile (drawer): sedikit lebih buram agar teks tetap terbaca,
+   tapi translucency liquid glass masih terasa */
+@media (max-width: 1023px) {
+  aside.lg-glass,
+  aside.lg-drawer {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.74) 100%
+    );
+    backdrop-filter: blur(34px) saturate(160%);
+    -webkit-backdrop-filter: blur(34px) saturate(160%);
+  }
+
+  /* Kontras teks nav dinaikkan di mobile */
+  aside.lg-glass nav button:not([class*="text-[#2F6A43]"]) {
+    color: #2b2b33;
+  }
 }
 
 aside nav button {

@@ -1,0 +1,7 @@
+.git
+.env
+.env.local
+README.md
+docs/
+sql/
+cleanup-repo.sh
