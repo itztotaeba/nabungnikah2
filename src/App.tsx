@@ -111,7 +111,7 @@ export default function App() {
             <img
               src={LOGO_URL}
               alt="Logo Mahes & Aira"
-              className="w-8 h-8 rounded-md object-cover border border-[#E8E0D4]"
+              className="w-8 h-8 rounded-md object-cover border border-white/60"
             />
             <div className="min-w-0">
               <h1 className="font-heading text-sm font-semibold text-gray-800 truncate">Mahes & Aira</h1>
@@ -160,7 +160,7 @@ export default function App() {
                 <img
                   src={LOGO_URL}
                   alt="Logo Mahes & Aira"
-                  className="w-8 h-8 rounded-md object-cover border border-[#E8E0D4]"
+                  className="w-8 h-8 rounded-md object-cover border border-white/60"
                 />
                 <h1 className="font-heading text-sm font-semibold text-gray-800">Mahes & Aira</h1>
               </div>
@@ -206,7 +206,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-lg"
+                className="lg:hidden p-2 hover:bg-[#F3EFE6] rounded-xl"
               >
                 <Menu size={22} className="text-gray-600" />
               </button>
@@ -240,7 +240,7 @@ export default function App() {
                 </button>
               ) : (
                 <div className="flex items-center gap-2">
-                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-lg">
+                  <div className="hidden sm:flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-xl">
                     <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-[#2F6A43]">
                       {userAvatar ? (
                         <img 

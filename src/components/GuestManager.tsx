@@ -247,9 +247,9 @@ export default function GuestManager() {
           ============================================ */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {/* Total Tamu */}
-        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-white/60">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-purple-100 rounded-xl flex items-center justify-center">
               <Users size={16} className="text-purple-500" />
             </div>
           </div>
@@ -259,9 +259,9 @@ export default function GuestManager() {
         </div>
 
         {/* Konfirmasi Hadir */}
-        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-white/60">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-emerald-100 rounded-xl flex items-center justify-center">
               <UserCheck size={16} className="text-emerald-500" />
             </div>
           </div>
@@ -271,9 +271,9 @@ export default function GuestManager() {
         </div>
 
         {/* Tidak Hadir */}
-        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-white/60">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-red-100 rounded-xl flex items-center justify-center">
               <UserX size={16} className="text-red-500" />
             </div>
           </div>
@@ -283,9 +283,9 @@ export default function GuestManager() {
         </div>
 
         {/* Belum Respon */}
-        <div className="bg-white rounded-md p-4 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-4 border border-white/60">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center">
               <Clock size={16} className="text-amber-500" />
             </div>
           </div>
@@ -295,9 +295,9 @@ export default function GuestManager() {
         </div>
 
         {/* Total Circle */}
-        <div className="bg-white rounded-md p-4 border border-[#E8E0D4] col-span-2 sm:col-span-1">
+        <div className="bg-white rounded-md p-4 border border-white/60 col-span-2 sm:col-span-1">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-[#B76E79]/10 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#B76E79]/10 rounded-xl flex items-center justify-center">
               <Users size={16} className="text-[#B76E79]" />
             </div>
           </div>
@@ -313,7 +313,7 @@ export default function GuestManager() {
           INLINE FORM
           ============================================ */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 border border-white/60 shadow-sm space-y-5">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               {editingId ? '✏️ Edit Tamu' : '✨ Tambah Tamu Baru'}
@@ -321,7 +321,7 @@ export default function GuestManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
             >
               <X size={20} className="text-gray-500" />
             </button>
@@ -338,7 +338,7 @@ export default function GuestManager() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Masukkan nama lengkap..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -349,7 +349,7 @@ export default function GuestManager() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as Guest['category'])}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 {GUEST_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>
@@ -366,7 +366,7 @@ export default function GuestManager() {
                 <button
                   type="button"
                   onClick={() => setPax((prev) => String(Math.max(1, parseInt(prev) - 1)))}
-                  className="w-10 h-10 rounded-md border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+                  className="w-10 h-10 rounded-md border border-white/60 flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
                 >
                   −
                 </button>
@@ -376,12 +376,12 @@ export default function GuestManager() {
                   onChange={(e) => setPax(e.target.value)}
                   min="1"
                   max="10"
-                  className="w-20 text-center px-3 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
+                  className="w-20 text-center px-3 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] font-semibold"
                 />
                 <button
                   type="button"
                   onClick={() => setPax((prev) => String(Math.min(10, parseInt(prev) + 1)))}
-                  className="w-10 h-10 rounded-md border border-[#E8E0D4] flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
+                  className="w-10 h-10 rounded-md border border-white/60 flex items-center justify-center hover:bg-[#F5F0E8] transition-colors text-gray-600 font-bold"
                 >
                   +
                 </button>
@@ -397,7 +397,7 @@ export default function GuestManager() {
                 value={circle}
                 onChange={(e) => setCircle(e.target.value)}
                 placeholder="Contoh: Kantor A, SMA 5, dll"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Kelompok/komunitas tamu (opsional)
@@ -451,7 +451,7 @@ export default function GuestManager() {
       {/* ============================================
           FILTER & SEARCH BAR
           ============================================ */}
-      <div className="bg-white rounded-md p-4 border border-[#E8E0D4] space-y-3">
+      <div className="bg-white rounded-md p-4 border border-white/60 space-y-3">
         <div className="flex items-center gap-2 mb-1">
           <Filter size={16} className="text-gray-400" />
           <span className="text-sm font-medium text-gray-600">Filter & Cari</span>
@@ -474,7 +474,7 @@ export default function GuestManager() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari nama tamu..."
-              className="w-full pl-9 pr-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+              className="w-full pl-9 pr-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
             />
           </div>
 
@@ -482,7 +482,7 @@ export default function GuestManager() {
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+            className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
           >
             <option value="Semua">Semua Kategori</option>
             {GUEST_CATEGORIES.map((cat) => (
@@ -496,7 +496,7 @@ export default function GuestManager() {
           <select
             value={filterRsvp}
             onChange={(e) => setFilterRsvp(e.target.value)}
-            className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
+            className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-sm"
           >
             <option value="Semua">Semua Status RSVP</option>
             {RSVP_OPTIONS.map((opt) => (
@@ -521,8 +521,8 @@ export default function GuestManager() {
           ============================================ */}
       {guests.length === 0 ? (
         /* Empty State - belum ada tamu sama sekali */
-        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-xl border border-white/60">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-xl flex items-center justify-center mx-auto mb-4">
             <UserPlus size={28} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Belum ada daftar tamu</p>
@@ -539,8 +539,8 @@ export default function GuestManager() {
         </div>
       ) : filteredGuests.length === 0 ? (
         /* Empty State - filter tidak cocok */
-        <div className="text-center py-12 bg-white rounded-lg border border-[#E8E0D4]">
-          <div className="w-14 h-14 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-3">
+        <div className="text-center py-12 bg-white rounded-xl border border-white/60">
+          <div className="w-14 h-14 bg-[#F5F0E8] rounded-xl flex items-center justify-center mx-auto mb-3">
             <Search size={24} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Tidak ada tamu yang cocok</p>
@@ -553,7 +553,7 @@ export default function GuestManager() {
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-[#E8E0D4] overflow-hidden shadow-sm">
+        <div className="bg-white rounded-xl border border-white/60 overflow-hidden shadow-sm">
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
@@ -607,14 +607,14 @@ export default function GuestManager() {
                       <div className="flex items-center justify-center gap-1">
                         <button
                           onClick={() => handleEdit(guest)}
-                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 hover:bg-blue-50 rounded-xl transition-colors"
                           title="Edit"
                         >
                           <Pencil size={15} className="text-blue-600" />
                         </button>
                         <button
                           onClick={() => handleDelete(guest.id, guest.name)}
-                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                           title="Hapus"
                         >
                           <Trash2 size={15} className="text-red-600" />
@@ -665,13 +665,13 @@ export default function GuestManager() {
                   <div className="flex gap-1 shrink-0">
                     <button
                       onClick={() => handleEdit(guest)}
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 hover:bg-blue-50 rounded-xl transition-colors"
                     >
                       <Pencil size={15} className="text-blue-600" />
                     </button>
                     <button
                       onClick={() => handleDelete(guest.id, guest.name)}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                     >
                       <Trash2 size={15} className="text-red-600" />
                     </button>

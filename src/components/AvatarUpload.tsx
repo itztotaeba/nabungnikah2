@@ -111,7 +111,7 @@ export default function AvatarUpload() {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
           <Camera size={20} className="text-purple-500" />

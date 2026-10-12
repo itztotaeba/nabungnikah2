@@ -25,7 +25,7 @@ export default function PWAUpdateToast() {
 
   return (
     <div className="fixed bottom-24 right-4 z-50">
-      <div className="bg-white rounded-lg shadow-sm border border-[#D6E5DC] p-4 max-w-xs">
+      <div className="bg-white rounded-xl shadow-sm border border-[#D6E5DC] p-4 max-w-xs">
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#2F6A43] rounded-md flex items-center justify-center">

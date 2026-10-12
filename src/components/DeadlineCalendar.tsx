@@ -82,7 +82,7 @@ export default function DeadlineCalendar() {
         <div className="flex items-center gap-2">
           <button
             onClick={previousMonth}
-            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <ChevronLeft size={18} className="text-gray-600" />
           </button>
@@ -91,7 +91,7 @@ export default function DeadlineCalendar() {
           </span>
           <button
             onClick={nextMonth}
-            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1.5 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <ChevronRight size={18} className="text-gray-600" />
           </button>
@@ -124,7 +124,7 @@ export default function DeadlineCalendar() {
             <div
               key={idx}
               className={`
-                relative aspect-square p-1 rounded-lg border transition-colors cursor-pointer
+                relative aspect-square p-1 rounded-xl border transition-colors cursor-pointer
                 ${!isCurrentMonth ? 'bg-gray-50 border-gray-100' : 'bg-white border-gray-200'}
                 ${isToday ? 'ring-2 ring-[#87A878]' : ''}
                 ${isHovered && events.length > 0 ? 'shadow-md scale-105' : ''}
@@ -148,7 +148,7 @@ export default function DeadlineCalendar() {
 
               {/* Tooltip */}
               {isHovered && events.length > 0 && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 bg-white p-2 rounded-lg shadow-sm border border-gray-200 min-w-[150px]">
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-10 bg-white p-2 rounded-xl shadow-sm border border-gray-200 min-w-[150px]">
                   {events.map((event, i) => (
                     <div key={i} className="text-xs">
                       <p className="font-semibold text-gray-800">{event.vendorName}</p>

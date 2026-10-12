@@ -45,7 +45,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
               <button
                 key={menu.id}
                 onClick={() => handleMainClick(menu.id)}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-colors ${
                   isActive 
                     ? 'text-[#2F6A43] bg-[#2F6A43]/10' 
                     : 'text-gray-500 hover:text-[#2F6A43]'
@@ -60,7 +60,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
           {/* Tombol Lainnya */}
           <button
             onClick={() => setIsMoreOpen(true)}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-lg text-gray-500 hover:text-[#2F6A43] transition-colors"
+            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-500 hover:text-[#2F6A43] transition-colors"
           >
             <MoreHorizontal size={22} />
             <span className="text-[10px] font-medium">Lainnya</span>
@@ -99,7 +99,7 @@ export default function MobileBottomNav({ activeTab, onTabChange }: MobileBottom
                           : 'hover:bg-[#F3EFE6] text-gray-700'
                       }`}
                     >
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                         isActive ? 'bg-[#2F6A43]/20' : 'bg-[#2F6A43]/10'
                       }`}>
                         <Icon size={20} className={isActive ? 'text-[#2F6A43]' : 'text-[#2F6A43]'} />

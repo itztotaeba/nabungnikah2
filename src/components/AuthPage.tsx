@@ -76,7 +76,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2F6A43] rounded-lg mb-4 shadow-sm">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#2F6A43] rounded-xl mb-4 shadow-sm">
             <Heart size={32} className="text-white" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-gray-800 mb-2">
@@ -88,7 +88,7 @@ export default function AuthPage() {
         </div>
 
         {/* Auth Card */}
-        <div className="bg-white rounded-lg shadow-sm p-8 border border-[#E8E0D4]">
+        <div className="bg-white rounded-xl shadow-sm p-8 border border-white/60">
           <h2 className="font-heading text-2xl font-bold text-gray-800 mb-6 text-center">
             {isLogin ? 'Masuk' : 'Daftar'}
           </h2>
@@ -106,7 +106,7 @@ export default function AuthPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nama@email.com"
-                  className="w-full pl-10 pr-4 py-3 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                  className="w-full pl-10 pr-4 py-3 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                   required
                 />
               </div>
@@ -124,7 +124,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimal 6 karakter"
-                  className="w-full pl-10 pr-4 py-3 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                  className="w-full pl-10 pr-4 py-3 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                   required
                 />
               </div>
@@ -143,7 +143,7 @@ export default function AuthPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Ulangi password"
-                    className="w-full pl-10 pr-4 py-3 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                    className="w-full pl-10 pr-4 py-3 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                     required
                   />
                 </div>

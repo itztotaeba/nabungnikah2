@@ -68,7 +68,7 @@ export default function EmergencyBufferAlert() {
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className={`rounded-lg p-6 border ${statusInfo.bgColor} ${statusInfo.borderColor} shadow-sm`}>
+    <div className={`rounded-xl p-6 border ${statusInfo.bgColor} ${statusInfo.borderColor} shadow-sm`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

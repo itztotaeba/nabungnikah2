@@ -180,7 +180,7 @@ export default function SettingsPage() {
       {user && <AvatarUpload />}
 
       {/* Wedding Date Section */}
-      <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 bg-[#B76E79]/10 rounded-md flex items-center justify-center">
             <Calendar size={20} className="text-[#B76E79]" />
@@ -198,13 +198,13 @@ export default function SettingsPage() {
               type="date"
               value={weddingDate}
               onChange={(e) => setWeddingDate(e.target.value)}
-              className="w-full max-w-sm px-4 py-3 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-gray-800"
+              className="w-full max-w-sm px-4 py-3 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] text-gray-800"
             />
           </div>
 
           {/* Countdown Preview */}
           {weddingDate && (
-            <div className="bg-[#FBFAF7] rounded-md p-4 border border-[#E8E0D4]/50">
+            <div className="bg-[#FBFAF7] rounded-md p-4 border border-white/60/50">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white rounded-md flex items-center justify-center shadow-sm">
                   <span className="text-xl">⏰</span>
@@ -237,7 +237,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Data Info */}
-      <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
             <HardDrive size={20} className="text-blue-500" />
@@ -273,15 +273,15 @@ export default function SettingsPage() {
         <div className="mt-4 pt-4 border-t border-[#E8E0D4]">
           <p className="text-xs text-gray-400 mb-2">Ringkasan Data Tersimpan</p>
           <div className="grid grid-cols-3 gap-3">
-            <div className="text-center p-2 bg-[#FDFBF7] rounded-lg">
+            <div className="text-center p-2 bg-[#FDFBF7] rounded-xl">
               <p className="text-lg font-bold text-gray-800">{budgetItems.length}</p>
               <p className="text-xs text-gray-500">Item Anggaran</p>
             </div>
-            <div className="text-center p-2 bg-[#FDFBF7] rounded-lg">
+            <div className="text-center p-2 bg-[#FDFBF7] rounded-xl">
               <p className="text-lg font-bold text-gray-800">{savings.length}</p>
               <p className="text-xs text-gray-500">Catatan Tabungan</p>
             </div>
-            <div className="text-center p-2 bg-[#FDFBF7] rounded-lg">
+            <div className="text-center p-2 bg-[#FDFBF7] rounded-xl">
               <p className="text-lg font-bold text-gray-800">{guests.length}</p>
               <p className="text-xs text-gray-500">Daftar Tamu</p>
             </div>
@@ -296,7 +296,7 @@ export default function SettingsPage() {
       {user ? (
         <CollaborationSection />
       ) : (
-        <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+        <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
               <Users size={20} className="text-purple-500" />
@@ -319,7 +319,7 @@ export default function SettingsPage() {
       )}
 
       {/* Backup & Restore Section */}
-      <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-emerald-100 rounded-md flex items-center justify-center">
             <Download size={20} className="text-emerald-500" />
@@ -380,7 +380,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-white rounded-lg p-6 border border-red-200 shadow-sm">
+      <div className="bg-white rounded-xl p-6 border border-red-200 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-red-100 rounded-md flex items-center justify-center">
             <AlertTriangle size={20} className="text-red-500" />
@@ -409,13 +409,13 @@ export default function SettingsPage() {
             <div className="flex gap-3">
               <button
                 onClick={handleReset}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors text-sm font-medium"
               >
                 Ya, Hapus Semua Data
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 bg-white text-gray-600 rounded-lg hover:bg-gray-50 border border-gray-200 transition-colors text-sm font-medium"
+                className="px-4 py-2 bg-white text-gray-600 rounded-xl hover:bg-gray-50 border border-gray-200 transition-colors text-sm font-medium"
               >
                 Batal
               </button>

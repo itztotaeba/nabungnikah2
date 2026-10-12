@@ -50,7 +50,7 @@ export default function ToastContainer() {
             </p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="shrink-0 p-1 hover:bg-black/5 rounded-lg transition-colors"
+              className="shrink-0 p-1 hover:bg-black/5 rounded-xl transition-colors"
             >
               <X size={14} className="text-gray-400" />
             </button>
