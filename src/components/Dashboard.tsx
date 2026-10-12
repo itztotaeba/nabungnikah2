@@ -165,7 +165,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Anggaran */}
         <div className="bg-white rounded-md p-5 border border-[#D6E5DC] transition-shadow">
           <div className="flex items-start justify-between">

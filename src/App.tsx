@@ -274,8 +274,8 @@ export default function App() {
 
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-8">
           {/* Desktop: konten melebar mengisi ruang (white space kanan-kiri dipangkas),
-              tetap terpusat dengan batas maksimum lebar layar */}
-          <div className="max-w-5xl mx-auto lg:max-w-[min(100%,96rem)] w-full">
+              batas maksimum dilebarkan agar 6 kartu stats muat satu baris rapi */}
+          <div className="max-w-5xl mx-auto lg:max-w-[min(100%,120rem)] w-full">
             {renderContent()}
           </div>
         </main>
