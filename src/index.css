@@ -1,5 +1,404 @@
 @import "tailwindcss";
 
+/* ============================================================
+   LIQUID GLASS — iOS 26 style design layer (CSS-only revamp)
+   Fungsi & fitur yang sudah live tidak diubah.
+   ============================================================ */
+
+/* ---------- Design Tokens (Tailwind v4 @theme) ---------- */
+@theme {
+  /* Radius lebih besar & organik khas liquid glass */
+  --radius-md: 1rem;      /* rounded-md -> 16px */
+  --radius-lg: 1.5rem;    /* rounded-lg -> 24px */
+  --radius-xl: 1.75rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
+
+  /* Netral lebih lembut, translucent-friendly */
+  --color-gray-50: #f8f8fa;
+  --color-gray-100: #f1f1f5;
+  --color-gray-200: #e6e6ec;
+  --color-gray-300: #d3d3dd;
+  --color-gray-400: #a7a7b4;
+  --color-gray-500: #74747f;
+  --color-gray-600: #52525c;
+  --color-gray-700: #393941;
+  --color-gray-800: #23232b;
+  --color-gray-900: #121218;
+
+  /* Depth berlapis ala iOS */
+  --shadow-sm: 0 1px 2px rgba(18, 18, 24, 0.04), 0 4px 14px rgba(18, 18, 24, 0.05);
+  --shadow-md: 0 2px 4px rgba(18, 18, 24, 0.04), 0 12px 32px rgba(18, 18, 24, 0.09);
+  --shadow-lg: 0 4px 8px rgba(18, 18, 24, 0.05), 0 24px 48px rgba(18, 18, 24, 0.14);
+}
+
+/* ---------- Ambient background (cahaya warna di balik kaca) ---------- */
+body {
+  background-color: #f2f4f7 !important;
+  color: var(--color-gray-800);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.lg-root {
+  position: relative;
+  isolation: isolate;
+}
+
+.lg-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 12% 8%, rgba(47, 106, 67, 0.16) 0%, transparent 65%),
+    radial-gradient(50% 42% at 88% 12%, rgba(212, 168, 67, 0.16) 0%, transparent 65%),
+    radial-gradient(60% 50% at 82% 88%, rgba(135, 168, 120, 0.18) 0%, transparent 70%),
+    radial-gradient(45% 40% at 15% 90%, rgba(183, 110, 121, 0.12) 0%, transparent 65%),
+    linear-gradient(180deg, #f6f7fa 0%, #eef1f5 100%);
+  animation: lg-ambient-drift 24s ease-in-out infinite alternate;
+}
+
+@keyframes lg-ambient-drift {
+  0%   { filter: hue-rotate(0deg);  transform: scale(1); }
+  100% { filter: hue-rotate(-8deg); transform: scale(1.04); }
+}
+
+/* ---------- Kaca utama (kartu / panel / form) ---------- */
+.lg-glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.78) 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 6px rgba(18, 18, 24, 0.04),
+    0 16px 40px rgba(18, 18, 24, 0.08);
+}
+
+/* bg-white pada elemen blok = kartu kaca translucent */
+.bg-white:not(button):not([class*="lg-icon-chip"]) {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.78) 0%,
+    rgba(255, 255, 255, 0.62) 100%
+  ) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25),
+    0 2px 6px rgba(18, 18, 24, 0.04),
+    0 16px 40px rgba(18, 18, 24, 0.08) !important;
+}
+
+/* Kartu berwarna solid brand → kilau + highlight dalam */
+.bg-\[\#2F6A43\]:not(button),
+.bg-\[\#1E4A2E\]:not(button) {
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(47, 106, 67, 0.25) !important;
+}
+
+.bg-\[\#D4A843\]:not(button),
+.bg-\[\#B8922F\]:not(button) {
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 8px 24px rgba(212, 168, 67, 0.28) !important;
+}
+
+/* Kilau cair di atas kartu solid (overlay, tidak menutupi konten) */
+.bg-\[\#2F6A43\]:not(button)::after,
+.bg-\[\#1E4A2E\]:not(button)::after,
+.bg-\[\#D4A843\]:not(button)::after,
+.bg-\[\#B8922F\]:not(button)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 90% at 15% -10%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 40%);
+}
+
+/* Panel sekunder krem → kaca tembus pandang ringan */
+.bg-\[\#FBFAF7\]:not(.lg-glass),
+.bg-\[\#FAF8F4\]:not(.lg-root),
+.bg-\[\#F3EFE6\] {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* Garis tepi keras → hairline lembut ala iOS */
+.border-\[\#E8E0D4\],
+.border-\[\#D6E5DC\] {
+  border-color: rgba(18, 18, 24, 0.07) !important;
+}
+
+/* ---------- Input, select, textarea ---------- */
+input[type="text"], input[type="number"], input[type="date"],
+input[type="email"], input[type="password"], input[type="tel"],
+input[type="search"], input[type="url"], select {
+  border-radius: 9999px;
+  border-color: rgba(18, 18, 24, 0.1) !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+textarea {
+  border-radius: 1.25rem;
+  border-color: rgba(18, 18, 24, 0.1) !important;
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  resize: vertical;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+}
+
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: none;
+  border-color: rgba(47, 106, 67, 0.45) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow:
+    0 0 0 4px rgba(47, 106, 67, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+select { cursor: pointer; }
+
+/* Checkbox / radio / file jangan ikut jadi pil */
+input[type="checkbox"], input[type="radio"], input[type="file"] {
+  border-radius: revert;
+  background: revert;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ---------- Tombol pil + refleksi cair ---------- */
+button {
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease;
+}
+
+/* Tombol berlabel (padding horizontal sedang-besar / full-width) → pil penuh */
+button[class*="px-3"], button[class*="px-4"], button[class*="px-5"], button[class*="px-6"],
+button[class*="w-full"] {
+  border-radius: 9999px;
+}
+
+button:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+
+button:active {
+  transform: translateY(0.5px) scale(0.97);
+  transition-duration: 0.08s;
+}
+
+/* ---------- Header kaca ---------- */
+.lg-header {
+  background: rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 1px 0 rgba(18, 18, 24, 0.04), 0 8px 24px rgba(18, 18, 24, 0.05);
+}
+
+/* ---------- Sidebar & drawer ---------- */
+aside.lg-glass {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    1px 0 0 rgba(18, 18, 24, 0.04),
+    12px 0 40px rgba(18, 18, 24, 0.06);
+}
+
+aside nav button {
+  border-radius: 9999px;
+}
+
+/* Item nav aktif → pil kaca terisi */
+aside nav button[class*="bg-[#2F6A43]/10"] {
+  background: rgba(47, 106, 67, 0.14) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 10px rgba(47, 106, 67, 0.15);
+}
+
+/* ---------- Backdrop overlay (sidebar mobile & modal) ---------- */
+.lg-backdrop,
+.fixed.inset-0 > [class*="bg-black"],
+div.fixed.inset-0[class*="bg-black"] {
+  background: rgba(18, 18, 24, 0.35) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+/* Bottom sheet mengambang (panel detail vendor di mobile) */
+.lg-sheet {
+  border-radius: 2rem 2rem 0 0;
+}
+
+@media (min-width: 640px) {
+  .lg-sheet {
+    border-radius: 1.75rem;
+  }
+}
+
+/* ---------- Bottom nav mobile: dock liquid glass ---------- */
+nav.fixed.bottom-0,
+.lg-dock {
+  background: rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border-top: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 -8px 32px rgba(18, 18, 24, 0.08);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Item dock aktif → kapsul kaca (cahaya terisi di belakang ikon) */
+.lg-dock-item {
+  border-radius: 9999px;
+  position: relative;
+}
+
+.lg-dock-item[class*="font-semibold"] {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 2px 10px rgba(47, 106, 67, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Baris menu aktif pada bottom sheet */
+.lg-chip-active {
+  background: rgba(47, 106, 67, 0.13) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 10px rgba(47, 106, 67, 0.12);
+}
+
+/* Bottom sheet "Lainnya" */
+.animate-slide-up,
+.lg-sheet {
+  background: rgba(248, 248, 250, 0.72) !important;
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 2rem 2rem 0 0;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    0 -16px 48px rgba(18, 18, 24, 0.16);
+}
+
+/* ---------- Modal & toast: radius besar ---------- */
+[class*="animate-scale-in"],
+div.fixed[class*="z-50"] > div.bg-white,
+div.fixed[class*="z-\[60\]"] > div.bg-white {
+  border-radius: 1.75rem;
+}
+
+/* Skala masuk halus untuk modal (Auth/Exit/Conflict) */
+@keyframes lg-scale-in {
+  from { opacity: 0; transform: scale(0.92) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+[class*="animate-scale-in"] {
+  animation: lg-scale-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ---------- Progress bar capsule berkilau ---------- */
+.overflow-hidden.rounded-full > div[style*="width"] {
+  border-radius: 9999px;
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0) 55%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Foto & avatar: ring kaca ---------- */
+img[class*="rounded"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 4px 14px rgba(18, 18, 24, 0.12);
+}
+
+/* ---------- Scrollbar halus ala iOS ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(18, 18, 24, 0.18) transparent;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(18, 18, 24, 0.16);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(18, 18, 24, 0.3);
+  background-clip: content-box;
+}
+
+/* ---------- Fallback tanpa backdrop-filter ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg-glass,
+  .bg-white:not(button):not([class*="lg-icon-chip"]) {
+    background: rgba(255, 255, 255, 0.94) !important;
+  }
+  .lg-header, aside.lg-glass, nav.fixed.bottom-0, .animate-slide-up {
+    background: rgba(255, 255, 255, 0.92) !important;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .lg-root::before { animation: none !important; }
+  button:hover { transform: none; }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 /* Animation for bottom sheet */
 @keyframes slideUp {
   from {

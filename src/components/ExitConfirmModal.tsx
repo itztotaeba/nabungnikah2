@@ -18,8 +18,8 @@ export default function ExitConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-lg shadow-sm w-full max-w-sm p-6 animate-scale-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg-backdrop">
+      <div className="lg-glass w-full max-w-sm p-6 animate-scale-in rounded-[1.75rem]">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
