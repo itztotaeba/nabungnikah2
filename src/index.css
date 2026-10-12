@@ -600,3 +600,139 @@ img[class*="rounded"] {
 .animate-heartbeat {
   animation: heartbeat 1.6s ease-in-out infinite;
 }
+
+/* ============================================================
+   COUNTDOWN "MENUJU HARI BAHAGIA" — liquid glass kalem
+   Panel kaca tunggal, tanpa gradien norak / emoji berlebihan.
+   ============================================================ */
+.lg-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.4rem 1.75rem;
+  border-radius: 1.75rem;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(255, 255, 255, 0.52) 100%
+  );
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2),
+    0 2px 6px rgba(18, 18, 24, 0.04),
+    0 14px 36px rgba(18, 18, 24, 0.07);
+}
+
+.lg-countdown__eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6f6f80;
+  margin-bottom: 0.3rem;
+}
+
+.lg-countdown__big {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  color: #1d1d26;
+  line-height: 1.1;
+}
+
+.lg-countdown__num {
+  font-family: var(--font-heading, inherit);
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.lg-countdown__unit {
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+  font-weight: 600;
+  color: #52525c;
+}
+
+.lg-countdown__date {
+  margin-top: 0.45rem;
+  font-size: 0.85rem;
+  color: #6f6f80;
+}
+
+.lg-countdown__side {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-shrink: 0;
+}
+
+.lg-countdown__photo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 2px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.35));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.55),
+    0 4px 14px rgba(18, 18, 24, 0.1);
+}
+
+.lg-countdown__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.lg-countdown__names {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1d1d26;
+}
+
+.lg-countdown__note {
+  font-size: 0.78rem;
+  color: #6f6f80;
+  margin-top: 0.15rem;
+}
+
+/* Mobile: tetap satu baris rapi — angka besar di kiri, foto di kanan */
+@media (max-width: 640px) {
+  .lg-countdown {
+    padding: 1.1rem 1.25rem;
+    gap: 0.9rem;
+    border-radius: 1.5rem;
+  }
+  .lg-countdown__num {
+    font-size: 2.1rem;
+  }
+  .lg-countdown__photo {
+    width: 44px;
+    height: 44px;
+  }
+  .lg-countdown__meta {
+    max-width: 8.5rem;
+  }
+  .lg-countdown__names {
+    font-size: 0.82rem;
+  }
+  .lg-countdown__note {
+    font-size: 0.72rem;
+  }
+  .lg-countdown__date {
+    font-size: 0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-countdown {
+    transition: none;
+  }
+}

@@ -16,7 +16,7 @@ import {
 import { generateFullReport } from '../helpers/pdfGenerator';
 import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
-import { Calendar, TrendingUp, Wallet, Target, Users, Clock, FileText, FileSpreadsheet, User, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Calendar, TrendingUp, Wallet, Target, Users, FileText, FileSpreadsheet, User, CheckCircle2, AlertTriangle } from 'lucide-react';
 import BudgetPieChart from './BudgetPieChart';
 import SavingsLineChart from './SavingsLineChart';
 import DeadlineCalendar from './DeadlineCalendar';
@@ -146,23 +146,56 @@ export default function Dashboard() {
       </div>
 
       {/* Countdown Section - Always show if weddingDate is set */}
-      {safeSettings.weddingDate && (
-        <div className="bg-[#2F6A43] rounded-lg p-6 text-white shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Clock size={24} />
-              <h3 className="font-heading text-xl font-bold">Countdown Pernikahan</h3>
+      {safeSettings.weddingDate && (() => {
+        const cd = new Date(safeSettings.weddingDate);
+        const now = new Date();
+        const diffMs = cd.getTime() - now.getTime();
+        const totalDays = Math.max(0, Math.ceil(diffMs / 86400000));
+        const cdMonths = Math.floor(totalDays / 30);
+        const cdDays = totalDays % 30;
+        return (
+          <section className="lg-countdown" aria-label="Menuju hari pernikahan">
+            <div className="lg-countdown__lead">
+              <p className="lg-countdown__eyebrow">Menuju hari bahagia</p>
+              <p className="lg-countdown__big">
+                {diffMs <= 0 ? (
+                  'Hari H telah lewat'
+                ) : (
+                  <>
+                    {cdMonths > 0 && (
+                      <>
+                        <span className="lg-countdown__num">{cdMonths}</span>{' '}
+                        <span className="lg-countdown__unit">bulan</span>{' '}
+                      </>
+                    )}
+                    <span className="lg-countdown__num">{cdDays}</span>{' '}
+                    <span className="lg-countdown__unit">hari lagi</span>
+                  </>
+                )}
+              </p>
+              <p className="lg-countdown__date">{formattedDate}</p>
             </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold">{formatRemainingTime(safeSettings.weddingDate)}</p>
+
+            <div className="lg-countdown__side">
+              <div className="lg-countdown__photo">
+                <img
+                  src="https://is3.cloudhost.id/totaeba/mahesaira.jpg"
+                  alt="Mahes & Aira"
+                  loading="lazy"
+                />
+              </div>
+              <div className="lg-countdown__meta">
+                <p className="lg-countdown__names">Mahes &amp; Aira</p>
+                <p className="lg-countdown__note">
+                  {diffMs <= 0
+                    ? 'Sudah melewati tanggal pernikahan'
+                    : formatRemainingTime(safeSettings.weddingDate)}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="bg-white/10 rounded-md p-4">
-            <p className="text-sm opacity-90 mb-1">Tanggal Pernikahan:</p>
-            <p className="text-lg font-semibold">{formattedDate}</p>
-          </div>
-        </div>
-      )}
+          </section>
+        );
+      })()}
 
       {/* Stats Grid */}
       <div className="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
