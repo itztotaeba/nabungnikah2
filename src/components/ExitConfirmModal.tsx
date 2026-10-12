@@ -19,7 +19,7 @@ export default function ExitConfirmModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-lg shadow-sm w-full max-w-sm p-6 animate-scale-in">
+      <div className="bg-white rounded-xl shadow-sm w-full max-w-sm p-6 animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -32,7 +32,7 @@ export default function ExitConfirmModal({
           </div>
           <button
             onClick={onCancel}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
           >
             <X size={20} className="text-gray-500" />
           </button>

@@ -12,7 +12,7 @@ export default function LiveSyncIndicator() {
   }
 
   return (
-    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl ${
       isConnected ? 'bg-emerald-50' : 'bg-gray-100'
     }`}>
       {isConnected ? (

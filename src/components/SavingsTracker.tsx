@@ -111,7 +111,7 @@ export default function SavingsTracker() {
         </div>
 
         {/* Monthly Target */}
-        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
               <Target size={20} className="text-purple-500" />
@@ -124,7 +124,7 @@ export default function SavingsTracker() {
         </div>
 
         {/* Progress */}
-        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-5 border border-white/60">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#B76E79]/10 rounded-md flex items-center justify-center">
               <TrendingUp size={20} className="text-[#B76E79]" />
@@ -138,7 +138,7 @@ export default function SavingsTracker() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-md p-6 border border-[#E8E0D4]">
+      <div className="bg-white rounded-md p-6 border border-white/60">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-heading text-lg font-semibold text-gray-800">Progress Menuju Target</h3>
           <span className="text-sm text-gray-500">
@@ -166,7 +166,7 @@ export default function SavingsTracker() {
 
       {/* Inline Form - DIPINDAH KE ATAS */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 border border-white/60 shadow-sm space-y-5">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               💰 Tambah Tabungan Baru
@@ -174,7 +174,7 @@ export default function SavingsTracker() {
             <button
               type="button"
               onClick={resetForm}
-              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
             >
               <X size={20} className="text-gray-500" />
             </button>
@@ -187,7 +187,7 @@ export default function SavingsTracker() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -197,7 +197,7 @@ export default function SavingsTracker() {
               <select
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               >
                 {SAVINGS_SOURCES.map((src) => (
@@ -214,7 +214,7 @@ export default function SavingsTracker() {
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
                 min="1"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
               {amount && (
@@ -231,7 +231,7 @@ export default function SavingsTracker() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Tambahkan catatan..."
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               />
             </div>
           </div>
@@ -256,15 +256,15 @@ export default function SavingsTracker() {
 
       {/* Table */}
       {sortedSavings.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-xl border border-white/60">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-xl flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">💵</span>
           </div>
           <p className="text-gray-500 font-medium">Belum ada tabungan</p>
           <p className="text-sm text-gray-400 mt-1">Mulai catat setoran pertamamu!</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-[#E8E0D4] overflow-hidden shadow-sm">
+        <div className="bg-white rounded-xl border border-white/60 overflow-hidden shadow-sm">
           {/* Desktop Table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
@@ -302,7 +302,7 @@ export default function SavingsTracker() {
                     <td className="px-5 py-4 text-center">
                       <button
                         onClick={() => handleDelete(entry.id)}
-                        className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                         title="Hapus"
                       >
                         <Trash2 size={16} className="text-red-600" />
@@ -338,7 +338,7 @@ export default function SavingsTracker() {
                   </div>
                   <button
                     onClick={() => handleDelete(entry.id)}
-                    className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                   >
                     <Trash2 size={16} className="text-red-600" />
                   </button>

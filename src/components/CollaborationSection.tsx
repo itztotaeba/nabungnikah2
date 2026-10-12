@@ -65,7 +65,7 @@ export default function CollaborationSection() {
   // Loading state
   if (isLoading || isCreating) {
     return (
-      <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
         <div className="flex items-center justify-center py-8">
           <Loader2 size={24} className="animate-spin text-[#87A878]" />
           <span className="ml-3 text-gray-600">Membuat wedding...</span>
@@ -77,7 +77,7 @@ export default function CollaborationSection() {
   // Belum ada wedding
   if (!currentWeddingId) {
     return (
-      <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+      <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
             <Users size={20} className="text-purple-500" />
@@ -107,7 +107,7 @@ export default function CollaborationSection() {
   }
 
   return (
-    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
       <div className="flex items-center gap-3 mb-4">
         <div className="w-10 h-10 bg-purple-100 rounded-md flex items-center justify-center">
           <Users size={20} className="text-purple-500" />
@@ -134,7 +134,7 @@ export default function CollaborationSection() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="email@pasangan.com"
-                className="w-full pl-10 pr-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full pl-10 pr-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -171,7 +171,7 @@ export default function CollaborationSection() {
 
         {/* Empty state */}
         {!isLoading && members.length === 0 && (
-          <div className="text-center py-6 bg-[#FDFBF7] rounded-md border border-[#E8E0D4]">
+          <div className="text-center py-6 bg-[#FDFBF7] rounded-md border border-white/60">
             <Users size={32} className="mx-auto text-gray-400 mb-2" />
             <p className="text-sm text-gray-600">
               Anda adalah satu-satunya anggota di event ini.
@@ -192,7 +192,7 @@ export default function CollaborationSection() {
               return (
                 <div
                   key={member.id}
-                  className="flex items-center justify-between p-3 bg-[#FDFBF7] rounded-md border border-[#E8E0D4]"
+                  className="flex items-center justify-between p-3 bg-[#FDFBF7] rounded-md border border-white/60"
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -223,7 +223,7 @@ export default function CollaborationSection() {
                   {userRole === 'owner' && !isCurrentUser && (
                     <button
                       onClick={() => handleRemove(member.user_id, member.profiles?.email || '')}
-                      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 hover:bg-red-50 rounded-xl transition-colors"
                       title="Hapus akses"
                     >
                       <Trash2 size={16} className="text-red-600" />

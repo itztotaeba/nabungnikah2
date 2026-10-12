@@ -222,7 +222,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
     const accentBorder = accent === 'purple' ? 'border-purple-100' : 'border-blue-100';
 
     return (
-      <div className={`bg-white rounded-lg p-4 border ${accentBorder}`}>
+      <div className={`glass-card rounded-xl p-4 border ${accentBorder}`}>
         <p className="text-[13px] text-gray-500 mb-1">{title}</p>
         {list.length === 0 ? (
           <p className="text-sm text-gray-400 italic py-2">Belum ada vendor dipilih.</p>
@@ -349,7 +349,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-6">
+    <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm space-y-6">
       {/* Header dengan judul & tombol close */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-heading text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -358,7 +358,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
         </h3>
         <button
           onClick={onClose}
-          className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+          className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
         >
           <X size={20} className="text-gray-500" />
         </button>
@@ -398,12 +398,12 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
             </h4>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <div className="bg-white rounded-lg p-4 border border-purple-100">
+              <div className="bg-white rounded-xl p-4 border border-purple-100">
                 <p className="text-[13px] text-gray-500 mb-1">Total All-in</p>
                 <p className="text-xl font-bold text-purple-700">{formatCurrency(totalAllIn, settings.currency)}</p>
                 <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'All-in').length} vendor</p>
               </div>
-              <div className="bg-white rounded-lg p-4 border border-blue-100">
+              <div className="bg-white rounded-xl p-4 border border-blue-100">
                 <p className="text-[13px] text-gray-500 mb-1">Total Satuan</p>
                 <p className="text-xl font-bold text-blue-700">{formatCurrency(totalSatuan, settings.currency)}</p>
                 <p className="text-xs text-gray-400 mt-1">{vendors.filter(v => v.type === 'Satuan').length} vendor</p>
@@ -411,7 +411,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
             </div>
 
             {totalAllIn > 0 && totalSatuan > 0 && (
-              <div className={`rounded-lg p-4 border-2 ${isAllInCheaper ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'}`}>
+              <div className={`rounded-xl p-4 border-2 ${isAllInCheaper ? 'bg-purple-50 border-purple-200' : 'bg-blue-50 border-blue-200'}`}>
                 <p className="text-sm font-medium text-gray-700 mb-1">
                   {isAllInCheaper ? '🎉 All-in Lebih Hemat!' : '🎉 Satuan Lebih Hemat!'}
                 </p>
@@ -426,7 +426,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
           </div>
 
           {/* Matriks Perbandingan */}
-          <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
+          <div className="bg-white rounded-md p-5 border border-white/60">
             <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
               Matriks Perbandingan
             </h4>
@@ -524,7 +524,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                     setGroupA({ vendorIds: groupB.vendorIds });
                     setGroupB({ vendorIds: a });
                   }}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
                   ⇄ Tukar Grup A ↔ B
                 </button>
@@ -535,7 +535,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
                     setPickA('');
                     setPickB('');
                   }}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                  className="text-xs px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
                   Reset Pilihan
                 </button>
@@ -544,7 +544,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
             {/* Comparison Result */}
             {canCompare && (
-              <div className={`mt-4 rounded-lg p-4 border-2 ${
+              <div className={`mt-4 rounded-xl p-4 border-2 ${
                 isSameTotal
                   ? 'bg-gray-50 border-gray-200'
                   : isGroupACheaper
@@ -581,7 +581,7 @@ export default function ComparisonAnalysis({ isVisible, onClose }: ComparisonAna
 
           {/* Group Details Comparison */}
           {canCompare && (
-            <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
+            <div className="bg-white rounded-md p-5 border border-white/60">
               <h4 className="font-heading text-base font-semibold text-gray-800 mb-4">
                 Detail Perbandingan
               </h4>

@@ -41,7 +41,7 @@ export default function CloudSyncSection() {
   if (!user) {
     return (
       <>
-        <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+        <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
               <Cloud size={20} className="text-blue-500" />
@@ -78,7 +78,7 @@ export default function CloudSyncSection() {
 
   // If logged in, show sync buttons
   return (
-    <div className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm">
+    <div className="bg-white rounded-xl p-6 border border-white/60 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
@@ -91,7 +91,7 @@ export default function CloudSyncSection() {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors"
         >
           <LogOut size={16} />
           <span>Logout</span>

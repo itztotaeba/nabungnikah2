@@ -180,7 +180,7 @@ export default function TimelineManager() {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white rounded-md p-6 border border-[#E8E0D4]">
+      <div className="bg-white rounded-md p-6 border border-white/60">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <CheckCircle2 size={20} className="text-[#87A878]" />
@@ -208,9 +208,9 @@ export default function TimelineManager() {
           const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
           
           return (
-            <div key={assigneeType} className="bg-white rounded-md p-4 border border-[#E8E0D4]">
+            <div key={assigneeType} className="bg-white rounded-md p-4 border border-white/60">
               <div className="flex items-center gap-2 mb-2">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                   assigneeType === 'Pria' ? 'bg-blue-100' :
                   assigneeType === 'Wanita' ? 'bg-pink-100' : 'bg-purple-100'
                 }`}>
@@ -261,8 +261,8 @@ export default function TimelineManager() {
 
       {/* Timeline Groups */}
       {groupedTasks.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-lg border border-[#E8E0D4]">
-          <div className="w-16 h-16 bg-[#F5F0E8] rounded-lg flex items-center justify-center mx-auto mb-4">
+        <div className="text-center py-16 bg-white rounded-xl border border-white/60">
+          <div className="w-16 h-16 bg-[#F5F0E8] rounded-xl flex items-center justify-center mx-auto mb-4">
             <Calendar size={28} className="text-gray-400" />
           </div>
           <p className="text-gray-500 font-medium">Belum ada tugas</p>
@@ -275,7 +275,7 @@ export default function TimelineManager() {
             const completedInMonth = monthTasks.filter(t => t.isCompleted).length;
             
             return (
-              <div key={month} className="bg-white rounded-md border border-[#E8E0D4] overflow-hidden">
+              <div key={month} className="bg-white rounded-md border border-white/60 overflow-hidden">
                 {/* Month Header */}
                 <div className={`px-5 py-3 border-b border-[#E8E0D4] ${isCurrentMonth ? 'bg-[#F5F0E8]' : 'bg-[#F5F0E8]/50'}`}>
                   <div className="flex items-center justify-between">
@@ -358,7 +358,7 @@ export default function TimelineManager() {
                             {!taskIsDefault && (
                               <button
                                 onClick={() => handleDelete(taskId, taskTitle)}
-                                className="flex-shrink-0 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                className="flex-shrink-0 p-2 hover:bg-red-50 rounded-xl transition-colors"
                                 title="Hapus tugas"
                               >
                                 <Trash2 size={16} className="text-red-600" />
@@ -389,7 +389,7 @@ export default function TimelineManager() {
 
       {/* Inline Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg p-6 border border-[#E8E0D4] shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 border border-white/60 shadow-sm space-y-5">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-heading text-lg font-semibold text-gray-800">
               ✨ Tambah Tugas Baru
@@ -397,7 +397,7 @@ export default function TimelineManager() {
             <button
               type="button"
               onClick={resetForm}
-              className="p-2 hover:bg-[#F5F0E8] rounded-lg transition-colors"
+              className="p-2 hover:bg-[#F5F0E8] rounded-xl transition-colors"
             >
               <X size={20} className="text-gray-500" />
             </button>
@@ -413,7 +413,7 @@ export default function TimelineManager() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Contoh: Booking fotografer"
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
                 required
               />
             </div>
@@ -423,7 +423,7 @@ export default function TimelineManager() {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as TaskCategory)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 {TASK_CATEGORIES.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -436,7 +436,7 @@ export default function TimelineManager() {
               <select
                 value={monthsBefore}
                 onChange={(e) => setMonthsBefore(e.target.value)}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7]"
               >
                 <option value="12">12 Bulan</option>
                 <option value="9">9 Bulan</option>
@@ -475,7 +475,7 @@ export default function TimelineManager() {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Deskripsi tugas..."
                 rows={2}
-                className="w-full px-4 py-2.5 border border-[#E8E0D4] rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
+                className="w-full px-4 py-2.5 border border-white/60 rounded-md focus:ring-2 focus:ring-[#87A878]/30 focus:border-[#87A878] outline-none bg-[#FDFBF7] resize-none"
               />
             </div>
           </div>

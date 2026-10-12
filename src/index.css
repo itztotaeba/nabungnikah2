@@ -1,38 +1,110 @@
 @import "tailwindcss";
 
-/* Animation for bottom sheet */
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+/* ==========================================================================
+   iOS "Liquid Glass" design system — Nabung Nikah 2.0
+   Palet warna tetap: sage #2F6A43, sage muda #87A878, rose #B76E79,
+   gold #D4A843, krem #FAF8F4/#FDFBF7. Yang berubah: material & bentuk.
+   ========================================================================== */
+
+@theme {
+  --font-heading: "SF Pro Display", "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --radius-xl: 1rem;      /* kartu glass */
+  --radius-2xl: 1.25rem;  /* panel besar */
 }
 
-.animate-slide-up {
-  animation: slideUp 0.3s ease-out forwards;
+html, body {
+  font-family: var(--font-heading);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em; /* tracking khas SF Pro */
 }
+
+/* --- Latar belakang "wallpaper" lembut agar efek kaca terlihat --- */
+.app-glass-backdrop {
+  background-color: #f3efe7;
+  background-image:
+    radial-gradient(52rem 30rem at 12% -8%, rgba(135, 168, 120, 0.30), transparent 60%),
+    radial-gradient(44rem 28rem at 95% 8%, rgba(212, 168, 67, 0.20), transparent 60%),
+    radial-gradient(48rem 34rem at 30% 105%, rgba(183, 110, 121, 0.16), transparent 60%),
+    linear-gradient(180deg, #faf8f4 0%, #f5f0e8 100%);
+  background-attachment: fixed;
+}
+
+/* --- Material Liquid Glass (dipakai lewat utility class di bawah) --- */
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.12),
+    0 1px 2px rgba(26, 46, 35, 0.04),
+    0 12px 32px -12px rgba(26, 46, 35, 0.14);
+}
+
+@utility glass-panel {
+  background: rgba(253, 251, 247, 0.72);
+  -webkit-backdrop-filter: blur(34px) saturate(170%);
+  backdrop-filter: blur(34px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.8),
+    0 24px 64px -24px rgba(26, 46, 35, 0.28);
+}
+
+@utility glass-bar {
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(26, 46, 35, 0.06);
+}
+
+/* Tombol primer: pil glossy ala iOS (highlight specular + inner shadow) */
+@utility glass-btn-primary {
+  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 45%), #2F6A43;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 6px 16px -6px rgba(47, 106, 67, 0.55);
+}
+
+/* Fallback Safari lama / GPU rendah: kaca pekat tanpa blur */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-card { background: rgba(255, 255, 255, 0.92); }
+  .glass-panel { background: rgba(253, 251, 247, 0.96); }
+  .glass-bar { background: rgba(255, 255, 255, 0.92); }
+}
+
+/* Interaksi halus khas iOS */
+button, a, input, select, textarea {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  transition-duration: 0.2s;
+}
+button:active:not(:disabled) { transform: scale(0.97); }
+
+::selection { background: rgba(47, 106, 67, 0.18); }
+
+/* Scrollbar tipis transparan */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(26, 46, 35, 0.14); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(26, 46, 35, 0.24); }
+
+/* Animation for bottom sheet */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
 
 /* Animasi detak jantung untuk watermark "Made With Love" */
 @keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  14% {
-    transform: scale(1.25);
-  }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.25);
-  }
-  70% {
-    transform: scale(1);
-  }
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.25); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.25); }
+  70% { transform: scale(1); }
 }
-
-.animate-heartbeat {
-  animation: heartbeat 1.6s ease-in-out infinite;
-}
+.animate-heartbeat { animation: heartbeat 1.6s ease-in-out infinite; }

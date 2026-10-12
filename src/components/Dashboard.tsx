@@ -132,7 +132,7 @@ export default function Dashboard() {
       </div>
 
       {/* Welcome Message */}
-      <div className="bg-white rounded-lg p-8 border border-[#D6E5DC] text-center">
+      <div className="bg-white rounded-xl p-8 border border-[#D6E5DC] text-center">
         <div className="w-20 h-20 mx-auto mb-4">
           <img 
             src="https://is3.cloudhost.id/totaeba/mahesaira.jpg" 
@@ -147,7 +147,7 @@ export default function Dashboard() {
 
       {/* Countdown Section - Always show if weddingDate is set */}
       {safeSettings.weddingDate && (
-        <div className="bg-[#2F6A43] rounded-lg p-6 text-white shadow-sm">
+        <div className="bg-[#2F6A43] rounded-xl p-6 text-white shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Clock size={24} />
@@ -181,7 +181,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total Realisasi */}
-        <div className="bg-white rounded-md p-5 border border-[#E8E0D4] transition-shadow">
+        <div className="bg-white rounded-md p-5 border border-white/60 transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[13px] text-gray-500 font-medium">Total Realisasi</p>
@@ -197,7 +197,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total Tabungan */}
-        <div className="bg-white rounded-md p-5 border border-[#E8E0D4] transition-shadow">
+        <div className="bg-white rounded-md p-5 border border-white/60 transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[13px] text-gray-500 font-medium">Total Tabungan</p>
@@ -255,7 +255,7 @@ export default function Dashboard() {
         </div>
 
         {/* Total Tamu */}
-        <div className="bg-white rounded-md p-5 border border-[#E8E0D4] transition-shadow">
+        <div className="bg-white rounded-md p-5 border border-white/60 transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-[13px] text-gray-500 font-medium">Total Tamu</p>
@@ -351,7 +351,7 @@ export default function Dashboard() {
 
       {/* Task Assignment Summary */}
       {safeTasks.length > 0 && (
-        <div className="bg-white rounded-md p-6 border border-[#E8E0D4]">
+        <div className="bg-white rounded-md p-6 border border-white/60">
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 size={20} className="text-[#87A878]" />
             <h3 className="font-heading text-lg font-semibold text-gray-800">Pembagian Tugas</h3>
@@ -362,9 +362,9 @@ export default function Dashboard() {
               const percentage = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0;
               
               return (
-                <div key={assigneeType} className="rounded-lg p-4 border border-gray-100">
+                <div key={assigneeType} className="rounded-xl p-4 border border-gray-100">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                       assigneeType === 'Pria' ? 'bg-blue-100' :
                       assigneeType === 'Wanita' ? 'bg-pink-100' : 'bg-purple-100'
                     }`}>

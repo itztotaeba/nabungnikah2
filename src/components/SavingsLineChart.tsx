@@ -15,7 +15,7 @@ interface CustomTooltipProps {
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-200">
         <p className="text-sm font-semibold text-gray-800">{label}</p>
         <p className="text-sm text-gray-600">{formatCurrency(payload[0].value)}</p>
       </div>
