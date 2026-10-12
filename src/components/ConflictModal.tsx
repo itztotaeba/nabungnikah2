@@ -40,8 +40,8 @@ export default function ConflictModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-sm w-full max-w-md animate-scale-in">
+    <div className="fixed inset-0 lg-backdrop z-50 flex items-center justify-center p-4">
+      <div className="lg-glass w-full max-w-md animate-scale-in rounded-[1.75rem]">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">

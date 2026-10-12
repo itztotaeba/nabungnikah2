@@ -49,12 +49,12 @@ export default function VendorDetailModal({ vendor, onClose, onEdit }: VendorDet
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="lg-backdrop absolute inset-0" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] bg-white rounded-t-lg sm:rounded-lg shadow-sm flex flex-col overflow-hidden">
+      <div className="relative w-full sm:max-w-lg max-h-[92vh] lg-sheet sm:lg-glass sm:rounded-[1.75rem] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E8E0D4] bg-[#FDFBF7]">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/50">
           <button
             onClick={onClose}
             aria-label="Kembali"

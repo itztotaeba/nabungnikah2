@@ -80,10 +80,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-sm w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-scale-in">
+    <div className="fixed inset-0 lg-backdrop z-50 flex items-center justify-center p-4">
+      <div className="lg-glass w-full max-w-md max-h-[90vh] overflow-y-auto relative animate-scale-in rounded-[1.75rem]">
         {/* Header dengan tombol close */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-lg z-10">
+        <div className="sticky top-0 lg-glass border-b border-white/50 px-6 py-4 rounded-t-[1.75rem] z-10">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-heading font-semibold text-gray-900">
               {isLogin ? 'Masuk' : 'Daftar'}

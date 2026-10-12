@@ -103,9 +103,9 @@ export default function App() {
 
   return (
     <SupabaseSyncProvider>
-    <div className="min-h-screen bg-[#FAF8F4] flex">
+    <div className="lg-root min-h-screen flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 bg-[#FBFAF7] border-r border-[#E8E0D4] z-40">
+      <aside className="lg-glass hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 border-r z-40">
         <div className="px-4 py-4">
           <div className="flex items-center gap-2.5">
             <img
@@ -151,10 +151,10 @@ export default function App() {
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="lg-backdrop absolute inset-0"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 bg-[#FBFAF7] border-r border-[#E8E0D4] flex flex-col">
+          <aside className="lg-glass lg-drawer absolute left-0 top-0 h-full w-64 border-r flex flex-col">
             <div className="px-4 py-4 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <img
@@ -201,7 +201,7 @@ export default function App() {
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-sm border-b border-[#E8E0D4]">
+        <header className="lg-header sticky top-0 z-30 border-b">
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             <div className="flex items-center gap-3">
               <button
