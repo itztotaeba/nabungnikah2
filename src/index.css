@@ -305,6 +305,42 @@ div.fixed.inset-0[class*="bg-black"] {
   }
 }
 
+/* ---------- Desktop layout "full-bleed liquid glass" ----------
+   White space kanan-kiri dipangkas: konten melebar mengisi layar,
+   sidebar & header menjadi panel kaca mengambang (floating pill). */
+@media (min-width: 1024px) {
+  /* Sidebar: panel kaca utuh melayang dari semua tepi */
+  aside.lg-glass:not(.lg-drawer) {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 12px 40px rgba(18, 18, 24, 0.10),
+      0 2px 8px rgba(18, 18, 24, 0.05);
+  }
+
+  /* Header: floating pill — membulat penuh, melayang di bawah tepi atas */
+  .lg-header {
+    border-radius: 9999px !important;
+    border-width: 1px;
+    background: rgba(255, 255, 255, 0.58) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 8px 28px rgba(18, 18, 24, 0.08);
+  }
+}
+
+/* Dashboard: manfaatkan lebar layar ekstra → grid lebih banyak kolom */
+@media (min-width: 1440px) {
+  main .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1760px) {
+  main .grid.grid-cols-1.sm\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
 /* ---------- Bottom nav mobile: ikon melayang, tanpa panel kaca ----------
    Bar sepenuhnya transparan (tanpa background & blur) — hanya ikon/label
    yang berbentuk kapsul liquid glass murni. */
