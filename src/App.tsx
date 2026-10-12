@@ -103,15 +103,15 @@ export default function App() {
 
   return (
     <SupabaseSyncProvider>
-    <div className="lg-root min-h-screen flex">
-      {/* Desktop Sidebar */}
-      <aside className="lg-glass hidden lg:flex flex-col fixed left-0 top-0 h-full w-60 border-r z-40">
+    <div className="lg-root lg-shell min-h-screen flex">
+      {/* Desktop Sidebar — floating liquid glass panel, melayang dari tepi layar */}
+      <aside className="lg-glass hidden lg:flex flex-col fixed left-4 top-4 bottom-4 w-60 rounded-[2rem] border z-40">
         <div className="px-4 py-4">
           <div className="flex items-center gap-2.5">
             <img
               src={LOGO_URL}
               alt="Logo Mahes & Aira"
-              className="w-8 h-8 rounded-md object-cover border border-[#E8E0D4]"
+              className="w-9 h-9 rounded-xl object-cover border border-white/60 shadow-sm"
             />
             <div className="min-w-0">
               <h1 className="font-heading text-sm font-semibold text-gray-800 truncate">Mahes & Aira</h1>
@@ -120,7 +120,7 @@ export default function App() {
           </div>
         </div>
 
-        <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-2.5 py-2 space-y-0.5 overflow-y-auto">
           <p className="px-2 pt-2 pb-1 text-[11px] font-medium text-gray-400">Ruang Kerja</p>
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -129,7 +129,7 @@ export default function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm transition-colors ${
+                className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-sm transition-colors ${
                   isActive
                     ? 'bg-[#2F6A43]/10 text-[#1E4A2E] font-medium'
                     : 'text-gray-600 hover:bg-[#F3EFE6] hover:text-gray-800'
@@ -200,8 +200,8 @@ export default function App() {
       )}
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen">
-        <header className="lg-header sticky top-0 z-30 border-b">
+      <div className="flex-1 lg:ml-[17.5rem] lg:mr-4 flex flex-col min-h-screen">
+        <header className="lg-header sticky top-0 lg:top-4 z-30 border-b lg:border lg:rounded-[1.75rem] mx-2 sm:mx-4 lg:mx-0">
           <div className="flex items-center justify-between px-4 sm:px-6 h-16">
             <div className="flex items-center gap-3">
               <button
@@ -272,8 +272,10 @@ export default function App() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 sm:px-8 py-6 pb-24 lg:pb-8">
-          <div className="max-w-5xl mx-auto">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 pb-24 lg:pb-8">
+          {/* Desktop: konten melebar mengisi ruang (white space kanan-kiri dipangkas),
+              batas maksimum dilebarkan agar 6 kartu stats muat satu baris rapi */}
+          <div className="max-w-5xl mx-auto lg:max-w-[min(100%,120rem)] w-full">
             {renderContent()}
           </div>
         </main>
