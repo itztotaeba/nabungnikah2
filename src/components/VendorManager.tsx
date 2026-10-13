@@ -34,7 +34,11 @@ const VENDOR_CATEGORIES: VendorCategory[] = ['WO', 'Katering', 'Venue', 'MUA', '
 const CONTRACT_STATUSES: ContractStatus[] = ['Belum Kontrak', 'Sudah DP', 'Lunas'];
 
 export default function VendorManager() {
-  const { settings, vendors, addVendor, updateVendor, deleteVendor } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const vendors = useWeddingStore((s) => s.vendors);
+  const addVendor = useWeddingStore((s) => s.addVendor);
+  const updateVendor = useWeddingStore((s) => s.updateVendor);
+  const deleteVendor = useWeddingStore((s) => s.deleteVendor);
   const { addToast } = useToastStore();
 
   const [showForm, setShowForm] = useState(false);

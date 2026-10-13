@@ -2,15 +2,25 @@ import { useState, useRef } from 'react';
 import { useWeddingStore } from '../store';
 import { useAuthStore } from '../authStore';
 import { calculateRemainingMonths, formatRemainingTime, formatCurrency, calculateTotalBudget, calculateTotalSavings } from '../helpers';
-import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
 import { Calendar, HardDrive, AlertTriangle, CheckCircle2, Download, Upload, FileSpreadsheet, Users } from 'lucide-react';
 import CloudSyncSection from './CloudSyncSection';
 import CollaborationSection from './CollaborationSection';
 import AvatarUpload from './AvatarUpload';
 
+// xlsx dimuat on-demand (dynamic import) agar bundle awal tidak ikut membawa library Excel
+const loadExcelGenerator = () => import('../helpers/excelGenerator');
+
 export default function SettingsPage() {
-  const { settings, updateSettings, resetData, importData, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const updateSettings = useWeddingStore((s) => s.updateSettings);
+  const resetData = useWeddingStore((s) => s.resetData);
+  const importData = useWeddingStore((s) => s.importData);
+  const budgetItems = useWeddingStore((s) => s.budgetItems);
+  const savings = useWeddingStore((s) => s.savings);
+  const guests = useWeddingStore((s) => s.guests);
+  const vendors = useWeddingStore((s) => s.vendors);
+  const tasks = useWeddingStore((s) => s.tasks);
   const { user } = useAuthStore();
   const { addToast } = useToastStore();
   
@@ -81,12 +91,13 @@ export default function SettingsPage() {
   // ============================================
   // EXPORT EXCEL
   // ============================================
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     try {
       if (budgetItems.length === 0 && guests.length === 0 && vendors.length === 0 && tasks.length === 0) {
         addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
+      const { exportToExcel } = await loadExcelGenerator();
       exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks });
       addToast('File Excel berhasil didownload!', 'success');
     } catch (error) {

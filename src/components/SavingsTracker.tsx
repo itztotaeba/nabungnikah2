@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useWeddingStore } from '../store';
 import {
   formatCurrency,
@@ -16,7 +16,11 @@ import { Plus, Trash2, PiggyBank, Target, TrendingUp, Calendar, X } from 'lucide
 const SAVINGS_SOURCES = ['Gaji', 'Bonus', 'Hadiah', 'Tabungan Lama', 'Lainnya'];
 
 export default function SavingsTracker() {
-  const { settings, savings, budgetItems, addSavings, deleteSavings } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const savings = useWeddingStore((s) => s.savings);
+  const budgetItems = useWeddingStore((s) => s.budgetItems);
+  const addSavings = useWeddingStore((s) => s.addSavings);
+  const deleteSavings = useWeddingStore((s) => s.deleteSavings);
   const { addToast } = useToastStore();
   
   const [showForm, setShowForm] = useState(false);
@@ -27,13 +31,16 @@ export default function SavingsTracker() {
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
 
-  // Calculations from helpers
-  const totalSavings = calculateTotalSavings(savings);
-  const totalBudget = calculateTotalBudget(budgetItems);
-  const fundingGap = calculateFundingGap(totalBudget, totalSavings);
-  const remainingMonths = calculateRemainingMonths(settings.weddingDate);
-  const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
-  const progress = calculateProgressPercentage(totalSavings, totalBudget);
+  // Calculations from helpers (memoized agar tidak dihitung ulang tiap render)
+  const { totalSavings, totalBudget, fundingGap, remainingMonths, monthlyTarget, progress } = useMemo(() => {
+    const totalSavings = calculateTotalSavings(savings);
+    const totalBudget = calculateTotalBudget(budgetItems);
+    const fundingGap = calculateFundingGap(totalBudget, totalSavings);
+    const remainingMonths = calculateRemainingMonths(settings.weddingDate);
+    const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
+    const progress = calculateProgressPercentage(totalSavings, totalBudget);
+    return { totalSavings, totalBudget, fundingGap, remainingMonths, monthlyTarget, progress };
+  }, [savings, budgetItems, settings]);
 
   const resetForm = () => {
     setDate(new Date().toISOString().split('T')[0]);

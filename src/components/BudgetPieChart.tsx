@@ -1,6 +1,7 @@
 'use client';
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useMemo } from 'react';
 import { useWeddingStore } from '../store';
 import { formatCurrency } from '../helpers';
 
@@ -26,18 +27,23 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 };
 
 export default function BudgetPieChart() {
-  const { budgetItems, settings } = useWeddingStore();
+  const budgetItems = useWeddingStore((s) => s.budgetItems);
+  const settings = useWeddingStore((s) => s.settings);
 
-  // Kelompokkan berdasarkan category dan jumlahkan estimatedCost
-  const categoryData = budgetItems.reduce((acc, item) => {
-    const existing = acc.find((d) => d.name === item.category);
-    if (existing) {
-      existing.value += item.estimatedCost;
-    } else {
-      acc.push({ name: item.category, value: item.estimatedCost });
-    }
-    return acc;
-  }, [] as { name: string; value: number }[]);
+  // Kelompokkan berdasarkan category dan jumlahkan estimatedCost (memoized)
+  const categoryData = useMemo(
+    () =>
+      budgetItems.reduce((acc, item) => {
+        const existing = acc.find((d) => d.name === item.category);
+        if (existing) {
+          existing.value += item.estimatedCost;
+        } else {
+          acc.push({ name: item.category, value: item.estimatedCost });
+        }
+        return acc;
+      }, [] as { name: string; value: number }[]),
+    [budgetItems]
+  );
 
   if (categoryData.length === 0) {
     return (

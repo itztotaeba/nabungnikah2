@@ -53,7 +53,11 @@ const assigneeIcon = (assignee: TaskAssignee) => {
 };
 
 export default function TimelineManager() {
-  const { settings, tasks: rawTasks, addTask, toggleTask, deleteTask } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const rawTasks = useWeddingStore((s) => s.tasks);
+  const addTask = useWeddingStore((s) => s.addTask);
+  const toggleTask = useWeddingStore((s) => s.toggleTask);
+  const deleteTask = useWeddingStore((s) => s.deleteTask);
   const { addToast } = useToastStore();
 
   // Safe data access dengan fallback

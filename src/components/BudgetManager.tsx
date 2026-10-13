@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useWeddingStore } from '../store';
 import { formatCurrency, calculateTotalBudget, calculateTotalActual, calculateItemStatus } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
-import { generateBudgetPDF } from '../helpers/pdfGenerator';
 import { useToastStore } from '../toastStore';
 import { Plus, Pencil, Trash2, Receipt, TrendingUp, Minus, X, FileText } from 'lucide-react';
+
+// jsPDF dimuat on-demand (dynamic import) agar bundle awal tidak ikut membawa jspdf
+const loadPdfGenerator = () => import('../helpers/pdfGenerator');
 
 const BUDGET_CATEGORIES = [
   'Katering',
@@ -20,7 +22,11 @@ const BUDGET_CATEGORIES = [
 ];
 
 export default function BudgetManager() {
-  const { settings, budgetItems, addBudgetItem, updateBudgetItem, deleteBudgetItem } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const budgetItems = useWeddingStore((s) => s.budgetItems);
+  const addBudgetItem = useWeddingStore((s) => s.addBudgetItem);
+  const updateBudgetItem = useWeddingStore((s) => s.updateBudgetItem);
+  const deleteBudgetItem = useWeddingStore((s) => s.deleteBudgetItem);
   const { addToast } = useToastStore();
   
   const [showForm, setShowForm] = useState(false);
@@ -33,8 +39,13 @@ export default function BudgetManager() {
   const [actualCost, setActualCost] = useState('');
 
   // Calculations from helpers
-  const totalBudget = calculateTotalBudget(budgetItems);
-  const totalActual = calculateTotalActual(budgetItems);
+  const { totalBudget, totalActual } = useMemo(
+    () => ({
+      totalBudget: calculateTotalBudget(budgetItems),
+      totalActual: calculateTotalActual(budgetItems),
+    }),
+    [budgetItems]
+  );
   const totalDifference = totalBudget - totalActual;
 
   const resetForm = () => {
@@ -119,13 +130,14 @@ export default function BudgetManager() {
     }
   };
 
-  // Handle Export PDF
-  const handleExportPDF = () => {
+  // Handle Export PDF (jsPDF dimuat on-demand)
+  const handleExportPDF = async () => {
     try {
       if (budgetItems.length === 0) {
         addToast('Data anggaran masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
+      const { generateBudgetPDF } = await loadPdfGenerator();
       generateBudgetPDF(budgetItems, settings);
       addToast('PDF berhasil dibuat!', 'success');
     } catch (error) {

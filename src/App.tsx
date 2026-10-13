@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, ListTodo, Menu, X, LogIn, LogOut, type LucideIcon } from 'lucide-react';
-import Dashboard from './components/Dashboard';
-import BudgetManager from './components/BudgetManager';
-import SavingsTracker from './components/SavingsTracker';
-import GuestManager from './components/GuestManager';
-import VendorManager from './components/VendorManager';
-import TimelineManager from './components/TimelineManager';
-import SettingsPage from './components/Settings';
+// Lazy-load tab halaman agar bundle awal lebih kecil — hanya tab aktif yang di-download saat dibutuhkan
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const BudgetManager = lazy(() => import('./components/BudgetManager'));
+const SavingsTracker = lazy(() => import('./components/SavingsTracker'));
+const GuestManager = lazy(() => import('./components/GuestManager'));
+const VendorManager = lazy(() => import('./components/VendorManager'));
+const TimelineManager = lazy(() => import('./components/TimelineManager'));
+const SettingsPage = lazy(() => import('./components/Settings'));
 import ToastContainer from './components/ToastContainer';
 import LiveSyncIndicator from './components/LiveSyncIndicator';
 import LoadingOverlay from './components/LoadingOverlay';
@@ -100,6 +101,21 @@ export default function App() {
       default: return <Dashboard />;
     }
   };
+
+  // Bungkus dengan Suspense agar halaman lazy bisa di-resolve saat chunk dimuat
+  const content = (
+    <Suspense
+      fallback={
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 w-1/3 rounded-md bg-[#E8F0EA]" />
+          <div className="h-40 rounded-lg bg-[#EEF4EF]" />
+          <div className="h-40 rounded-lg bg-[#EEF4EF]" />
+        </div>
+      }
+    >
+      {renderContent()}
+    </Suspense>
+  );
 
   return (
     <SupabaseSyncProvider>
@@ -276,7 +292,7 @@ export default function App() {
           {/* Desktop: konten melebar mengisi ruang (white space kanan-kiri dipangkas),
               batas maksimum dilebarkan agar 6 kartu stats muat satu baris rapi */}
           <div className="max-w-5xl mx-auto lg:max-w-[min(100%,120rem)] w-full">
-            {renderContent()}
+            {content}
           </div>
         </main>
 
