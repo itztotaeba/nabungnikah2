@@ -13,8 +13,6 @@ import {
   formatRemainingTime,
   calculateTotalActual,
 } from '../helpers';
-import { generateFullReport } from '../helpers/pdfGenerator';
-import { exportToExcel } from '../helpers/excelGenerator';
 import { useToastStore } from '../toastStore';
 import { Calendar, TrendingUp, Wallet, Target, Users, FileText, FileSpreadsheet, User, CheckCircle2, AlertTriangle } from 'lucide-react';
 import BudgetPieChart from './BudgetPieChart';
@@ -22,8 +20,18 @@ import SavingsLineChart from './SavingsLineChart';
 import DeadlineCalendar from './DeadlineCalendar';
 import EmergencyBufferAlert from './EmergencyBufferAlert';
 
+// Helper export dibuat lazy (dynamic import) karena menarik bundle jspdf & xlsx
+// yang besar — hanya dimuat saat user benar-benar menekan tombol Export.
+const loadPdfGenerator = () => import('../helpers/pdfGenerator');
+const loadExcelGenerator = () => import('../helpers/excelGenerator');
+
 export default function Dashboard() {
-  const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const budgetItems = useWeddingStore((s) => s.budgetItems);
+  const savings = useWeddingStore((s) => s.savings);
+  const guests = useWeddingStore((s) => s.guests);
+  const vendors = useWeddingStore((s) => s.vendors);
+  const tasks = useWeddingStore((s) => s.tasks);
   const { addToast } = useToastStore();
 
   // Safe data access dengan fallback
@@ -34,15 +42,19 @@ export default function Dashboard() {
   const safeVendors = Array.isArray(vendors) ? vendors : [];
   const safeTasks = Array.isArray(tasks) ? tasks : [];
 
-  // Semua perhitungan menggunakan helper functions
-  const totalBudget = calculateTotalBudget(safeBudgetItems);
-  const totalActual = calculateTotalActual(safeBudgetItems);
-  const totalSavings = calculateTotalSavings(safeSavings);
-  const fundingGap = calculateFundingGap(totalBudget, totalSavings);
-  const remainingMonths = calculateRemainingMonths(safeSettings.weddingDate);
-  const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
-  const progress = calculateProgressPercentage(totalSavings, totalBudget);
-  const totalGuests = safeGuests.reduce((sum, g) => sum + (g.pax || 0), 0);
+  // Semua perhitungan menggunakan helper functions (memoized agar tidak dihitung ulang tiap render)
+  const totals = useMemo(() => {
+    const totalBudget = calculateTotalBudget(safeBudgetItems);
+    const totalActual = calculateTotalActual(safeBudgetItems);
+    const totalSavings = calculateTotalSavings(safeSavings);
+    const fundingGap = calculateFundingGap(totalBudget, totalSavings);
+    const remainingMonths = calculateRemainingMonths(safeSettings.weddingDate);
+    const monthlyTarget = calculateMonthlyTarget(fundingGap, remainingMonths);
+    const progress = calculateProgressPercentage(totalSavings, totalBudget);
+    const totalGuests = safeGuests.reduce((sum, g) => sum + (g.pax || 0), 0);
+    return { totalBudget, totalActual, totalSavings, fundingGap, remainingMonths, monthlyTarget, progress, totalGuests };
+  }, [safeBudgetItems, safeSavings, safeSettings, safeGuests]);
+  const { totalBudget, totalActual, totalSavings, fundingGap, remainingMonths, monthlyTarget, progress, totalGuests } = totals;
 
   // Task assignment statistics
   const taskStats = useMemo(() => {
@@ -74,13 +86,14 @@ export default function Dashboard() {
       })
     : null;
 
-  // Handle Export PDF
-  const handleExportPDF = () => {
+  // Handle Export PDF (jspdf dimuat on-demand via dynamic import)
+  const handleExportPDF = async () => {
     try {
       if (safeBudgetItems.length === 0 && safeGuests.length === 0) {
         addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
+      const { generateFullReport } = await loadPdfGenerator();
       generateFullReport(safeBudgetItems, safeGuests, safeSettings);
       addToast('PDF berhasil dibuat!', 'success');
     } catch (error) {
@@ -89,13 +102,14 @@ export default function Dashboard() {
     }
   };
 
-  // Handle Export Excel
-  const handleExportExcel = () => {
+  // Handle Export Excel (xlsx dimuat on-demand via dynamic import)
+  const handleExportExcel = async () => {
     try {
       if (safeBudgetItems.length === 0 && safeGuests.length === 0 && safeVendors.length === 0 && safeTasks.length === 0) {
         addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
+      const { exportToExcel } = await loadExcelGenerator();
       exportToExcel({ 
         settings: safeSettings, 
         budgetItems: safeBudgetItems, 

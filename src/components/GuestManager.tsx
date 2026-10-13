@@ -51,7 +51,11 @@ const rsvpBadge = (status: string) => {
 };
 
 export default function GuestManager() {
-  const { settings, guests, addGuest, updateGuest, deleteGuest } = useWeddingStore();
+  const settings = useWeddingStore((s) => s.settings);
+  const guests = useWeddingStore((s) => s.guests);
+  const addGuest = useWeddingStore((s) => s.addGuest);
+  const updateGuest = useWeddingStore((s) => s.updateGuest);
+  const deleteGuest = useWeddingStore((s) => s.deleteGuest);
   const { addToast } = useToastStore();
 
   const [showForm, setShowForm] = useState(false);
