@@ -97,15 +97,15 @@ export default function SavingsTracker() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Total Savings */}
-        <div className="bg-[#2F6A43] hover:bg-[#1E4A2E] rounded-md p-5 text-white shadow-sm">
+        {/* Total Savings — kartu kaca netral, konsisten dengan kartu lainnya */}
+        <div className="bg-white rounded-md p-5 border border-[#E8E0D4]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-md flex items-center justify-center">
-              <PiggyBank size={20} />
+            <div className="w-10 h-10 bg-[#2F6A43]/10 rounded-md flex items-center justify-center">
+              <PiggyBank size={20} className="text-[#2F6A43]" />
             </div>
             <div>
-              <p className="text-xs opacity-90 uppercase">Total Tabungan</p>
-              <p className="text-xl font-bold">{formatCurrency(totalSavings, settings.currency)}</p>
+              <p className="text-[13px] text-gray-500">Total Tabungan</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(totalSavings, settings.currency)}</p>
             </div>
           </div>
         </div>
