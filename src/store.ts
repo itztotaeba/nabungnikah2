@@ -12,6 +12,7 @@ import { calculateItemStatus, generateId, getDefaultSettings } from './helpers';
 import { getAuditMetadata } from './helpers/auditTrail';
 import { AppState } from './types';
 import { defaultTasks } from './data/defaultTasks';
+import type { SeserahanItem } from './types/seserahan';
 
 // Re-export types for convenience
 export type { 
@@ -27,6 +28,8 @@ export type {
   Task,
   TaskCategory,
   TaskAssignee,
+  SeserahanItem,
+  SeserahanCategory,
   AppState 
 } from './types';
 
@@ -45,6 +48,7 @@ const initialState = {
     id: generateId(),
     isCompleted: false,
   })),
+  seserahanItems: [],
 };
 
 // ============================================
@@ -225,6 +229,47 @@ export const useWeddingStore = create<AppState>()(
           tasks: state.tasks.filter((task) => task.id !== id),
         })),
 
+      // ---- Seserahan Items ----
+      addSeserahanItem: (item) =>
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            seserahanItems: [
+              ...state.seserahanItems,
+              {
+                ...item,
+                id: generateId(),
+                ...audit,
+              },
+            ],
+          };
+        }),
+
+      updateSeserahanItem: (id, updates) =>
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            seserahanItems: state.seserahanItems.map((item) =>
+              item.id === id ? { ...item, ...updates, ...audit } : item
+            ),
+          };
+        }),
+
+      deleteSeserahanItem: (id) =>
+        set((state) => ({
+          seserahanItems: state.seserahanItems.filter((item) => item.id !== id),
+        })),
+
+      toggleSeserahanBought: (id) =>
+        set((state) => {
+          const audit = getAuditMetadata();
+          return {
+            seserahanItems: state.seserahanItems.map((item) =>
+              item.id === id ? { ...item, isBought: !item.isBought, ...audit } : item
+            ),
+          };
+        }),
+
       // ---- Reset ----
       resetData: () => set({ ...initialState }),
 
@@ -241,6 +286,7 @@ export const useWeddingStore = create<AppState>()(
           const safeGuests = Array.isArray(data.guests) ? data.guests : [];
           const safeVendors = Array.isArray(data.vendors) ? data.vendors : [];
           const safeTasks = Array.isArray(data.tasks) ? data.tasks : [];
+          const safeSeserahanItems = Array.isArray(data.seserahanItems) ? data.seserahanItems : [];
 
           set({
             settings: safeSettings,
@@ -249,6 +295,7 @@ export const useWeddingStore = create<AppState>()(
             guests: safeGuests,
             vendors: safeVendors,
             tasks: safeTasks,
+            seserahanItems: safeSeserahanItems,
           });
         } catch (error) {
           console.error('❌ Import data error:', error);
@@ -266,6 +313,7 @@ export const useWeddingStore = create<AppState>()(
         guests: state.guests,
         vendors: state.vendors,
         tasks: state.tasks,
+        seserahanItems: state.seserahanItems,
       }),
       // Safe hydration: handle corrupted LocalStorage data
       onRehydrateStorage: () => {

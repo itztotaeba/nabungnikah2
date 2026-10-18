@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import { WeddingSettings, BudgetItem, SavingsEntry, Guest, Vendor, Task } from '../types';
+import { WeddingSettings, BudgetItem, SavingsEntry, Guest, Vendor, Task, SeserahanItem } from '../types';
 
 interface AppData {
   settings: WeddingSettings;
@@ -8,6 +8,7 @@ interface AppData {
   guests: Guest[];
   vendors: Vendor[];
   tasks: Task[];
+  seserahanItems?: SeserahanItem[];
 }
 
 /**
@@ -16,7 +17,7 @@ interface AppData {
  */
 export function exportToExcel(data: AppData): void {
   try {
-    const { settings, budgetItems, savings, guests, vendors, tasks } = data;
+    const { settings, budgetItems, savings, guests, vendors, tasks, seserahanItems = [] } = data;
 
     // Create workbook
     const wb = XLSX.utils.book_new();
@@ -45,6 +46,9 @@ export function exportToExcel(data: AppData): void {
       { 'Item': 'Total Vendor', 'Value': totalVendors },
       { 'Item': 'Total Tugas', 'Value': tasks.length },
       { 'Item': 'Tugas Selesai', 'Value': tasks.filter(t => t.isCompleted).length },
+      { 'Item': 'Total Seserahan', 'Value': seserahanItems.length },
+      { 'Item': 'Seserahan Terbeli', 'Value': seserahanItems.filter(i => i.isBought).length },
+      { 'Item': 'Estimasi Biaya Seserahan', 'Value': seserahanItems.reduce((sum, i) => sum + (i.estimatedCost || 0), 0) },
     ];
 
     const wsSummary = XLSX.utils.json_to_sheet(summaryData);
@@ -186,6 +190,35 @@ export function exportToExcel(data: AppData): void {
     ];
 
     XLSX.utils.book_append_sheet(wb, wsTasks, 'Timeline');
+
+    // ============================================
+    // SHEET 7: Seserahan
+    // ============================================
+    const seserahanData = seserahanItems.map(item => ({
+      'Nama Barang': item.title,
+      'Kategori/Baki': item.category,
+      'Brand': item.brand || '-',
+      'Estimasi Biaya': item.estimatedCost,
+      'Status': item.isBought ? 'Sudah Dibeli' : 'Belum Dibeli',
+      'Label': item.label || '-',
+      'Link Belanja': item.link || '-',
+      'Catatan': item.notes || '-',
+    }));
+
+    const wsSeserahan = XLSX.utils.json_to_sheet(seserahanData);
+
+    wsSeserahan['!cols'] = [
+      { wch: 30 }, // Nama Barang
+      { wch: 20 }, // Kategori/Baki
+      { wch: 18 }, // Brand
+      { wch: 18 }, // Estimasi Biaya
+      { wch: 15 }, // Status
+      { wch: 15 }, // Label
+      { wch: 40 }, // Link Belanja
+      { wch: 30 }, // Catatan
+    ];
+
+    XLSX.utils.book_append_sheet(wb, wsSeserahan, 'Seserahan');
 
     // ============================================
     // Download file

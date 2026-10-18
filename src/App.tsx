@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
-import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, ListTodo, Menu, X, LogIn, LogOut, type LucideIcon } from 'lucide-react';
+import { LayoutDashboard, Receipt, PiggyBank, Users, Settings as SettingsIcon, Building2, ListTodo, Gift, Menu, X, LogIn, LogOut, type LucideIcon } from 'lucide-react';
 // Lazy-load tab halaman agar bundle awal lebih kecil — hanya tab aktif yang di-download saat dibutuhkan
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const BudgetManager = lazy(() => import('./components/BudgetManager'));
@@ -7,6 +7,7 @@ const SavingsTracker = lazy(() => import('./components/SavingsTracker'));
 const GuestManager = lazy(() => import('./components/GuestManager'));
 const VendorManager = lazy(() => import('./components/VendorManager'));
 const TimelineManager = lazy(() => import('./components/TimelineManager'));
+const SeserahanManager = lazy(() => import('./components/SeserahanManager'));
 const SettingsPage = lazy(() => import('./components/Settings'));
 import ToastContainer from './components/ToastContainer';
 import LiveSyncIndicator from './components/LiveSyncIndicator';
@@ -25,7 +26,7 @@ import { useBackNavigation } from './hooks/useBackNavigation';
 // Logo foto Mahes & Aira (untuk branding, bukan avatar user)
 const LOGO_URL = "https://is3.cloudhost.id/totaeba/mahesaira.jpg";
 
-type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'timeline' | 'settings';
+type Tab = 'dashboard' | 'budget' | 'savings' | 'guests' | 'vendors' | 'seserahan' | 'timeline' | 'settings';
 
 interface NavItem {
   id: Tab;
@@ -39,6 +40,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'savings', label: 'Tabungan', icon: PiggyBank },
   { id: 'guests', label: 'Tamu', icon: Users },
   { id: 'vendors', label: 'Vendor', icon: Building2 },
+  { id: 'seserahan', label: 'Seserahan', icon: Gift },
   { id: 'timeline', label: 'Timeline', icon: ListTodo },
   { id: 'settings', label: 'Pengaturan', icon: SettingsIcon },
 ];
@@ -96,6 +98,7 @@ export default function App() {
       case 'savings': return <SavingsTracker />;
       case 'guests': return <GuestManager />;
       case 'vendors': return <VendorManager />;
+      case 'seserahan': return <SeserahanManager />;
       case 'timeline': return <TimelineManager />;
       case 'settings': return <SettingsPage />;
       default: return <Dashboard />;

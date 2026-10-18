@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Home, Receipt, Users, Building2, MoreHorizontal, PiggyBank, CalendarDays, Settings, X } from 'lucide-react';
+import { Home, Receipt, Users, Building2, MoreHorizontal, PiggyBank, CalendarDays, Settings, Gift, X } from 'lucide-react';
 
 interface MobileBottomNavProps {
   activeTab: string;
@@ -16,6 +16,7 @@ const mainMenus = [
 ];
 
 const moreMenus = [
+  { id: 'seserahan', name: 'Seserahan', icon: Gift },
   { id: 'savings', name: 'Tabungan', icon: PiggyBank },
   { id: 'timeline', name: 'Timeline', icon: CalendarDays },
   { id: 'settings', name: 'Pengaturan', icon: Settings },

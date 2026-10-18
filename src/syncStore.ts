@@ -67,7 +67,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       lastSyncToCloudTime = Date.now();
       set({ status: 'syncing', isSyncing: true });
       
-      const { settings, budgetItems, savings, guests, vendors, tasks } = useWeddingStore.getState();
+      const { settings, budgetItems, savings, guests, vendors, tasks, seserahanItems } = useWeddingStore.getState();
       
       const now = new Date().toISOString();
       
@@ -80,6 +80,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         guests,
         vendors,
         tasks,
+        seserahan_items: seserahanItems,
         updated_at: now,
       };
 
@@ -165,6 +166,11 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           guests: Array.isArray(data.guests) ? data.guests : [],
           vendors: Array.isArray(data.vendors) ? data.vendors : [],
           tasks: Array.isArray(data.tasks) ? data.tasks : [],
+          // Fallback: jika kolom seserahan_items belum ada di DB (belum migration),
+          // jangan hapus data lokal — pakai data lokal yang ada.
+          seserahanItems: Array.isArray(data.seserahan_items)
+            ? data.seserahan_items
+            : useWeddingStore.getState().seserahanItems,
         });
 
         isSyncingFromCloud = false;
@@ -219,6 +225,7 @@ if (typeof window !== 'undefined') {
         state.guests !== prevState.guests ||
         state.vendors !== prevState.vendors ||
         state.tasks !== prevState.tasks ||
+        state.seserahanItems !== prevState.seserahanItems ||
         state.settings !== prevState.settings;
       
       if (hasDataChanged) {
