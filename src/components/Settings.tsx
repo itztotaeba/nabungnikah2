@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const guests = useWeddingStore((s) => s.guests);
   const vendors = useWeddingStore((s) => s.vendors);
   const tasks = useWeddingStore((s) => s.tasks);
+  const seserahanItems = useWeddingStore((s) => s.seserahanItems);
   const { user } = useAuthStore();
   const { addToast } = useToastStore();
   
@@ -56,12 +57,15 @@ export default function SettingsPage() {
   const handleExport = () => {
     try {
       const exportData = {
-        version: '1.0',
+        version: '1.1',
         exportDate: new Date().toISOString(),
         settings,
         budgetItems,
         savings,
         guests,
+        vendors,
+        tasks,
+        seserahanItems,
       };
 
       const jsonString = JSON.stringify(exportData, null, 2);
@@ -93,12 +97,12 @@ export default function SettingsPage() {
   // ============================================
   const handleExportExcel = async () => {
     try {
-      if (budgetItems.length === 0 && guests.length === 0 && vendors.length === 0 && tasks.length === 0) {
+      if (budgetItems.length === 0 && guests.length === 0 && vendors.length === 0 && tasks.length === 0 && seserahanItems.length === 0) {
         addToast('Data masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
       const { exportToExcel } = await loadExcelGenerator();
-      exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks });
+      exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks, seserahanItems });
       addToast('File Excel berhasil didownload!', 'success');
     } catch (error) {
       console.error('Excel export error:', error);
@@ -149,7 +153,8 @@ export default function SettingsPage() {
 
         // Show confirmation
         const vendorCount = data.vendors ? data.vendors.length : 0;
-        const confirmMessage = `Data saat ini akan diganti dengan data dari file.\n\nFile berisi:\n- ${data.budgetItems.length} item anggaran\n- ${data.savings.length} catatan tabungan\n- ${data.guests.length} tamu${vendorCount > 0 ? `\n- ${vendorCount} vendor` : ''}\n\nLanjutkan?`;
+        const seserahanCount = data.seserahanItems ? data.seserahanItems.length : 0;
+        const confirmMessage = `Data saat ini akan diganti dengan data dari file.\n\nFile berisi:\n- ${data.budgetItems.length} item anggaran\n- ${data.savings.length} catatan tabungan\n- ${data.guests.length} tamu${vendorCount > 0 ? `\n- ${vendorCount} vendor` : ''}${seserahanCount > 0 ? `\n- ${seserahanCount} item seserahan` : ''}\n\nLanjutkan?`;
         
         if (window.confirm(confirmMessage)) {
           importData({
@@ -159,6 +164,7 @@ export default function SettingsPage() {
             guests: data.guests,
             vendors: data.vendors || [],
             tasks: data.tasks || [],
+            seserahanItems: data.seserahanItems || [],
           });
           
           // Update local state

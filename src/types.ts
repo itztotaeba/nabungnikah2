@@ -5,6 +5,11 @@
  * Dipisahkan untuk menghindari circular dependency.
  */
 
+// ---- Fitur Seserahan (type dipisah di types/seserahan.ts) ----
+import type { SeserahanItem } from './types/seserahan';
+
+export type { SeserahanItem, SeserahanCategory } from './types/seserahan';
+
 export interface WeddingSettings {
   weddingDate: string; // ISO String
   currency: string; // default 'IDR'
@@ -107,6 +112,7 @@ export interface AppState {
   guests: Guest[];
   vendors: Vendor[];
   tasks: Task[];
+  seserahanItems: SeserahanItem[];
 
   // Settings Actions
   updateSettings: (settings: Partial<WeddingSettings>) => void;
@@ -135,6 +141,12 @@ export interface AppState {
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
 
+  // Seserahan Actions (fitur daftar seserahan — mengikuti pola Vendor/Task)
+  addSeserahanItem: (item: Omit<SeserahanItem, 'id'>) => void;
+  updateSeserahanItem: (id: string, updates: Partial<SeserahanItem>) => void;
+  deleteSeserahanItem: (id: string) => void;
+  toggleSeserahanBought: (id: string) => void;
+
   // Reset
   resetData: () => void;
 
@@ -146,5 +158,6 @@ export interface AppState {
     guests: Guest[];
     vendors: Vendor[];
     tasks: Task[];
+    seserahanItems?: SeserahanItem[];
   }) => void;
 }
