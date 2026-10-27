@@ -138,7 +138,7 @@ export default function BudgetManager() {
         return;
       }
       const { generateBudgetPDF } = await loadPdfGenerator();
-      generateBudgetPDF(budgetItems, settings);
+      await generateBudgetPDF(budgetItems, settings);
       addToast('PDF berhasil dibuat!', 'success');
     } catch (error) {
       console.error('PDF export error:', error);
