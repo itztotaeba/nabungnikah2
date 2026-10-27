@@ -1,5 +1,6 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+// OPTIMASI BUNDLE (TUGAS 2): jspdf & jspdf-autotable tidak lagi di-import statis.
+// Keduanya dimuat via dynamic import() hanya saat fungsi generate* dipanggil
+// (mis. saat tombol Export diklik), sehingga memkecilkan bundle awal.
 import { BudgetItem, WeddingSettings, Guest } from '../types';
 import { formatCurrency } from '../helpers';
 
@@ -11,7 +12,7 @@ const SAGE_GREEN_LIGHT: [number, number, number] = [168, 196, 154]; // #A8C49A
  * Helper untuk membuat cover page
  */
 function createCoverPage(
-  doc: jsPDF,
+  doc: import('jspdf').default,
   title: string,
   weddingDate: string,
   currency: string
@@ -86,13 +87,17 @@ function createCoverPage(
 /**
  * Generate PDF untuk Laporan Anggaran
  */
-export function generateBudgetPDF(
+export async function generateBudgetPDF(
   items: BudgetItem[],
   settings: WeddingSettings
-): void {
+): Promise<void> {
   if (items.length === 0) {
     throw new Error('Data anggaran kosong');
   }
+
+  // Load library berat on-demand (hanya saat export dijalankan)
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
 
   const doc = new jsPDF();
   const currency = settings.currency || 'IDR';
@@ -204,13 +209,17 @@ export function generateBudgetPDF(
 /**
  * Generate PDF untuk Daftar Tamu
  */
-export function generateGuestPDF(
+export async function generateGuestPDF(
   guests: Guest[],
   settings: WeddingSettings
-): void {
+): Promise<void> {
   if (guests.length === 0) {
     throw new Error('Data tamu kosong');
   }
+
+  // Load library berat on-demand (hanya saat export dijalankan)
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
 
   const doc = new jsPDF();
   const currency = settings.currency || 'IDR';
@@ -313,14 +322,18 @@ export function generateGuestPDF(
 /**
  * Generate PDF Laporan Lengkap (Gabungan Anggaran + Tamu)
  */
-export function generateFullReport(
+export async function generateFullReport(
   budgetItems: BudgetItem[],
   guests: Guest[],
   settings: WeddingSettings
-): void {
+): Promise<void> {
   if (budgetItems.length === 0 && guests.length === 0) {
     throw new Error('Data kosong');
   }
+
+  // Load library berat on-demand (hanya saat export dijalankan)
+  const { default: jsPDF } = await import('jspdf');
+  const { default: autoTable } = await import('jspdf-autotable');
 
   const doc = new jsPDF();
   const currency = settings.currency || 'IDR';

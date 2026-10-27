@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { useWeddingStore, Guest } from '../store';
 import { formatCurrency } from '../helpers';
 import { formatAuditInfo } from '../helpers/timeAgo';
-import { generateGuestPDF } from '../helpers/pdfGenerator';
+// OPTIMASI BUNDLE (TUGAS 2): pdfGenerator (menarik jspdf & jspdf-autotable)
+// dimuat on-demand via dynamic import, bukan import statis di top-level.
+const loadPdfGenerator = () => import('../helpers/pdfGenerator');
 import { useToastStore } from '../toastStore';
 import {
   Plus,
@@ -200,14 +202,15 @@ export default function GuestManager() {
 
   const hasActiveFilters = searchQuery || filterCategory !== 'Semua' || filterRsvp !== 'Semua';
 
-  // Handle Export PDF
-  const handleExportPDF = () => {
+  // Handle Export PDF (jspdf dimuat on-demand saat tombol diklik)
+  const handleExportPDF = async () => {
     try {
       if (guests.length === 0) {
         addToast('Data tamu masih kosong, tidak ada yang bisa di-export', 'warning');
         return;
       }
-      generateGuestPDF(guests, settings);
+      const { generateGuestPDF } = await loadPdfGenerator();
+      await generateGuestPDF(guests, settings);
       addToast('PDF berhasil dibuat!', 'success');
     } catch (error) {
       console.error('PDF export error:', error);

@@ -28,16 +28,12 @@ interface SyncState {
 // ============================================
 let isSyncingToCloud = false;
 let isSyncingFromCloud = false;
-let lastSyncToCloudTime = 0;
-let lastSyncFromCloudTime = 0;
 
 // Expose to window for cross-module access
 if (typeof window !== 'undefined') {
   (window as any).__SYNC_STATE__ = {
     isSyncingToCloud: () => isSyncingToCloud,
     isSyncingFromCloud: () => isSyncingFromCloud,
-    lastSyncToCloudTime: () => lastSyncToCloudTime,
-    lastSyncFromCloudTime: () => lastSyncFromCloudTime,
   };
 }
 
@@ -64,7 +60,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
     try {
       isSyncingToCloud = true;
-      lastSyncToCloudTime = Date.now();
       set({ status: 'syncing', isSyncing: true });
       
       const { settings, budgetItems, savings, guests, vendors, tasks, seserahanItems } = useWeddingStore.getState();
@@ -83,6 +78,11 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         seserahan_items: seserahanItems,
         updated_at: now,
       };
+
+      // [MONITORING SEMENTARA] Cetak ukuran payload (dalam bytes) yang dikirim ke cloud.
+      // Gunakan angka ini untuk memutuskan apakah perlu diff-based sync di masa depan.
+      // Hapus baris ini setelah monitoring selesai.
+      console.log(`[syncToCloud] payload size: ${JSON.stringify(data).length} bytes`);
 
       const { error } = await supabase
         .from('wedding_data')
@@ -131,7 +131,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
     try {
       isSyncingFromCloud = true;
-      lastSyncFromCloudTime = Date.now();
       set({ status: 'syncing', isSyncing: true });
       
       const { data, error } = await supabase
@@ -212,8 +211,13 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 // ============================================
 
 let autoSyncTimer: ReturnType<typeof setTimeout> | null = null;
-const AUTO_SYNC_DEBOUNCE_MS = 2000; // 2 detik debounce
-const SYNC_COOLDOWN_MS = 5000; // 5 detik cooldown setelah sync
+// OPTIMASI: Debounce dipercepat dari 2000ms -> 1000ms agar auto-sync lebih responsif.
+const AUTO_SYNC_DEBOUNCE_MS = 1000; // 1 detik debounce
+
+// OPTIMASI: Mekanisme cooldown (SYNC_COOLDOWN_MS = 5000) yang memblokir sync
+// sudah DIHAPUS. Race condition & infinite loop dicegah sepenuhnya oleh flag
+// `isSyncingToCloud` / `isSyncingFromCloud` di atas — jauh lebih aman dan
+// tidak memblokir perubahan data user secara tidak perlu setelah sync selesai.
 
 // Defer subscription to avoid circular dependency
 if (typeof window !== 'undefined') {
@@ -239,17 +243,14 @@ if (typeof window !== 'undefined') {
           return;
         }
         
-        // FIX 2: Skip jika baru saja sync (cooldown)
-        const now = Date.now();
-        const timeSinceLastSyncToCloud = now - lastSyncToCloudTime;
-        const timeSinceLastSyncFromCloud = now - lastSyncFromCloudTime;
-        
-        if (timeSinceLastSyncToCloud < SYNC_COOLDOWN_MS || timeSinceLastSyncFromCloud < SYNC_COOLDOWN_MS) {
+        // OPTIMASI (TUGAS 1): Blok "cooldown" yang lama (SYNC_COOLDOWN_MS) DIHAPUS.
+        // Sebelumnya, perubahan data user diblokir hingga 5 detik setelah sync,
+        // meskipun sync sudah selesai. Perlindungan terhadap race condition &
+        // infinite loop kini sepenuhnya ditangani oleh flag isSyncingToCloud /
+        // isSyncingFromCloud di atas (FIX 1).
 
-          return;
-        }
-        
-        // FIX 3: Skip jika sedang syncing
+        // Optimistic UI tetap terjaga: state lokal update instan (oleh store),
+        // sync ke cloud dijadwalkan di background dengan debounce singkat.
         if (user && currentWeddingId && !isSyncing) {
           if (autoSyncTimer) {
             clearTimeout(autoSyncTimer);

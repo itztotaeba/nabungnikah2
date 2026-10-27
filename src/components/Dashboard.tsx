@@ -94,7 +94,7 @@ export default function Dashboard() {
         return;
       }
       const { generateFullReport } = await loadPdfGenerator();
-      generateFullReport(safeBudgetItems, safeGuests, safeSettings);
+      await generateFullReport(safeBudgetItems, safeGuests, safeSettings);
       addToast('PDF berhasil dibuat!', 'success');
     } catch (error) {
       console.error('❌ PDF export error:', error);
@@ -110,7 +110,7 @@ export default function Dashboard() {
         return;
       }
       const { exportToExcel } = await loadExcelGenerator();
-      exportToExcel({ 
+      await exportToExcel({ 
         settings: safeSettings, 
         budgetItems: safeBudgetItems, 
         savings: safeSavings, 

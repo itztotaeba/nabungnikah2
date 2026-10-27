@@ -1,4 +1,6 @@
-import * as XLSX from 'xlsx';
+// OPTIMASI BUNDLE (TUGAS 2): xlsx tidak lagi di-import statis di top-level.
+// Library dimuat via dynamic import() hanya saat exportToExcel() benar-benar dipanggil,
+// sehingga chunk xlsx tidak memengaruhi initial load & build time Vercel.
 import { WeddingSettings, BudgetItem, SavingsEntry, Guest, Vendor, Task, SeserahanItem } from '../types';
 
 interface AppData {
@@ -15,8 +17,11 @@ interface AppData {
  * Generate dan download file Excel dengan multiple sheets
  * @param data - Semua data dari Zustand store
  */
-export function exportToExcel(data: AppData): void {
+export async function exportToExcel(data: AppData): Promise<void> {
   try {
+    // Dynamic import: xlsx baru di-download ke browser saat user menekan tombol Export
+    const XLSX = await import('xlsx');
+
     const { settings, budgetItems, savings, guests, vendors, tasks, seserahanItems = [] } = data;
 
     // Create workbook

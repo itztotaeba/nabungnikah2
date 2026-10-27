@@ -69,16 +69,9 @@ export function useRealtimeSync(weddingId: string | null, enabled: boolean = tru
             return;
           }
 
-          // FIX: Check cooldown - skip jika baru saja sync
-          const now = Date.now();
-          const timeSinceLastSyncToCloud = now - (syncState?.lastSyncToCloudTime() || 0);
-          const timeSinceLastSyncFromCloud = now - (syncState?.lastSyncFromCloudTime() || 0);
-          
-          if (timeSinceLastSyncToCloud < 5000 || timeSinceLastSyncFromCloud < 5000) {
-            console.log(`⏭️ Skipping realtime update (cooldown: toCloud=${timeSinceLastSyncToCloud}ms, fromCloud=${timeSinceLastSyncFromCloud}ms)`);
-            return;
-          }
-
+          // OPTIMASI (TUGAS 1): Check cooldown yang lama DIHAPUS agar realtime
+          // update dari pasangan tidak tertunda. Perlindungan race condition
+          // sudah ditangani oleh flag isSyncingToCloud/isSyncingFromCloud di atas.
           // Process update dari user lain
           try {
 

@@ -102,7 +102,7 @@ export default function SettingsPage() {
         return;
       }
       const { exportToExcel } = await loadExcelGenerator();
-      exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks, seserahanItems });
+      await exportToExcel({ settings, budgetItems, savings, guests, vendors, tasks, seserahanItems });
       addToast('File Excel berhasil didownload!', 'success');
     } catch (error) {
       console.error('Excel export error:', error);
